@@ -67,6 +67,7 @@ export default {
             this.errorLogin()
           }
         }).catch(err => {
+          alert(err)
           //console.log(err)
         })
     },
