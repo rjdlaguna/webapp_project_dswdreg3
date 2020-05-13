@@ -67,7 +67,7 @@ export default {
             this.errorLogin()
           }
         }).catch(err => {
-          console.log(err)
+          //console.log(err)
         })
     },
     /* emitMethod () {
