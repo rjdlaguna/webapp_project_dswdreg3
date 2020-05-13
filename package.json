@@ -8,7 +8,7 @@
     "start": "node app.js",
     "server": "nodemon app.js",
     "client": "npm run serve --prefix client",
-    "dev": "concurrently \"npm run server\" \"npm run client'"
+    "dev": "'concurrently \"npm run server\" \"npm run client'"
   },
   "author": "Rene Laguna Jr.",
   "license": "MIT",
