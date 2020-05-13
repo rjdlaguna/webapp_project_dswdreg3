@@ -1,0 +1,63 @@
+.navbar{
+	margin-top:1em;
+}
+.nav-link:link{
+	color:white;
+}
+.nav-link:visited{
+	color:white;
+}
+
+.mainnav{
+	background: #004d99;
+}
+#home-section{
+	position: relative;
+}
+
+.desc_text, .p_name, .labels, .field-label{
+	color:#004d99;
+}
+
+.header_name{
+	color:#004d99;
+}
+
+.control-label{
+	color:#004d99;
+	font-weight: 600;
+}
+
+.user-modal-container *{
+	box-sizing: border-box;
+}
+
+
+
+/*
+.user-modal-container {
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
+	opacity: 0;
+	visibility: hidden;
+	cursor: pointer;
+	overflow-y: auto;
+	z-index: 3;
+	font-family: 'Lato', 'Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif';
+	font-size: 14px;
+	background-color: rgba(17,17,17,.9);
+	-webkit-transition: all 0.25s linear;
+	-moz-transition: all 0.25s linear;
+	-o-transition: all 0.25s linear;
+	-ms-transition: all 0.25s linear;
+	transition: all 0.25s linear;
+  }
+  
+  .user-modal-container.active {
+	opacity: 1;
+	visibility: visible;
+  }*/
+
