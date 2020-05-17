@@ -28,8 +28,8 @@ const actions = {
     commit
   }, user) {
     commit('auth_request')
-    //let res = await axios.post('http://104.248.144.145:81/api/users/login', user)
-    let res = await axios.post('http://localhost:7000/api/users/login', user)
+    let res = await axios.post('http://104.248.144.145:81/api/users/login', user)
+    //let res = await axios.post('http://localhost:7000/api/users/login', user)
     if (res.data.success) {
       const token = res.data.token
       const user = res.data.user
@@ -43,8 +43,8 @@ const actions = {
     commit
   }, user) {
     commit('register_request')
-    //let res = await axios.post('http://104.248.144.145:81/api/users/registeruser', user)
-    let res = await axios.post('http://localhost:7000/api/users/registeruser', user)
+    let res = await axios.post('http://104.248.144.145:81/api/users/registeruser', user)
+    //let res = await axios.post('http://localhost:7000/api/users/registeruser', user)
     if (res.data.success !== undefined) {
       commit('register_success')
     }
@@ -56,8 +56,8 @@ const actions = {
   },
   async getProfile ({commit}) {
     commit('profile_request')
-    //let res = await axios.get('http://104.248.144.145:81/api/users/profile')
-    let res = await axios.get('http://localhost:7000/api/users/profile')
+    let res = await axios.get('http://104.248.144.145:81/api/users/profile')
+    //let res = await axios.get('http://localhost:7000/api/users/profile')
     commit('user_profile', res.data.user)
     return res
   },
@@ -69,8 +69,8 @@ const actions = {
   },
   async displayProfilePic ({commit}, id) {
       commit('profilepic_request')
-      //let res = await axios.get('http://104.248.144.145:81/api/users/displayprofilepic/'+ id)
-      let res = await axios.get('http://localhost:7000/api/users/displayprofilepic/'+ id)
+      let res = await axios.get('http://104.248.144.145:81/api/users/displayprofilepic/'+ id)
+      //let res = await axios.get('http://localhost:7000/api/users/displayprofilepic/'+ id)
       commit('profile_picture', res.data.image_path)
       return res
   },
