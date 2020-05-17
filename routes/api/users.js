@@ -57,8 +57,9 @@ let u_id = 0, cen_id = 0
 
 //Get API Key
 users.get('/getapikey', (req, res) => {
-    myAPIKey = 'AIzaSyD0av1I6ws3pKn06FOdeRfBt0HRqxBhBao'
-    res.json(myAPIkey)
+    console.log('getting the api key')
+    var myAPIKey = 'AIzaSyD0av1I6ws3pKn06FOdeRfBt0HRqxBhBao'
+    res.json(myAPIKey)
 })
 
 //User Registration (Working)

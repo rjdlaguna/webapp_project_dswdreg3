@@ -311,7 +311,7 @@ export default {
       first_name: '',
       middle_initial: '',
       last_name: '',
-      mobile_no: 0,
+      mobile_no: '',
       birthdate: '',
       address: '',
       email:'',
@@ -339,7 +339,7 @@ export default {
   },
   methods: {
     ...mapActions(['getProfile']),
-    /*logout () {
+    logout () {
       axios.get('users/logout', {
         first_name: this.first_name,
         last_name: this.last_name
@@ -349,10 +349,8 @@ export default {
         this.last_name = ''
         this.user_data = res.data
         router.push({ name: 'Login' })
-      }).catch(err => {
-        console.log(err)
       })
-    }, */
+    },
     ...mapActions(['logout']),
     logoutUser () {
       this.logout()
@@ -397,7 +395,7 @@ export default {
     loginMessage () {
       this.login_message = "User successfully registered. You can now login to your account."
     },
-    ...mapActions(['register']),
+    ...mapActions(['register', 'getAPIkey']),
     registerUser() {
       if (this.first_name === '' ||
       this.last_name === '' ||
@@ -438,12 +436,6 @@ export default {
             this.showRegisterModal2 = false
             this.showRegistrationSuccessModal = true
           }
-          if (res.data.error){
-            alert('Username already taken')
-          }
-          else {
-            alert('Email already existing')
-          }
         })
       }
     },
@@ -460,6 +452,7 @@ export default {
       this.birthdate === '' ||
       this.address === '') {
         this.required_fields = "Please provide input on the required fields (*)."
+        this.getGoogleMapAPI()
       }
       else {
         this.address = document.getElementById('input_address').value
@@ -482,7 +475,7 @@ export default {
     getGoogleMapAPI() {
       let mapAPIkey;
       this.getAPIkey()
-      .then(res => {
+      .then(res =>{
         mapAPIkey = res.data
       })
       return mapAPIkey

@@ -58,17 +58,14 @@ export default {
         email: this.email,
         password: this.password
       }
-      this.login(user)
-      // this.$store.dispatch('login', user)
+      //this.login(user)
+      this.$store.dispatch('login', user)
         .then(res => {
           if (res.data.success) {
             router.push({ name: 'centersandinstitutions' })
           } else {
             this.errorLogin()
           }
-        }).catch(err => {
-          alert(err)
-          //console.log(err)
         })
     },
     /* emitMethod () {

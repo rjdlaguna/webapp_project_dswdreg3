@@ -5,6 +5,7 @@ import store from './store'
 import axios from 'axios'
 import BootstrapVue from 'bootstrap-vue'
 import VueRouter from 'vue-router'
+import VueGoogleAutocomplete from 'vue-google-autocomplete'
 import { ValidationProvider , ValidationObserver} from 'vee-validate';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import 'bootstrap/dist/css/bootstrap.css'
@@ -24,6 +25,14 @@ import '@fortawesome/fontawesome-free/js/all.js'
 require('../node_modules/bootstrap/dist/css/bootstrap.css')
 
 Vue.component('vue-phone-number-input', VuePhoneNumberInput)
+
+Vue.use(VueGoogleAutocomplete, {
+  load: {
+    key: 'AIzaSyD0av1I6ws3pKn06FOdeRfBt0HRqxBhBao',
+    libraries: 'places' // necessary for places input
+  }
+}) 
+
 
 Vue.filter('formatDate', function(value){
   if (value) {
