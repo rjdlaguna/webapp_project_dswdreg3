@@ -130,6 +130,11 @@ users.post('/registeruser', (req, res) => {
                                         var img = fs.readFileSync('../webapp_project/client/src/assets/images/temp_pic.jpg')
                                         var encode_image = img.toString('base64')
                                         
+                                        /*let imgtype = '"image/*"'
+                                        let imgdata = Buffer.from(encode_image).toString('base64')
+                                        let imgpath = '@/assets/images/temp_pic.jpg'
+                                        let imgname = 'temp_pic.jpg'*/
+                                        
                                         const TempPicData = {
                                             profile_pic: {
                                                 contentType: '"image/jpg"',
@@ -139,11 +144,27 @@ users.post('/registeruser', (req, res) => {
                                             image_path: '@/assets/images/temp_pic.jpg',
                                             image_name: 'temp_pic.jpg'
                                         }
+                                        
+                                        /* let profimage = new ProfilePicture({
+                                            profile_pic:{
+                                                imgtype,
+                                                imgdata
+                                            },
+                                            u_id,
+                                            imgpath,
+                                            imgname
+                                        })
+                                        profimage.save()
+                                        .then(temppic=> {
+                                            console.log('Temporary Profile Picture Saved.')
+                                        }) */
+
                                         ProfilePicture.create(TempPicData)
                                         .then(temppic=> {
                                             // res.json({ status: user.email + ' registered' })
                                             console.log('Temporary Profile Picture Saved.')
                                         })
+
                                         //Create the verification token for the user
                                         /*var token = new Token({ 
                                             _userId: user._id, 

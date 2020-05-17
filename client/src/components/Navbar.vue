@@ -377,8 +377,8 @@ export default {
         loginemail: this.loginemail,
         loginpassword: this.loginpassword
       }
-      // this.login(user)
-      this.$store.dispatch('login', user)
+      this.login(user)
+      //this.$store.dispatch('login', user)
         .then(res => {
           if (res.data.success) {
             router.push({ name: 'home' })
