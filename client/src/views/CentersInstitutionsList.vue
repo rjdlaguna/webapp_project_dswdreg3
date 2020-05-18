@@ -140,8 +140,8 @@
                         <div class="form-group">
                           <ValidationProvider name = "center_yearfounded" rules="required" v-slot="{ errors }">
                             <label for="Year Founded">Year Founded<span class = 'required_data'>*</span></label>
-                            <select id="center_yearfounded" v-model="center_yearfounded" class="form-control" name="center_yearfounded" @mousedown="generateLatLong" placeholder="Enter year founded"></select>
-                            <!--<input type="text" v-model="center_yearfounded" class="form-control" name="center_yearfounded" @mousedown="generateLatLong" placeholder="Enter year founded">-->
+                            <!--<select id="center_yearfounded" v-model="center_yearfounded" class="form-control" name="center_yearfounded" @mousedown="generateLatLong" placeholder="Enter year founded"></select>-->
+                            <input type="text" v-model="center_yearfounded" class="form-control" name="center_yearfounded" @mousedown="generateLatLong" placeholder="Enter year founded">
                             <span class = "err_message">{{ errors[0] }}</span>
                           </ValidationProvider>
                         </div>
