@@ -81,7 +81,7 @@ const actions = {
     let imgForm = new FormData
     imgForm = imgdata
     let id = imgForm.get('user_id')
-    let res = await axios.post('http://104.248.144.145:81/api/users/uploadprofilepic/' + id, imgdata) //,{headers: {'Content-Type': 'multipart/form-data' }})
+    let res = await axios.post('http://104.248.144.145:81/api/users/uploadprofilepic/' + id, imgForm) //,{headers: {'Content-Type': 'multipart/form-data' }})
     if (res.data.success !== undefined) {
       commit('uploadpic_success')
     }
