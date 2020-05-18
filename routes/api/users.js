@@ -14,7 +14,7 @@ const nodemailer = require('nodemailer')
 
 const storage = multer.diskStorage({
     destination: function(req, res, cb) {
-        cb(null, '../webapp_project/client/src/assets/images/')
+        cb(null, '../vue/client/src/assets/images/')
     },
     filename: function(req, file, cb) {
         cb(null, file.originalname)
@@ -127,9 +127,9 @@ users.post('/registeruser', (req, res) => {
                                             if (err) {return err}
                                             u_id = info.id
                                             console.log(info.id)
-                                        var img = fs.readFileSync('../webapp_project/client/src/assets/images/temp_pic.jpg')
+                                        var img = fs.readFileSync('../vue/client/src/assets/images/temp_pic.jpg')
                                         var encode_image = img.toString('base64')
-                                        
+
                                         /*let imgtype = '"image/*"'
                                         let imgdata = Buffer.from(encode_image).toString('base64')
                                         let imgpath = '@/assets/images/temp_pic.jpg'
