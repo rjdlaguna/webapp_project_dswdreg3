@@ -325,7 +325,7 @@ users.get("/displayprofilepic/:id", (req, res) => {
             image_data = result.profile_pic.data
             image_format = Buffer.from(image_data,'base64')
             res.setHeader('content-type',image_content)
-            decoded_image = fs.writeFileSync(result.image_name,image_format)
+            // decoded_image = fs.writeFileSync(result.image_name,image_format)
             // console.log(result.image_path)
             res.send(result.image_name)
         })
