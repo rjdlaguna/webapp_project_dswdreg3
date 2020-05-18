@@ -7,6 +7,7 @@ const multer = require("multer")
 const cookieParser = require('cookie-parser');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
+const fs = require('fs')
 
 const app = express();
 
