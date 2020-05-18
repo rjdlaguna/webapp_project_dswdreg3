@@ -421,11 +421,11 @@ users.post('/registercenter', (req, res) => {
     let centerID = 0
     //console.log(req.body.center_long)
     //console.log(req.body.center_lat)
-    let img = fs.readFileSync('../webapp_project/client/src/assets/images/sample_center.png')
+    let img = fs.readFileSync('../vue/client/src/assets/images/sample_center.png')
     let encode_image = img.toString('base64')
     let imgtype ='"image/png"'
     let imgdata = Buffer.from(encode_image).toString('base64')
-    let image_path = '../webapp_project/client/src/assets/images/sample_center.png'
+    let image_path = '../vue/client/src/assets/images/sample_center.png'
     let image_name = 'sample_center.png'
     let {
         center_name,
@@ -667,7 +667,7 @@ users.post('/createcenteruser', (req, res) => {
                                             if (err) {return err}
                                             u_id = info.id
                                             //console.log(info.id)
-                                        var img = fs.readFileSync('../webapp_project/client/src/assets/images/temp_pic.jpg')
+                                        var img = fs.readFileSync('../vue/client/src/assets/images/temp_pic.jpg')
                                         var encode_image = img.toString('base64')
                                         
                                         const TempPicData = {

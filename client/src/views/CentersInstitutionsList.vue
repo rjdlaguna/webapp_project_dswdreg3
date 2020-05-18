@@ -162,7 +162,7 @@
                         <div class="form-group">
                           <ValidationProvider name = "center_mobileno" rules="required" v-slot="{ errors }">
                             <label for="Mobile No.">Mobile No.<span class = 'required_data'>*</span></label>
-                            <input type="text" v-model="center_mobileno" class="form-control" name="center_mobileno" placeholder="Enter year founded">
+                            <input type="text" v-model="center_mobileno" class="form-control" name="center_mobileno" placeholder="Enter mobile no">
                             <span class = "err_message">{{ errors[0] }}</span>
                           </ValidationProvider>
                         </div>
@@ -408,7 +408,7 @@ export default {
       } else {
         this.showCenterRegisterModal1 = false
         this.showCenterRegisterModal2 = true
-        this.populateYear()
+        // this.populateYear()
       }
     },
     getCenterImageURL(pic){
