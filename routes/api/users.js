@@ -278,7 +278,7 @@ users.get('/profile', passport.authenticate('jwt', {
 
 //Uploading Profile Picture (Working)
 users.post("/uploadprofilepic/:id", upload.single('image_file'), (req,res) => {
-    //console.log('uploading picture' + req.params.id)
+    console.log('uploading picture from ' + req.file.path)
     var img = fs.readFileSync(req.file.path)
     var encode_image = img.toString('base64')
     let id = req.params.id
