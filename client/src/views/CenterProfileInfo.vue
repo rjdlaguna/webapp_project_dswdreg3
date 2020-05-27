@@ -12,7 +12,7 @@
                     <form enctype="multipart/form-data">
                         <b-card title="" style = "width:45rem">
                             <img :src="getCenterImageURL(center_profile.image_name)" name ="center_image" id="center_image" class = "m-auto" width = "680" height = "250"/>
-                            <button type="button" class = "btn" title="Upload Picture" id = "btnupload_center_image" @click="showUploadCenterPicModal=true"><i class = "fas fa-upload fa-2x" id="upload_icon" name = 'upload_center_image'></i></button>
+                            <button v-if="isShown" type="button" class = "btn" title="Upload Picture" id = "btnupload_center_image" @click="showUploadCenterPicModal=true"><i class = "fas fa-upload fa-2x" id="upload_icon" name = 'upload_center_image'></i></button>
                         </b-card>
                     </form>
                 </div>
@@ -96,8 +96,11 @@
                 </div>
             </div>
             <div id ="center_btnaction" class ="mt-5">
-                <button type="button" class="btn mb-3" id="btn_user" @click="displayCenterUserAccounts">User Accounts</button>
-                <button type="button" class="btn mb-3" id="btn_incident">Incident Reports</button>
+                <p id="centerID" style="display:none">{{user_profile.center_id}}</p>
+                <p id="usertype" style="display:none">{{user_profile.user_type}}</p>
+                <button v-if="isShown" type="button" class="btn mb-3" id="btn_user" @click="displayCenterUserAccounts">User Accounts</button>
+                <button v-if="isShown" type="button" class="btn mb-3" id="btn_incident">Incident Reports</button>
+                <button v-if="isShown" type="button" class="btn mb-3" id="btn_editcenter" @click="showEditCenterInfoModal1=true">Edit Information</button>
             </div>
         </div>
 
@@ -300,6 +303,164 @@
             </div>
           </transition>
         </div>
+        
+        <!--Center Edit Info Modal 1-->
+    <div v-if="showEditCenterInfoModal1">
+          <transition name = "modal">
+            <div class="modal-mask">
+              <div class="modal-wrapper">
+                <div class = "modal-dialog modal-md modal-dialog-scrollable" role="document">
+                  <form @submit.prevent="updateCenterData">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title">Edit Center or Institution</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true" @click="showEditCenterInfoModal1=false">&times;</span>
+                        </button>
+                      </div>
+                      <p class = "err_message ml-3">{{required_fields}}</p>
+                      <div class="modal-body">
+                        <div class = "modal-body-section1">
+                          <div class="form-group">
+                            <ValidationProvider name = "center_name" rules="required" v-slot="{ errors }">
+                              <label for="Name">Name<span class = 'required_data'>*</span></label>
+                              <input type="text" v-model="center_profile.center_name" id="center_name" class="form-control" name="center_name" placeholder="Enter center or institution name">
+                              <span class = "err_message">{{ errors[0] }}</span>
+                            </ValidationProvider>
+                          </div>
+                          <div class="form-group">
+                            <ValidationProvider name = "center_desc" rules="required" v-slot="{ errors }">
+                              <label for="Description">Description<span class = 'required_data'>*</span></label>
+                              <textarea type="text" v-model="center_profile.center_desc" id="center_desc" class="form-control" name="center_desc" placeholder="Enter center or institution description"></textarea>
+                              <span class = "err_message">{{ errors[0] }}</span>
+                            </ValidationProvider>
+                          </div>
+                          <div class="form-group">
+                              <label for="Name of Head">Name of Head<span class = 'required_data'>*</span></label>
+                              <ValidationProvider name = "center_head_firstname" rules="required" v-slot="{ errors }">
+                                  <input type="text" v-model="center_profile.center_head_firstname" id="center_head_firstname" class="form-control mb-2" name="center_head_firstname" placeholder="First Name">
+                                  <span class = "err_message">{{ errors[0] }}</span>
+                              </ValidationProvider>
+                              <ValidationProvider name = "center_head_middleinitial" rules="" v-slot="{ errors }">
+                                  <input type="text" v-model="center_profile.center_head_middleinitial" id="center_head_middleinitial" class="form-control mb-2" name="center_head_middleinitial" placeholder="Middle Initial">
+                                  <span class = "err_message">{{ errors[0] }}</span>
+                              </ValidationProvider>
+                              <ValidationProvider name = "center_head_lastname" rules="required" v-slot="{ errors }">
+                                  <input type="text" v-model="center_profile.center_head_lastname" id="center_head_lastname" class="form-control" name="center_head_lastname" placeholder="Last Name">
+                                  <span class = "err_message">{{ errors[0] }}</span>
+                              </ValidationProvider>
+                          </div>
+                          <div class="form-group">
+                              <ValidationProvider name = "center_indivtype" rules="required" v-slot="{ errors }">
+                                  <label for="center_indivtype">Type of Individuals: <span class = 'required_data'>*</span></label>
+                                  <select class="form-control" id="center_indivtype" v-model="center_profile.center_indivtype" name="center_indivtype" placeholder="Select One">
+                                      <option disabled value="">Select One</option>
+                                      <option>Child</option>
+                                      <option>Teenager</option>
+                                      <option>Adult</option>
+                                      <option>Elderly</option>
+                                      <option>Disabled</option>
+                                  </select>
+                                  <span class = "err_message">{{ errors[0] }}</span>
+                              </ValidationProvider>
+                          </div>
+                        </div>
+                        <div class = "modal-body-section2">
+                          <div class="form-group">
+                              <ValidationProvider name = "center_gender" rules="required" v-slot="{ errors }">
+                                  <label for="Gender">Gender: <span class = 'required_data'>*</span></label>
+                                  <select class="form-control" id="center_gender" v-model="center_profile.center_gender" name="center_gender" placeholder="">
+                                      <option disabled value="">Select Gender</option>
+                                      <option>Male</option>
+                                      <option>Female</option>
+                                      <option>Male and Female</option>
+                                  </select>
+                                  <span class = "err_message">{{ errors[0] }}</span>
+                              </ValidationProvider>
+                          </div>
+                          <div class="form-group">
+                            <ValidationProvider name = "center_location" rules="required" v-slot="{ errors }">
+                              <label for="Location">Location<span class = 'required_data'>*</span></label>
+                              <input type="text" v-model="center_profile.center_location" id="center_location" class="form-control" @focus="initAutocomplete()" name="center_location" placeholder="Enter location">
+                              <p id = "latitude" style="display:none"></p>
+                              <p id = "longitude" style="display:none"></p>
+                              <span class = "err_message">{{ errors[0] }}</span>
+                            </ValidationProvider>
+                          </div>
+                          <div class="form-group">
+                            <ValidationProvider name = "center_yearfounded" rules="required" v-slot="{ errors }">
+                              <label for="Year Founded">Year Founded<span class = 'required_data'>*</span></label>
+                              <!--<select id="center_yearfounded" v-model="center_yearfounded" class="form-control" name="center_yearfounded" @mousedown="generateLatLong" placeholder="Enter year founded"></select>-->
+                              <input type="text" v-model="center_profile.center_yearfounded" id="center_yearfounded" class="form-control" name="center_yearfounded" @mousedown="generateLatLong" placeholder="Enter year founded">
+                              <span class = "err_message">{{ errors[0] }}</span>
+                            </ValidationProvider>
+                          </div>
+                          <div class="form-group">
+                            <ValidationProvider name = "center_email" rules="required|email" v-slot="{ errors }">
+                              <label for="Email Address">Email Address<span class = 'required_data'>*</span></label>
+                              <input type="text" v-model="center_profile.center_email" id="center_email" class="form-control" name="center_email" placeholder="Enter email address">
+                              <span class = "err_message">{{ errors[0] }}</span>
+                            </ValidationProvider>
+                          </div>
+                          <div class="form-group">
+                            <ValidationProvider name = "center_telno" rules="required" v-slot="{ errors }">
+                              <label for="Telephone No.">Telephone No.<span class = 'required_data'>*</span></label>
+                              <input type="text" v-model="center_profile.center_telno" id="center_telno" class="form-control" name="center_telno" placeholder="Enter telephone no.">
+                              <span class = "err_message">{{ errors[0] }}</span>
+                            </ValidationProvider>
+                          </div>
+                          <div class="form-group">
+                            <ValidationProvider name = "center_mobileno" rules="required" v-slot="{ errors }">
+                              <label for="Mobile No.">Mobile No.<span class = 'required_data'>*</span></label>
+                              <input type="text" v-model="center_profile.center_mobileno" id="center_mobileno" class="form-control" name="center_mobileno" placeholder="Enter mobile no">
+                              <span class = "err_message">{{ errors[0] }}</span>
+                            </ValidationProvider>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="modal-footer">
+                        <div class = "form-group col text-center">
+                          <button class="btn btn-primary btn-inline mr-3" type="button" @click="showEditCenterInfoModal1=false">Cancel</button>
+                          <button class="btn btn-primary btn-inline mr-3" type="submit" >Save</button>
+                        </div>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </transition>
+        </div>
+        <!--End of Center Edit Info Modal-->
+
+        <!--Successful Center Edit Info Modal-->
+        <div v-if="showCenterEditInfoSuccessModal">
+          <transition name="modal">
+            <div class="modal-mask">
+              <div class="modal-wrapper">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                          <h5 class="modal-title">Update Center or Institution Information</h5>
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true" @click="showCenterEditInfoSuccessModal = false">&times;</span>
+                          </button>
+                      </div>
+                      <div class="modal-body">
+                         <p>Center or Institution successfully updated.</p>
+                      </div>
+                      <div class="modal-footer">
+                        <div class form-group>
+                          <button type="button" class="btn btn-secondary" @click="showCenterEditInfoSuccessModal = false">OK</button>
+                        </div>
+                      </div>
+                    </div>
+                </div>
+              </div>
+            </div>
+          </transition>
+        </div>
+        <!--Successful Center Registration Modal-->
 
     </div>    
 </template>
@@ -315,6 +476,9 @@ export default {
     props: {
         id: {
             required: true
+        },
+        uid: {
+          required : true
         }
     },
     components: {
@@ -350,10 +514,30 @@ export default {
             centerusers: [],
             autocomplete:null,
             place:null,
+            center_id:'',
+            isShown: true,
+            user_profile: [],
+            showEditCenterInfoModal1: false,
+            showEditCenterInfoModal2: false,
+            lati: 0.0,
+            long: 0.0,
+            center_name: '',
+            center_desc: '',
+            center_head_firstname:'',
+            center_head_middleinitial: '',
+            center_head_lastname: '',
+            center_indivtype: '',
+            center_gender: '',
+            center_location: '',
+            center_email: '',
+            center_telno: 0,
+            center_mobileno:'',
+            center_yearfounded: 0,
+            showCenterEditInfoSuccessModal: false
         }
     },
     methods: {
-        ...mapActions(['getCenterProfile', 'displayCenterImage', 'uploadCenterPic', 'createCenterUser', 'displayCenterUsers', 'getAPIkey']),
+        ...mapActions(['getCenterProfile', 'displayCenterImage', 'uploadCenterPic', 'createCenterUser', 'displayCenterUsers', 'getAPIkey', 'getCenterIDByProfile', 'updateCenterInfo']),
         getCenterImageURL(img) {
             return require('@/assets/images/'+img)
         },
@@ -459,11 +643,36 @@ export default {
           })
           return mapAPIkey
         },
+        generateLatLong() { 
+          let geocoder = new google.maps.Geocoder();
+          let address = document.getElementById("center_location").value;
+          var loc1, loc2;
+          geocoder.geocode( { 'address': address}, function(results, status) {
+            if (status == google.maps.GeocoderStatus.OK)
+            {
+              loc1= results[0].geometry.location.lat();
+              loc2= results[0].geometry.location.lng();
+            } else{
+              alert("Error: " + status);
+            }
+            document.getElementById('latitude').innerHTML = loc1
+            document.getElementById('longitude').innerHTML = loc2
+            //alert(this.lati + ' ' + this.long)
+          })
+          this.center_location = address
+          //alert(this.gen_address +' '+this.lati)
+        },
+        getLatLong(position){
+          this.lati = document.getElementById('latitude').innerHTML
+          this.long = document.getElementById('longitude').innerHTML
+          //this.lati = position.coords.latitude
+          //this.long = position.coords.longitude
+        },
         initAutocomplete(){
           // Create the autocomplete object, restricting the search to geographical
           // location types.
           this.autocomplete = new google.maps.places.Autocomplete(
-              /** @type {!HTMLInputElement} */(document.getElementById('input_address')),
+              /** @type {!HTMLInputElement} */(document.getElementById('center_location')),
               {types: ['geocode'],
               componentRestrictions: { country: "ph" }
               });
@@ -500,17 +709,81 @@ export default {
             }
             }
         },
+        updateCenterData() {
+          this.center_name = document.getElementById('center_name').value
+          this.center_desc = document.getElementById('center_desc').value
+          this.center_head_firstname = document.getElementById('center_head_firstname').value
+          this.center_head_middleinitial = document.getElementById('center_head_middleinitial').value
+          this.center_head_lastname = document.getElementById('center_head_lastname').value
+          this.center_indivtype = document.getElementById('center_indivtype').value
+          this.center_gender = document.getElementById('center_gender').value
+          this.center_location = document.getElementById('center_location').value
+          this.center_email = document.getElementById('center_email').value
+          this.center_telno = document.getElementById('center_telno').value
+          this.center_mobileno = document.getElementById('center_mobileno').value
+          this.center_yearfounded = document.getElementById('center_yearfounded').value
+          this.lati = document.getElementById('latitude').innerHTML
+          this.long = document.getElementById('longitude').innerHTML
+          
+          let centerdata = {
+            _id: this.id,
+            center_name: this.center_name,
+            center_desc: this.center_desc,
+            center_head_firstname: this.center_head_firstname,
+            center_head_middleinitial: this.center_head_middleinitial,
+            center_head_lastname: this.center_head_lastname,
+            center_indivtype: this.center_indivtype,
+            center_gender: this.center_gender,
+            center_location: this.center_location,
+            center_email: this.center_email,
+            center_telno: this.center_telno,
+            center_mobileno: this.center_mobileno,
+            center_yearfounded: this.center_yearfounded,
+            center_lat: this.lati,
+            center_long: this.long
+          }
+          this.updateCenterInfo(centerdata)
+          .then(res => {
+            if(res.data.success) {
+              this.showEditCenterInfoModal1 = false
+              this.showCenterEditInfoSuccessModal = true
+            }
+          })
+        }
     },
     created() {
         this.getCenterProfile(this.id)
         .then(res => {
             this.center_profile = res.data
         })
+        this.getCenterIDByProfile(this.uid)
+        .then(res => {
+          this.user_profile = res.data
+        })
+        
     },
     beforeMount() {
       this.displayCenterImage(this.id).then(res => {
         this.displayImage = res.data
       })
+
+    },
+    updated() {
+        let usertype = document.getElementById('usertype').innerHTML
+        let center_ID
+        if(usertype === 'admin')
+        {
+          this.isShown = true
+        } else if(usertype === 'employee') {
+          center_ID = document.getElementById('centerID').innerHTML
+          if(this.id === center_ID){
+            this.isShown = true
+          } else {
+            this.isShown = false
+          }
+        } else {
+          this.isShown = false
+        }
     }
 }
 
@@ -537,6 +810,9 @@ export default {
 #center_info_item1{
     width: 100%;
 }
+side-bar{
+  z-index: 100;
+}
 .modal-mask {
   position: fixed;
   z-index: 9998;
@@ -559,17 +835,22 @@ export default {
 .modal-body {
     align-items: center;
 }
+.modal-body-section1, .modal-body-section2{
+  float: left;
+  padding-right: 20px;
+  width:100%;
+}
 #centerinfo_section{
     display: flex;
 }
-#btn_user, #btn_incident{
+#btn_user, #btn_incident, #btn_editcenter{
     text-decoration: none;
     background:#042331;
     color: white;
     border-radius: 4px;
     padding: 9px;
 }
-#btn_user:hover, #btn_incident:hover{
+#btn_user:hover, #btn_incident:hover, #btn_editcenter:hover{
     background: white;
     color: #042331;
     border:1px solid #042331;

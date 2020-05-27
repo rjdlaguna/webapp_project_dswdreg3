@@ -334,11 +334,11 @@ export default {
       showCheck3:false,
       showCheck4:false,
       showCheck5:false,
-      pass_num: 0
+      pass_num: 0,
     }
   },
   methods: {
-    ...mapActions(['getProfile']),
+    ...mapActions(['getProfile', 'getCenterID']),
     logout () {
       axios.get('users/logout', {
         first_name: this.first_name,

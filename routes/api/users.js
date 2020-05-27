@@ -539,6 +539,23 @@ users.get('/getcenterprofile/:id', (req,res) => {
     })
 })
 
+//Get Center ID By Profile (working)
+users.get('/getcenteridbyprofile/:id', (req,res) => {
+    let id = req.params.id
+    User.findById(id, function(err, user){
+        if(err) {
+            res.json(err)
+        }
+        // console.log(center)
+        res.json(user)
+        /*return res.status(201).json({
+            success: 'true',
+            msg: "Center was successfully registered.",
+            center
+        })*/
+    })
+})
+
 //Display Center Image
 users.get("/displaycenterimage/:id", (req, res) => {  
     //console.log(req.params.id)
@@ -726,7 +743,6 @@ users.post('/createcenteruser', (req, res) => {
                 })
         }
     })
-
 })
 
 users.get('/displaycenterusers/:id', (req, res) => {
@@ -742,37 +758,110 @@ users.get('/displaycenterusers/:id', (req, res) => {
     })
 })
 
-users.post('/reportincident', (req, res) => {
-    const today = new Date()
-    const rep_by = req.body.reported_by
-    console.log(req.body.replocation)
-    const CtzenRepData = {
-        first_name: req.body.first_name,
-        last_name: req.body.last_name,
-        individual_type: req.body.individual_type,
-        gender: req.body.gender,
-        /* location:{
-            blk_st_brgy: req.body.blk_st_brgy,
-            city_town: req.body.city_town,
-            province: req.body.province
-            }, */
-        location: req.body.location,
-        description: req.body.description,
-        reported: today,
-        reported_by: rep_by
-    }
-    CitizenReport.create(CtzenRepData)
-            .then(ctzen => {
-                res.json({ status: 'Incident Successfully Reported...' })
-            })
-            .catch(err => {
-                res.send('error: ' + err)
-            })
-})
-users.get('/incidentreports/:id', (req, res) => {
+//Updating Center Information
+users.post('/updatecenterinfo/:id', (req, res) => {
     let id = req.params.id
     console.log(id)
-    CitizenReport.find({reported_by: id}, function (err, report){
+    let {
+        center_name,
+        center_desc,
+        center_head_firstname,
+        center_head_middleinitial,
+        center_head_lastname,
+        center_indivtype,
+        center_gender,
+        center_location,
+        center_yearfounded,
+        center_telno,
+        center_mobileno,
+        center_lat,
+        center_lon,
+        center_email,
+    } = req.body
+
+    CentersProfile.findById(id, function (err, center){
+        if(!center){
+            // res.status(404).send('Incident report information cannot be found.')
+            res.status({ error: err })
+        }
+        else{
+            center.center_name = center_name,
+            center.center_desc = center_desc,
+            center.center_head_firstname = center_head_firstname,
+            center.center_head_middleinitial = center_head_middleinitial,
+            center.center_head_lastname = center_head_lastname,
+            center.center_indivtype = center_indivtype,
+            center.center_gender = center_gender,
+            center.center_location = center_location,
+            center.center_yearfounded = center_yearfounded,
+            center.center_telno = center_telno,
+            center.center_mobileno = center_mobileno,
+            center.center_email = center_email,
+            center.center_lat = center_lat,
+            center.center_lon = center_lon
+            center.save().then(()=>{
+                return res.status(201).json({
+                    success: 'true',
+                    msg: "Center information successfully updated."
+                })
+            })
+        }
+    })
+    .catch(() => {
+        res.status(400).send('Unable to update record in the database.')
+    })
+})
+
+users.post("/sendincidentreport", upload.single('image_files'), (req,res) => {
+//users.post('/sendincidentreport', (req, res) => {
+    var image_path = req.file[0].path
+    console.log(image_path)
+    const reported_on = new Date()
+    //const rep_by = req.body.reported_by
+    //console.log(req.body.replocation)
+    let {
+        first_name,
+        middle_initial,
+        last_name,
+        individual_type,
+        gender,
+        location,
+        description,
+        center_name,
+        center_id,
+        user_id,
+        distance,
+        reported_by
+    } = req.body
+    
+    let newReport = new CitizenReport ({
+        first_name,
+        middle_initial,
+        last_name,
+        individual_type,
+        gender,
+        location,
+        description,
+        reported_on,
+        center_name,
+        center_id,
+        user_id,
+        distance,
+        reported_by,
+    })
+
+    newReport.save().then(center => {
+        return res.status(201).json({
+            success: 'true',
+            msg: "Incident Report was successfully sent."
+        })
+    })
+
+})
+users.get('/getmyincidentreports/:id', (req, res) => {
+    let id = req.params.id
+    console.log(id)
+    CitizenReport.find({user_id: id}, function (err, report){
         if(err) {
             res.json(err)
         }

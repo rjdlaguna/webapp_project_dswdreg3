@@ -9,14 +9,17 @@
     <div class = "nav">
       <ul class = "nav-link">
         <li class="nav-link-item">
-          <router-link to=""><i class = "fas fa-user-circle fa-3x"></i><br />Profile</router-link>
+          <router-link to=""><i class = "fas fa-user-circle fa-3x"></i><br/>Profile</router-link>
             <ul class = "nav-sublink">
-              <li id = "header_profile"><h3>Profile</h3></li>
+              <li id = "header_profile">
+                <h3>Profile</h3>
+              </li>
               <li id = "profile_name">{{ user.first_name.toUpperCase() + ' ' + user.last_name.toUpperCase()}}</li>
               <li class = "nav-sublink-item" id = "sublink1">
                 <router-link :to="{name: 'userprofile', params: {id: user._id}}">Account Details</router-link>
+                <p id="centerID" style="display:none">{{user.center_id}}</p>
               </li>
-              <li class = "nav-sublink-item">
+              <li class = "nav-sublink-item" id ="sublink2">
                 <button type="button" id="btn_logout" class="btn ml-5" @click="logoutUser">Logout</button>
               </li>
             </ul>
@@ -25,9 +28,23 @@
           <router-link to ="/dashboard"><i class = "fas fa-tachometer-alt fa-3x"></i><br />Dashboard</router-link>
           </li>
         <li class="nav-link-item">
-          <router-link to = "/centersinstitutionslist"><i class = "fas fa-house-user fa-3x"></i><br />Centers & Insitutions</router-link></li>
+          <router-link :to ="{name: 'centersinstitutionslist', params:{uid:user._id}}"><i class = "fas fa-house-user fa-3x"></i><br />Centers & Insitutions</router-link>
+          <ul v-if = "user.user_type == 'employee'" class = "nav-sublink">
+              <li id = "header_center">
+                <h5>Centers & Institutions</h5>
+              </li>
+              <li id = "center_profile">{{this.center_data.center_name}}</li>
+              <li class = "nav-sublink-item" id = "sublink3">
+                <router-link to="">User Accounts</router-link>
+              </li>
+              <li class = "nav-sublink-item" id = "sublink4">
+                <router-link to="">Incident Reports</router-link>
+              </li>
+          </ul>
+        </li>
         <li class="nav-link-item">
-          <router-link to = "/myincidentreports"><i class = "fas fa-blender-phone fa-3x"></i><br />My Reports</router-link></li>
+          <router-link :to="{name:'myincidentreports', params:{id: user._id}}"><i class = "fas fa-blender-phone fa-3x"></i><br />My Reports</router-link>
+          </li>
         <li class="nav-link-items">
           <router-link><i class = "fas fa-home"></i><br />SETTINGS</router-link>
           </li>
@@ -83,7 +100,9 @@ export default {
       fname: '',
       lname: '',
       fullname:'',
-      showLogoutModal: false
+      showLogoutModal: false,
+      user_data: {},
+      center_data: {}
     }
   },
   methods: {
@@ -96,10 +115,18 @@ export default {
     forceRerender () {
       this.userLoggedIn += 1
     },
-    ...mapActions(['getProfile'])
+    ...mapActions(['getProfile', 'getCenterProfile'])
   },
   created() {
-    this.getProfile();
+    this.getProfile()
+    .then(res => {
+      this.user_data = res.data
+      this.centerID = document.getElementById('centerID').innerHTML;
+      this.getCenterProfile(this.centerID)
+      .then(res => {
+        this.center_data = res.data
+      })
+    })
   }
 }
 </script>
@@ -177,12 +204,12 @@ export default {
   position: absolute;
   z-index: 999;
   opacity: 1;
+  background-color: #fff; 
   }
 
 .nav ul li > ul { 
   box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
   position: absolute; 
-  background-color: #fff; 
   top: 0; 
   left: -200px; 
   min-width: 200px; 
@@ -195,23 +222,23 @@ export default {
   z-index: -1;
   opacity: 1;
 }
-.nav ul li > ul #sublink1{
+
+.nav ul li > ul #sublink1, .nav ul li > ul #sublink3{
   padding-top: 10px;
 }
 .sublinks{
 position: absolute;
 z-index: 100;
 }
-#header_profile{
+#header_profile, #header_center{
   margin-top:30px;
   text-align: center;
 }
-#profile_name {
+#profile_name, #center_profile {
   text-align: center;
 }
 
 #btn_logout, #btn_change_pass{
-  background:#fff;
   color:#063146;
   font-weight:bold;
   margin: 0;

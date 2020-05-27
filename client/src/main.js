@@ -29,7 +29,7 @@ Vue.component('vue-phone-number-input', VuePhoneNumberInput)
 Vue.use(VueGoogleAutocomplete, {
   load: {
     key: 'AIzaSyD0av1I6ws3pKn06FOdeRfBt0HRqxBhBao',
-    libraries: 'places' // necessary for places input
+    libraries: 'places,geometry' // necessary for places input
   }
 }) 
 
@@ -55,6 +55,7 @@ Vue.use(BootstrapVue)
 Vue.use(axios)
 Vue.use(VueRouter)
 
+//Global variables
 
 extend('required', {
   validate (value) {
@@ -162,6 +163,18 @@ localize({
       },
       position: {
         required: 'Position is required.'
+      },
+      rep_indivtype:{
+        required:'Type of inidvidual is required.'
+      },
+      rep_gender: {
+        required: 'Gender is required.'
+      },
+      rep_desc: {
+        required: 'Description is required.'
+      },
+      rep_location: {
+        required: 'Location is required.'
       }
     }
   }

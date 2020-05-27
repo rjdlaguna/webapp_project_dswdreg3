@@ -6,7 +6,7 @@
     <app-footer/>
   </div>
 </template>
-<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=places&key=AIzaSyD0av1I6ws3pKn06FOdeRfBt0HRqxBhBao"></script>
+<script src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,places&key=AIzaSyD0av1I6ws3pKn06FOdeRfBt0HRqxBhBao"></script>
 <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
 <script>
 import Footer from './components/Footer.vue'

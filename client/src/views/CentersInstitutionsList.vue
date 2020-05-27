@@ -2,8 +2,27 @@
 <div class = "container">
     <sidebar-menu/>
     <div class="page_title">
-        <div class="col-md-12 pt-3" id = "menu_content">
-            <h4 class = "mb-4" id = "centers_label">Centers and Institutions</h4>
+        <div class="col-md-12 pt-3" style="display:flex" id = "menu_content">
+            <div style="width:70%">
+              <h4 class = "mb-4" id = "centers_label">Centers and Institutions</h4>
+            </div>
+            <div>
+              <label for="Search">Search</label><input type="text" class="form-control" id="search_center">
+            </div>
+            <!--<div>
+              <label for="View">View</label>
+              <select class ="form-control">
+                <option disabled value="">Select</option>
+                <option>All</option>
+                <option>For Male</option>
+                <option>For Female</option>
+                <option>For Children</option>
+                <option>For Teenager</option>
+                <option>For Adult</option>
+                <option>For Elderly</option>
+                <option>For Disabled</option>
+              </select>
+            </div>-->
         </div>
     </div>
     <div style="display:block;"><button id="btn_addCenter" v-if="showAddButton" type="button" class="btn btn-primary ml-5 mt-3" @click="showCenterRegisterModal1=true">Add Center or Institution</button></div>
@@ -20,7 +39,7 @@
             >
                 <b-card-text>
                 </b-card-text>
-                <router-link :to="{name: 'centerprofileinfo', params: {id: center._id}}" id="see_center_profile">See Profile</router-link>          
+                <router-link :to="{name: 'centerprofileinfo', params: {id: center._id , uid: uid}}" id="see_center_profile">See Profile</router-link>          
                 <!--<b-button variant="primary" class = "btn_center_details"><router-link :to="{name: 'centerprofileinfo', params: {id: center._id}}" id="see_center_profile">See Profile</router-link></b-button>-->
                 <!--<b-button href="#" variant  ="primary" class = "btn_report_incident">Add User Account</b-button>-->
             </b-card>
@@ -218,6 +237,11 @@
 import SideBarMenu from '../components/Sidebar'
 import { mapActions } from 'vuex'
 export default {
+  props: {
+    uid: {
+      required: true
+    }
+  },
   data () {
     return {
       first_name: '',

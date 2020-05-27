@@ -55,9 +55,10 @@ const routes = [
     component: AboutCenters
   },
   {
-    path: '/myincidentreports',
+    path: '/myincidentreports/:id',
     name: 'myincidentreports',
-    component: MyIncidentReports
+    component: MyIncidentReports,
+    props: true
   },
   {
     path: '/reportanincident',
@@ -76,9 +77,10 @@ const routes = [
     component: Dashboard
   },
   {
-    path: '/centersinstitutionslist',
+    path: '/centersinstitutionslist/:uid',
     name: 'centersinstitutionslist',
-    component: CentersInstitutionsList
+    component: CentersInstitutionsList,
+    props: true
   },
   {
     path: '/centerregistration',
@@ -86,7 +88,7 @@ const routes = [
     component: CenterRegistration
   },
   {
-    path: '/centerinstitutionslist/centerprofile/:id',
+    path: '/centerinstitutionslist/:uid/centerprofile/:id',
     name: 'centerprofileinfo',
     component: CenterProfileInfo,
     props: true

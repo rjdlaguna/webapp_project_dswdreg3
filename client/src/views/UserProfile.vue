@@ -65,7 +65,7 @@
                 <p><label for="Mobile Number">Mobile number: {{user.mobile_no}}</label></p>
               </div>
               <div class="account_btn">
-                <button type="button" class ="btn btn-primary" @click="showEditInfoModal=true">Edit Information</button>
+                <button type="button" id="btn_editinfo" class ="btn btn-primary" @click="showEditInfoModal=true">Edit Information</button>
               </div>
             </div>
             <div id="useraccount_cred" class ="mt-4">
@@ -76,7 +76,7 @@
                 <p><label for="Password">Password: {{this.password}}</label></p>
               </div>
               <div class ="account_btn">
-                <button type="button" class = "btn btn-primary" @click="showChangePasswordModal=true">Change Password</button>
+                <button type="button" id="btn_changepw" class = "btn btn-primary" @click="showChangePasswordModal=true">Change Password</button>
               </div>
             </div>
         </div>
@@ -155,7 +155,7 @@
                       </div>
                       <div class="modal-footer">
                         <div class form-group>
-                          <button type="button" class="btn btn-primary mr-3" @click="updateAccount">Update</button>
+                          <button type="button" id="btn_update" class="btn btn-primary mr-3" @click="updateAccount">Update</button>
                           <button type="button" class="btn btn-secondary" @click="showEditInfoModal=false">Close</button>
                         </div>
                       </div>
@@ -223,12 +223,39 @@
                       </div>
                       <div class="modal-footer">
                         <div class form-group>
-                          <input type="submit" class="btn btn-primary mr-3" value="Save" @click="changePassword">
+                          <input type="submit" id="btn_save" class="btn btn-primary mr-3" value="Save" @click="changePassword">
                           <button type="button" class="btn btn-secondary" @click="showChangePasswordModal=false">Close</button>
                         </div>
                       </div>
                     </div>
                   </form>
+                </div>
+              </div>
+            </div>
+          </transition>
+        </div>
+
+        <div v-if="showUserProfileEditSuccessModal">
+          <transition name="modal">
+            <div class="modal-mask">
+              <div class="modal-wrapper">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                          <h5 class="modal-title">Update Profile Information</h5>
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true" @click="showUserProfileEditSuccessModal = false">&times;</span>
+                          </button>
+                      </div>
+                      <div class="modal-body">
+                         <p>User Profile successfully updated.</p>
+                      </div>
+                      <div class="modal-footer">
+                        <div class form-group>
+                          <button type="button" id="btn_ok" class="btn btn-secondary" @click="showUserProfileEditSuccessModal = false">OK</button>
+                        </div>
+                      </div>
+                    </div>
                 </div>
               </div>
             </div>
@@ -287,7 +314,8 @@ export default {
       showCheck3:false,
       showCheck4:false,
       showCheck5:false,
-      pass_num: 0
+      pass_num: 0,
+      showUserProfileEditSuccessModal: false
     }
   },
   computed: mapGetters([
@@ -434,7 +462,7 @@ export default {
     this.last_name = document.getElementById('last_name').value
     this.mobile_no = document.getElementById('mobile_no').value
     this.address = document.getElementById('user_address').value
-    alert(this.first_name + ' ' + this.middle_initial + ' ' + this.last_name + ' ' + this.mobile_no)
+    
     let user_info = {
         _id: this.user_id,
         first_name: this.first_name,
@@ -447,8 +475,8 @@ export default {
     this.updateAccountInfo(user_info)
     .then(res => {
       if(res.data.success) {
-        alert('User information successfully updated.')
         this.showEditInfoModal = false
+        this.showUserProfileEditSuccessModal = true
       } else {
         
       }
@@ -559,6 +587,20 @@ export default {
 .b-button{
     background: #063146;
 }
+#btn_editinfo, #btn_changepw, #btn_ok, #btn_update, #btn_save{
+    text-decoration: none;
+    background:#042331;
+    color: white;
+    border-radius: 4px;
+    padding: 9px;
+}
+#btn_editinfo:hover, #btn_changepw:hover, #btn_ok:hover, #btn_update:hover, #btn_save:hover{
+    background: white;
+    color: #042331;
+    border:1px solid #042331;
+}
+
+
 sidebar-menu{
     z-index: 100;
 }
