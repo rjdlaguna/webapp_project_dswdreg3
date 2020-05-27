@@ -65,7 +65,7 @@ const actions = {
     commit
   }, id) {
     commit('profile_request')
-    let res = await axios.get('http://104.248.144.145:81/api/users/profile')
+    let res = await axios.get('http://104.248.144.145:81/api/users/getcenteridbyprofile' +id)
     // let res = await axios.get('http://localhost:9000/api/users/getcenteridbyprofile/'+id)
     commit('user_profile', res.data.user)
     return res
@@ -240,7 +240,8 @@ const actions = {
     commit
   }, id){
     commit('myincidentreports_request')
-    let res = await axios.get('http://localhost:9000/api/users/getmyincidentreports/' + id)
+    let res = await axios.get('http://104.248.144.145:81/api/users/getmyincidentreports' + id)
+    // let res = await axios.get('http://localhost:9000/api/users/getmyincidentreports/' + id)
     return res
   }
 }
