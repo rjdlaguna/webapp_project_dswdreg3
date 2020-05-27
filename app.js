@@ -21,7 +21,7 @@ app.use(cors())
 app.use(cookieParser());
 
 //Setting up the static directory
-app.use('../webappdswd2/client/src/assets/images/', express.static('images'))
+app.use('../vue/client/src/assets/images/', express.static('images'))
 app.use(express.static(path.join(__dirname, 'public')))
 
 app.use(passport.initialize());
