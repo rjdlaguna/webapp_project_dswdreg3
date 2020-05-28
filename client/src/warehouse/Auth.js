@@ -29,7 +29,6 @@ const actions = {
   }, user) {
     commit('auth_request')
     let res = await axios.post('http://104.248.144.145:81/api/users/login', user)
-    // let res = await axios.post('http://localhost:9000/api/users/login', user)
     if (res.data.success) {
       const token = res.data.token
       const user = res.data.user
@@ -44,7 +43,6 @@ const actions = {
   }, user) {
     commit('register_request')
     let res = await axios.post('http://104.248.144.145:81/api/users/registeruser', user)
-    // let res = await axios.post('http://localhost:9000/api/users/registeruser', user)
     if (res.data.success !== undefined) {
       commit('register_success')
     }
@@ -57,7 +55,6 @@ const actions = {
   async getProfile ({commit}) {
     commit('profile_request')
     let res = await axios.get('http://104.248.144.145:81/api/users/profile')
-    // let res = await axios.get('http://localhost:9000/api/users/profile')
     commit('user_profile', res.data.user)
     return res
   },
@@ -66,7 +63,6 @@ const actions = {
   }, id) {
     commit('profile_request')
     let res = await axios.get('http://104.248.144.145:81/api/users/getcenteridbyprofile' +id)
-    // let res = await axios.get('http://localhost:9000/api/users/getcenteridbyprofile/'+id)
     commit('user_profile', res.data.user)
     return res
   },
@@ -79,7 +75,6 @@ const actions = {
   async displayProfilePic ({commit}, id) {
       commit('profilepic_request')
       let res = await axios.get('http://104.248.144.145:81/api/users/displayprofilepic/'+ id)
-      // let res = await axios.get('http://localhost:9000/api/users/displayprofilepic/'+ id)
       commit('profile_picture', res.data.image_path)
       return res
   },
@@ -91,7 +86,6 @@ const actions = {
     imgForm = imgdata
     let id = imgForm.get('user_id')
     let res = await axios.post('http://104.248.144.145:81/api/users/uploadprofilepic/' + id, imgForm) //,{headers: {'Content-Type': 'multipart/form-data' }})
-    // let res = await axios.post('http://localhost:9000/api/users/uploadprofilepic/' + id, imgForm) //,{headers: {'Content-Type': 'multipart/form-data' }})
     if (res.data.success !== undefined) {
       commit('uploadpic_success')
     }
@@ -103,7 +97,6 @@ const actions = {
     commit('updateaccount_request')
     let id = user_info._id
     let res = await axios.post('http://104.248.144.145:81/api/users/updateaccountinfo/'+ id, user_info)
-    // let res = await axios.post('http://localhost:9000/api/users/updateaccountinfo/'+ id, user_info)
     if (res.data.success !== undefined) {
       commit('updateaccount_success')
     }
@@ -115,7 +108,6 @@ const actions = {
     let id = password_info._id
     commit('changepassword_request')
     let res = await axios.post('http://104.248.144.145:81/api/users/changepassword/'+id, password_info)
-    // let res = await axios.post('http://localhost:9000/api/users/changepassword/'+id, password_info)
     if(res.data.success !== undefined) {
       commit('changepassword_success')
     }
@@ -127,7 +119,6 @@ const actions = {
   }, center){
     commit('registercenter_request')
     let res = await axios.post('http://104.248.144.145:81/api/users/registercenter', center)
-    // let res = await axios.post('http://localhost:9000/api/users/registercenter', center)
     if(res.data.success !== undefined) {
       commit('registercenter_success')
     }
@@ -138,7 +129,6 @@ const actions = {
   }){
     commit('displaycenters_request')
     let res = await axios.get('http://104.248.144.145:81/api/users/displaycenters')
-    // let res = await axios.get('http://localhost:9000/api/users/displaycenters')
     if(res.data.success !== undefined) {
       commit('displaycenters_success')
     }
@@ -149,13 +139,11 @@ const actions = {
   }, id) {
     commit('centerprofile_request')
     let res = await axios.get('http://104.248.144.145:81/api/users/getcenterprofile/'+id)
-    // let res = await axios.get('http://localhost:9000/api/users/getcenterprofile/'+id)
     return res
   },
   async displayCenterImage ({commit}, id) {
     commit('centerimage_request')
     let res = await axios.get('http://104.248.144.145:81/api/users/displaycenterimage/'+ id)
-    // let res = await axios.get('http://localhost:9000/api/users/displaycenterimage/'+ id)
     commit('centerimage_request', res.data.image_path)
     return res
   },
@@ -167,7 +155,6 @@ const actions = {
     imgForm = imgdata
     let id = imgForm.get('center_id')
     let res = await axios.post('http://104.248.144.145:81/api/users/uploadcenterpic/' + id, imgdata) //,{headers: {'Content-Type': 'multipart/form-data' }})
-    // let res = await axios.post('http://localhost:9000/api/users/uploadcenterpic/' + id, imgdata) //,{headers: {'Content-Type': 'multipart/form-data' }})
     if (res.data.success !== undefined) {
       commit('uploadpic_success')
     }
@@ -178,7 +165,6 @@ const actions = {
   }, usercenter_data) {
     commit('registercenteruser_request')
     let res = await axios.post('http://104.248.144.145:81/api/users/createcenteruser', usercenter_data)
-    // let res = await axios.post('http://localhost:9000/api/users/createcenteruser', usercenter_data)
     if(res.data.success !== undefined) {
       commit('registercenteruser_success')
     }
@@ -189,7 +175,6 @@ const actions = {
   }, id){
     commit('centerusers_request')
     let res = await axios.get('http://104.248.144.145:81/api/users/displaycenterusers/' + id)
-    // let res = await axios.get('http://localhost:9000/api/users/displaycenterusers/' + id)
     if(res.data.success !== undefined) {
       commit('centerusers_success')
     }
@@ -200,7 +185,6 @@ const actions = {
   }){
     commit('apikey_request')
     let res = await axios.get('http://104.248.144.145:81/api/users/getapikey')
-    // let res = await axios.get('http://localhost:9000/api/users/getapikey')
     return res
   },
   async getCenterData({
@@ -208,7 +192,6 @@ const actions = {
   }, id){
     commit('centerdata_request')
     let res = await axios.get('http://104.248.144.145:81/api/users/getcenterdatabyuser/' + id)
-    //let res = await axios.get('http://localhost:9000/api/users/getcenterdatabyuser/' + id)
     return res
   },
   async updateCenterInfo({
@@ -217,7 +200,6 @@ const actions = {
     commit('updatecenterdata_request')
     let id = centerdata._id
     let res = await axios.get('http://104.248.144.145:81/api/users/updatecenterinfo/' + id, centerdata)
-    // let res = await axios.post('http://localhost:9000/api/users/updatecenterinfo/' + id, centerdata)
     if(res.data.success !== undefined){
       commit('updatecenterdata_success')
     }
@@ -230,7 +212,6 @@ const actions = {
     rptForm = report
     commit('sendincidentrep_request')
     let res = await axios.get('http://104.248.144.145:81/api/users/sendincidentreport', rptForm)
-    // let res = await axios.post('http://localhost:9000/api/users/sendincidentreport', rptForm)
     if(res.data.success !== undefined){
       commit('sendincientrep_success')
     }
@@ -241,7 +222,6 @@ const actions = {
   }, id){
     commit('myincidentreports_request')
     let res = await axios.get('http://104.248.144.145:81/api/users/getmyincidentreports' + id)
-    // let res = await axios.get('http://localhost:9000/api/users/getmyincidentreports/' + id)
     return res
   }
 }

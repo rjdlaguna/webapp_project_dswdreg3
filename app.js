@@ -47,7 +47,7 @@ mongoose.createConnection(db, {useNewUrlParser: true})
     console.log(`Unable to connect with the database ${err}`)
 })
 
-const PORT = process.env.PORT || 7000;
+const PORT = process.env.PORT || 9000;
 
 app.listen(PORT, () => {
     console.log(`Server started on port ${PORT}`)
