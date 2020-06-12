@@ -14,6 +14,7 @@ import Dashboard from '../views/Dashboard'
 import CentersInstitutionsList from '../views/CentersInstitutionsList'
 import CenterRegistration from '../views/CenterRegistration'
 import CenterProfileInfo from '../views/CenterProfileInfo'
+import CenterIncidentReports from '../views/CenterIncidentReports'
 import store from '../store'
 
 Vue.use(VueRouter)
@@ -92,6 +93,12 @@ const routes = [
     name: 'centerprofileinfo',
     component: CenterProfileInfo,
     props: true
+  },
+  {
+    path: '/centerincidentreports/:id',
+    name: 'centerincidentreports',
+    component: CenterIncidentReports,
+    props: true
   }
 ]
 
@@ -111,7 +118,7 @@ router.beforeEach((to, from, next) => {
     }
   } else if (to.matched.some(record => record.meta.requiresGuest)) {
     if (store.getters.isLoggedIn) {
-      next('/incidentreports')
+      next('/myincidentreports')
     } else {
       next()
     }

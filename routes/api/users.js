@@ -14,7 +14,7 @@ const nodemailer = require('nodemailer')
 
 const storage = multer.diskStorage({
     destination: function(req, res, cb) {
-        cb(null, '../vue/client/src/assets/images/')
+        cb(null, '../webapp_project/client/src/assets/images/')
     },
     filename: function(req, file, cb) {
         cb(null, file.originalname)
@@ -42,6 +42,7 @@ const CitizenReport = require("../../models/CitizensReport")
 const ProfilePicture = require("../../models/ProfileImage")
 const CentersProfile = require("../../models/CentersProfile")
 const CenterImage = require("../../models/CenterImage")
+const IncidentReportImages = require("../../models/IncidentRepImages")
 users.use(cors())
 
 const authMiddleware = (req, res, next) => {
@@ -53,7 +54,8 @@ const authMiddleware = (req, res, next) => {
   }
 
 process.env.SECRET_KEY = 'secret'
-let u_id = 0, cen_id = 0
+let u_id = 0, cen_id = 0;
+let rep_id;
 
 //Get API Key
 users.get('/getapikey', (req, res) => {
@@ -127,7 +129,7 @@ users.post('/registeruser', (req, res) => {
                                             if (err) {return err}
                                             u_id = info.id
                                             console.log(info.id)
-                                        var img = fs.readFileSync('../vue/client/src/assets/images/temp_pic.jpg')
+                                        var img = fs.readFileSync('../webapp_project/client/src/assets/images/temp_pic.jpg')
                                         var encode_image = img.toString('base64')
 
                                         /*let imgtype = '"image/*"'
@@ -387,8 +389,11 @@ users.post('/changepassword/:id', (req, res) => {
             bcrypt.compare(curr_password, user.password).then(isMatch=> {
                 if (isMatch) {
                     if(curr_password === new_password){
-                        console.log('New password cannot be the same wih your current password.')
-                        res.json({error: 'New password cannot be the same wih your current password.'})
+                        // res.json({error: 'New password cannot be the same wih your current password.'})
+                        return res.json({
+                            failed: 'true',
+                            msg: "New password cannot be the same wih your current password."
+                        })
                     } else {
                         bcrypt.genSalt(10, (err, salt) => {
                             bcrypt.hash(new_password, salt, (err, hash) => {
@@ -401,7 +406,7 @@ users.post('/changepassword/:id', (req, res) => {
                         })
                         return res.status(201).json({
                             success: 'true',
-                            msg: "Password is successfully changed."
+                            msg: "Password was successfully changed."
                         })
                     }
                 } else {
@@ -421,11 +426,11 @@ users.post('/registercenter', (req, res) => {
     let centerID = 0
     //console.log(req.body.center_long)
     //console.log(req.body.center_lat)
-    let img = fs.readFileSync('../vue/client/src/assets/images/sample_center.png')
+    let img = fs.readFileSync('../webapp_project/client/src/assets/images/sample_center.png')
     let encode_image = img.toString('base64')
     let imgtype ='"image/png"'
     let imgdata = Buffer.from(encode_image).toString('base64')
-    let image_path = '../vue/client/src/assets/images/sample_center.png'
+    let image_path = '../webapp_project/client/src/assets/images/sample_center.png'
     let image_name = 'sample_center.png'
     let {
         center_name,
@@ -684,7 +689,7 @@ users.post('/createcenteruser', (req, res) => {
                                             if (err) {return err}
                                             u_id = info.id
                                             //console.log(info.id)
-                                        var img = fs.readFileSync('../vue/client/src/assets/images/temp_pic.jpg')
+                                        var img = fs.readFileSync('../webapp_project/client/src/assets/images/temp_pic.jpg')
                                         var encode_image = img.toString('base64')
                                         
                                         const TempPicData = {
@@ -812,13 +817,36 @@ users.post('/updatecenterinfo/:id', (req, res) => {
     })
 })
 
-users.post("/sendincidentreport", upload.single('image_files'), (req,res) => {
+users.post("/sendincidentreport", upload.array('imageFiles', 4), (req,res) => {
 //users.post('/sendincidentreport', (req, res) => {
-    var image_path = req.file[0].path
-    console.log(image_path)
+    const imgArray = req.files;
+    console.log(imgArray.length)
+    let imgcontent, imgdata, imgpath, imgname;
+    let imgcontent2, imgdata2, imgpath2, imgname2;
+    const imgFormat = [];
     const reported_on = new Date()
+    let status = "Reported"
     //const rep_by = req.body.reported_by
-    //console.log(req.body.replocation)
+
+    for(let i = 0; i < imgArray.length; i++) {
+        imgFormat.push(imgArray[i].mimetype.split('/')[1] );
+        const img = fs.readFileSync(imgArray[i].path)
+        const encode_image = img.toString('base64')
+        if(i == 0)
+        {
+            imgcontent = imgArray[i].mimetype
+            imgdata = Buffer.from(encode_image).toString('base64')
+            imgpath = imgArray[i].path
+            imgname = imgArray[i].filename
+        } else if (i > 0) {
+            imgcontent2 = imgArray[i].mimetype
+            imgdata2 = Buffer.from(encode_image).toString('base64')
+            imgpath2 = imgArray[i].path
+            imgname2 = imgArray[i].filename
+        }
+    }
+
+    let newrept_images = {}
     let {
         first_name,
         middle_initial,
@@ -848,19 +876,83 @@ users.post("/sendincidentreport", upload.single('image_files'), (req,res) => {
         user_id,
         distance,
         reported_by,
+        status,
+        report_image1: {
+            data: imgdata,
+            contentType: imgcontent,
+            image_path: imgpath,
+            image_name: imgname
+        },
+        report_image2: {
+            data: imgdata2,
+            contentType: imgcontent2,
+            image_path: imgpath2,
+            image_name: imgname2
+        }
     })
 
     newReport.save().then(center => {
+        /*if(imgArray) {
+            CitizenReport.findOne().sort({reported_on: -1}).exec(function(err, info) {
+                    if (err) {return err}
+                    rep_id = info._id
+                for(let i = 0; i < imgArray.length; i++) {
+                    imgFormat.push(imgArray[i].mimetype.split('/')[1] );
+                    const img = fs.readFileSync(imgArray[i].path)
+                    const encode_image = img.toString('base64')
+                    if(i == 0)
+                    {
+                        imgcontent = imgArray[i].mimetype
+                        imgdata = Buffer.from(encode_image).toString('base64')
+                        imgpath = imgArray[i].path
+                        imgname = imgArray[i].filename
+                    } else if (i > 0) {
+                        imgcontent2 = imgArray[i].mimetype
+                        imgdata2 = Buffer.from(encode_image).toString('base64')
+                        imgpath2 = imgArray[i].path
+                        imgname2 = imgArray[i].filename
+                    }
+                }
+                console.log(imgcontent2)
+                console.log(imgpath2)
+                console.log(imgname)
+                newrept_images = {
+                    report_id: rep_id,
+                    incident_rep_img1: {
+                        contentType: imgcontent,
+                        data: imgdata
+                    },
+                    incident_rep_img1_path: imgpath,
+                    incident_rep_img1_name: imgname,
+                    incident_rep_img2: {
+                        contentType: imgcontent2,
+                        data: imgdata2
+                    },
+                    incident_rep_img2_path: imgpath2,
+                    incident_rep_img2_name: imgname2
+
+                }
+                IncidentReportImages.create(newrept_images)
+                .then(reptimg1=> {
+                    console.log('Reported incident images saved.')
+                })
+            })
+        }*/
         return res.status(201).json({
             success: 'true',
             msg: "Incident Report was successfully sent."
         })
     })
 
+    /*req.body.imageFiles = [];
+    for(let i = 0; i < imgArray.length; i++ ) {
+        req.body.imageFiles.push(`${uuid.v4()}.${imgFormat[i]}`);
+    } */
+
 })
 users.get('/getmyincidentreports/:id', (req, res) => {
     let id = req.params.id
-    console.log(id)
+    //console.log(id)
     CitizenReport.find({user_id: id}, function (err, report){
         if(err) {
             res.json(err)
@@ -869,9 +961,45 @@ users.get('/getmyincidentreports/:id', (req, res) => {
     })
 })
 
-users.get('/editreportedincident/:id', (req, res) => {
+users.get('/getincidentreportimages/:id', (req, res) => {
+    let id = req.params.id
+    console.log(id)
+    IncidentReportImages.find({report_id: id}, function(err, reportimg){
+        if(err) {
+            res.json(err)
+        }
+        console.log(reportimg.length)
+        res.json(reportimg)
+    })
+})
+
+users.get('/getreportedincident/:id', (req, res) => {
     let id = req.params.id
     CitizenReport.findById(id, function(err, report){
+        if(err) {
+            res.json(err)
+        }
+        res.json(report)
+    })
+})
+
+users.delete('/deletereportedincident/:id', (req,res) => {
+    let id = req.params.id
+    console.log(id)
+    CitizenReport.findByIdAndRemove({_id: id}, function(err){
+        if(err) res.json(err)
+        else{
+            IncidentReportImages.findOneAndRemove({report_id: id}, function(err){
+                console.log('Image successfully deleted...')
+            }) 
+            res.json('Incident report successfully removed...')
+        }
+    })
+})
+
+users.get('/getcenterincidentreports/:id', (req, res) => { 
+    let id = req.params.id
+    CitizenReport.find({center_id: id},function(err, report){
         if(err) {
             res.json(err)
         }
@@ -882,7 +1010,7 @@ users.get('/editreportedincident/:id', (req, res) => {
 users.post('/updatereportedincident/:id', (req, res) => {
     let id = req.params.id
     CitizenReport.findById(id, function(err, report){
-        if(!report){
+        if(err){
             res.status(404).send('Report was not found.')
         }
         else{
@@ -908,14 +1036,6 @@ users.post('/updatereportedincident/:id', (req, res) => {
 })
 
 
-users.delete('/deletereportedincident/:id', (req,res) => {
-    let id = req.params.id
-    console.log(id)
-    CitizenReport.findByIdAndRemove({_id: req.params.id}, function(err){
-        if(err) res.json(err)
-        else res.json('Incident report successfully removed...')
-    })
-})
 
 users.post("/uploadcenterpic/:id", upload.single('image_file'), (req,res) => {
     var img = fs.readFileSync(req.file.path)

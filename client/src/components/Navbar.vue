@@ -602,6 +602,15 @@ export default {
           this.numchar_textColor = 'red'
         }
       }
+      //Check if there is a special character
+      let format = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
+      if(format.test(this.password)) {
+        this.showCheck5 = true
+        this.specialchar_textColor = green
+      } else {
+        this.showCheck5 = false
+        this.specialchar_textColor = red
+      }
     }
   },
   created () {

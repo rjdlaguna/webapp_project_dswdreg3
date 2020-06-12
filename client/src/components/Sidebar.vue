@@ -43,7 +43,9 @@
           </ul>
         </li>
         <li class="nav-link-item">
-          <router-link :to="{name:'myincidentreports', params:{id: user._id}}"><i class = "fas fa-blender-phone fa-3x"></i><br />My Reports</router-link>
+          <router-link v-if="user.user_type==='citizen'" :to="{name:'myincidentreports', params:{id: user._id}}"><i class = "fas fa-blender-phone fa-3x"></i><br />My Incident Reports</router-link>
+          <router-link v-if="user.user_type=='employee'" :to="{name:'centerincidentreports', params:{id: center_data._id}}"><i class = "fas fa-blender-phone fa-3x"></i><br />Incident Reports</router-link>
+          <router-link v-if="user.user_type=='admin'" to=""><i class = "fas fa-blender-phone fa-3x"></i><br />Incident Reports</router-link>
           </li>
         <li class="nav-link-items">
           <router-link><i class = "fas fa-home"></i><br />SETTINGS</router-link>

@@ -30,6 +30,9 @@ const CitizenReportSchema = new Schema({
     center_name: {
         type: String
     },
+    status:{
+        type: String
+    },
     center_id: {
         type: String
     },
@@ -41,6 +44,18 @@ const CitizenReportSchema = new Schema({
     },
     reported_by: {
         type: String
+    },
+    report_image1: {
+        data: Buffer,
+        contentType: String,
+        image_path: String,
+        image_name: String 
+    },
+    report_image2: {
+        data: Buffer,
+        contentType: String,
+        image_path: String,
+        image_name: String 
     },
 },{
     collection: 'citizen_reports'

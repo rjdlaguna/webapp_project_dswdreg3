@@ -102,6 +102,13 @@ export default {
 </script>
 
 <style scoped>
+*,
+*::before,
+*::after{
+	margin: 0;
+	padding: 0;
+	box-sizing: inherit;
+}
 .container{
   max-width: 100%;
   height:575px;

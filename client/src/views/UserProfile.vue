@@ -172,7 +172,7 @@
             <div class="modal-mask">
               <div class="modal-wrapper">
                 <div class="modal-dialog" role="document">
-                  <form @submit.prevent="">
+                  <form @submit.prevent="changePassword">
                     <div class="modal-content">
                       <div class="modal-header">
                           <h5 class="modal-title">Change Password</h5>
@@ -262,6 +262,60 @@
           </transition>
         </div>
 
+        <div v-if="showChangePasswordMessageModal">
+          <transition name="modal">
+            <div class="modal-mask">
+              <div class="modal-wrapper">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                          <h5 class="modal-title">Change Password</h5>
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true" @click="showChangePasswordMessageModal = false">&times;</span>
+                          </button>
+                      </div>
+                      <div class="modal-body">
+                         <p id = "changepw_prompt">Password was successfully changed.</p>
+                      </div>
+                      <div class="modal-footer">
+                        <div class form-group>
+                          <button type="button" id="btn_ok" class="btn btn-secondary" @click="showChangePasswordMessageModal = false">OK</button>
+                        </div>
+                      </div>
+                    </div>
+                </div>
+              </div>
+            </div>
+          </transition>
+        </div>
+
+        <div v-if="showUploadProfilePicSuccessModal">
+          <transition name="modal">
+            <div class="modal-mask">
+              <div class="modal-wrapper">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                          <h5 class="modal-title">Uplad Profile Picture</h5>
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true" @click="showUploadProfilePicSuccessModal = false">&times;</span>
+                          </button>
+                      </div>
+                      <div class="modal-body">
+                         <p id = "changepw_prompt">Profile picture successfully uploaded.</p>
+                      </div>
+                      <div class="modal-footer">
+                        <div class form-group>
+                          <button type="button" id="btn_ok" class="btn btn-secondary" @click="showUploadProfilePicSuccessModal = false">OK</button>
+                        </div>
+                      </div>
+                    </div>
+                </div>
+              </div>
+            </div>
+          </transition>
+        </div>
+
 </div>
 </template>
 <script src="https://maps.googleapis.com/maps/api/js?key=getGoogleMapAPI&libraries=places&callback=initAutocomplete&language=nl&output=json" async defer></script>
@@ -315,7 +369,9 @@ export default {
       showCheck4:false,
       showCheck5:false,
       pass_num: 0,
-      showUserProfileEditSuccessModal: false
+      showUserProfileEditSuccessModal: false,
+      showChangePasswordMessageModal: false,
+      showUploadProfilePicSuccessModal: false
     }
   },
   computed: mapGetters([
@@ -380,7 +436,8 @@ export default {
     this.uploadProfilePic(fd)
     .then(res => {
       if(res.data.success) {
-        alert('Profile picture successfully uploaded.')
+        // alert('Profile picture successfully uploaded.')
+        this.showUploadProfilePicSuccessModal = true
         this.displayProfilePic(this.id).then(res => {
         this.displayImage = res.data
       })
@@ -548,6 +605,16 @@ export default {
           this.numchar_textColor = 'red'
         }
       }
+
+      //Check if there is a special character
+      let format = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
+      if(format.test(this.new_password)) {
+        this.showCheck5 = true
+        this.specialchar_textColor = green
+      } else {
+        this.showCheck5 = false
+        this.specialchar_textColor = red
+      }
     },
     changePassword() {
       let change_pass_data = {
@@ -558,11 +625,26 @@ export default {
       }
       this.changeUserPassword(change_pass_data)
       .then(res => {
-        alert('Password successfully changed')
-        this.showChangePasswordModal = false
-        this.curr_password = ''
-        this.new_password = ''
-        this.retyped_new_password = ''
+        if(res.data.success) {
+          alert('Password successfully changed')
+          this.showChangePasswordModal = false
+          this.showChangePasswordMessageModal = true
+          this.curr_password = ''
+          this.new_password = ''
+          this.retyped_new_password = ''
+        } else if (res.data.failed){
+          this.showChangePasswordMessageModal = true
+          document.getElementById('changepw_prompt').innerHTML = "New password cannot be the same with the current password."
+          this.curr_password = ''
+          this.new_password = ''
+          this.retyped_new_password = ''
+        } else {
+          this.showChangePasswordMessageModal = true
+          document.getElementById('changepw_prompt').innerHTML = "Current password did not match your account."
+          this.curr_password = ''
+          this.new_password = ''
+          this.retyped_new_password = ''
+        }
       })
     }
   }

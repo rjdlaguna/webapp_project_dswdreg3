@@ -1,51 +1,53 @@
 <template>
 <div class = "container">
     <sidebar-menu/>
-    <div class="page_title">
-        <div class="col-md-12 pt-3" style="display:flex" id = "menu_content">
-            <div style="width:70%">
-              <h4 class = "mb-4" id = "centers_label">Centers and Institutions</h4>
-            </div>
-            <div>
-              <label for="Search">Search</label><input type="text" class="form-control" id="search_center">
-            </div>
-            <!--<div>
-              <label for="View">View</label>
-              <select class ="form-control">
-                <option disabled value="">Select</option>
-                <option>All</option>
-                <option>For Male</option>
-                <option>For Female</option>
-                <option>For Children</option>
-                <option>For Teenager</option>
-                <option>For Adult</option>
-                <option>For Elderly</option>
-                <option>For Disabled</option>
-              </select>
-            </div>-->
-        </div>
+    <div class = "section">
+      <div class="col-md-12 pt-3 page-title"  id= "menu_content">
+            <h4 class = "mb-4" id = "label_centers">Centers and Institutions</h4>
+            <div class="form-group row" id = "search_section">
+                <label for="search" class="col-form-label">Search</label>
+                <div class="col-4">
+                    <input class="form-control" v-model = "search" type="text" value="" id="search" name = "search">
+                </div>
+                <button type="submit" class="btn btn-primary btn-design">Go</button>
+              <!--<div>
+                <label for="View">View</label>
+                <select class ="form-control">
+                  <option disabled value="">Select</option>
+                  <option>All</option>
+                  <option>For Male</option>
+                  <option>For Female</option>
+                  <option>For Children</option>
+                  <option>For Teenager</option>
+                  <option>For Adult</option>
+                  <option>For Elderly</option>
+                  <option>For Disabled</option>
+                </select>
+              </div>-->
+          </div>
+      </div>
+      <div style="display:block;"><button id="btn_addCenter" v-if="showAddButton" type="button" class="btn btn-primary ml-5 mt-3" @click="showCenterRegisterModal1=true">Add Center or Institution</button></div>
+      <div class = "row ml-3 mt-2">
+          <div class = "centers col-sm-4" v-for="center in centerslist" v-bind:key = center._id>
+              <b-card
+                  :title="center.center_name"
+                  :img-src="getCenterImageURL(center.image_name)"
+                  img-height=110
+                  img-top
+                  tag="article"
+                  style="max-width: 18rem;"
+                  class="mb-2"
+              >
+                  <b-card-text>
+                  </b-card-text>
+                  <router-link :to="{name: 'centerprofileinfo', params: {id: center._id , uid: uid}}" id="see_center_profile">See Profile</router-link>          
+                  <!--<b-button variant="primary" class = "btn_center_details"><router-link :to="{name: 'centerprofileinfo', params: {id: center._id}}" id="see_center_profile">See Profile</router-link></b-button>-->
+                  <!--<b-button href="#" variant  ="primary" class = "btn_report_incident">Add User Account</b-button>-->
+              </b-card>
+          </div>
+      </div>
     </div>
-    <div style="display:block;"><button id="btn_addCenter" v-if="showAddButton" type="button" class="btn btn-primary ml-5 mt-3" @click="showCenterRegisterModal1=true">Add Center or Institution</button></div>
-    <div class = "row ml-3 mt-2">
-        <div class = "centers col-sm-4" v-for="center in centerslist" v-bind:key = center._id>
-            <b-card
-                :title="center.center_name"
-                :img-src="getCenterImageURL(center.image_name)"
-                img-height=110
-                img-top
-                tag="article"
-                style="max-width: 18rem;"
-                class="mb-2"
-            >
-                <b-card-text>
-                </b-card-text>
-                <router-link :to="{name: 'centerprofileinfo', params: {id: center._id , uid: uid}}" id="see_center_profile">See Profile</router-link>          
-                <!--<b-button variant="primary" class = "btn_center_details"><router-link :to="{name: 'centerprofileinfo', params: {id: center._id}}" id="see_center_profile">See Profile</router-link></b-button>-->
-                <!--<b-button href="#" variant  ="primary" class = "btn_report_incident">Add User Account</b-button>-->
-            </b-card>
-        </div>
-    </div>
-
+    
     <!--Center Registration Modal 1-->
     <div v-if = "showCenterRegisterModal1">
           <transition name = "modal">
@@ -466,11 +468,16 @@ export default {
     font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
     z-index: -2;
 }
-.page_title{
-    margin-left: 10px;
-    font-weight: 500;
+#menu-content{
+  border-bottom: 50px solid #042331;
+}
+#label_centers{
+    color: #042331;
+    float: left;
+}
+#search_section{
+    justify-content:flex-end;
     color:#042331;
-    border-bottom:2px solid #042331;
 }
 .b-button, #btn_addCenter{
     background: #063146;
