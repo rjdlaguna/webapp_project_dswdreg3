@@ -36,6 +36,7 @@
                             <img :src="showImage(displayImage)" name = 'profile_image' id = "profile_image" class = "m-auto" width = "200" height = "200"/>
                             <input type='file' id="image_file" name="image_file" style="display:none" ref="file" accept="image/*" v-on:change="handleFileUpload()" />
                             <button class="btn btn-primary ml-5 mt-3" onclick="document.getElementById('image_file').click()">Select Image</button>
+                            <span class="err_message">{{noImageSelected}}</span>
                           </b-card>                                                
                         </div>
                         <div class="modal-footer">
@@ -371,7 +372,9 @@ export default {
       pass_num: 0,
       showUserProfileEditSuccessModal: false,
       showChangePasswordMessageModal: false,
-      showUploadProfilePicSuccessModal: false
+      showUploadProfilePicSuccessModal: false,
+      selectedImage: false,
+      noImageSelected: ''
     }
   },
   computed: mapGetters([
@@ -401,8 +404,10 @@ export default {
     },
   onFileSelected (event) {
       this.selectedFile = event.target.files[0]
+      this.selectedImage = true
     },
   handleFileUpload () {
+    this.noImageSelected = ''
     this.isUploading = true
     this.file = this.$refs.file.files[0]
     let reader = new FileReader()
@@ -432,17 +437,21 @@ export default {
     this.file = this.$refs.file.files[0]
     fd.append('image_file',this.file)
     fd.append('user_id', this.user_id)
-        
-    this.uploadProfilePic(fd)
-    .then(res => {
-      if(res.data.success) {
-        // alert('Profile picture successfully uploaded.')
-        this.showUploadProfilePicSuccessModal = true
-        this.displayProfilePic(this.id).then(res => {
-        this.displayImage = res.data
+
+    if(!this.selectedImage) {
+      this.noImageSelected = "Please select an image to upload."
+    } else {
+      this.uploadProfilePic(fd)
+      .then(res => {
+        if(res.data.success) {
+          // alert('Profile picture successfully uploaded.')
+          this.showUploadProfilePicSuccessModal = true
+          this.displayProfilePic(this.id).then(res => {
+          this.displayImage = res.data
+        })
+        }
       })
-      }
-    })
+    }
   },
   closeUploadModal () {
     this.showUploadPicModal = false
@@ -626,7 +635,6 @@ export default {
       this.changeUserPassword(change_pass_data)
       .then(res => {
         if(res.data.success) {
-          alert('Password successfully changed')
           this.showChangePasswordModal = false
           this.showChangePasswordMessageModal = true
           this.curr_password = ''

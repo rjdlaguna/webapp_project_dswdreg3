@@ -62,6 +62,10 @@ const UserSchema = new Schema({
     },
     center_id: {
         type: String
+    },
+    active:{
+        type: Boolean,
+        default: true
     }
 },{
     collection: 'useraccounts'

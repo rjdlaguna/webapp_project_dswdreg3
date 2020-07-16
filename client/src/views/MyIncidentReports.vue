@@ -42,12 +42,12 @@
                                     {{getValueByKey(value, index)}}<img :src="getReportImages(showReportImage())" v-if="index==='image_name'" width="50" height="50" />
                                 </li>
                                 <li style="display:inline;" v-for="(value,index) in report.report_image2 " v-bind:key='index'>
-                                    {{getValueByKey(value, index)}}<img :src="getReportImages(showReportImage())" v-if="index==='image_name'" width="50" height="50" @mouseover="enlargeImage"/>
+                                    {{getValueByKey(value, index)}}<img :src="getReportImages(showReportImage())" v-if="index==='image_name'" width="50" height="50"/>
                                 </li>
                             </ul>
                         </td>
                         <td>{{ report.center_name }}</td>
-                        <td></td>
+                        <td>{{ report.status }}</td>
                         <td>
                             <button type="button" class="btn btn-primary btn-actions" @click="getIncidentReport(report._id)">Edit</button>
                             <button type="button" class="btn btn-danger btn-actions" @click.prevent="confirmDelete(report._id, index)">Delete</button>
@@ -124,27 +124,30 @@
                                             <span class = "err_message">{{ errors[0] }}</span>
                                         </ValidationProvider>
                                     </div>       
+
                                     <div class="form-group">
-                                       <!--<div v-if="showAttachImage">-->
-                                            <label for="image">Attach maximum of 2 images (optional)</label>
+                                        <label for="attach" class="file-label">Attach Image (optional)</label>
+                                        <p class="input-guide">Note: You can attach up to 2 images</p>
+                                        <input type="file" multiple accept="image/*" @change="handleImages" ref="image" name="images"/>
+                                        <div v-for="(image,key) in imagesList" :key="key">
+                                            <button class="close" @click="removeImage(key)">&times;</button>
+                                            <div>
+                                                <img :src="image" class="preview" width="200" height="200" :ref="images"/>
+                                                <span>{{image.name}}</span>
+                                            </div>
+                                        </div>
+
+                                        <!--<label for="attach" class="file-label">Attach Image (optional)</label>
+                                            <p class="input-guide">Note: You can attach up to 2 images</p>
                                                 <div v-for="(image, key) in images" :key="key">
-                                                    <button class="close" @click.prevent="removeImage(index, $event)">&times;</button>
+                                                    <button class="close" @click.prevent="removeImage(key, $event)">&times;</button>
                                                     <div>
-                                                        <img class="preview" :ref="'image'" width="200" height="100"/>
+                                                        <img class="preview" :src="image" :key="'image'"/>
                                                         {{ image.name }}
                                                     </div>
                                                 </div>
-                                                <input
-                                                    type="file"
-                                                    multiple
-                                                    accept="image/*"
-                                                    @change="uploadImage"
-                                                    class = "images[]"
-                                                    name = "imageFiles"
-                                                    id = "files"
-                                                />
-                                        <!--</div>
-                                        <button type="button" class="btn btn-design" id="attach_image" @click="attachImage()">Attach Image</button>-->
+                                                <input type="file" multiple accept="image/*" ref="images" @change="uploadImage" id="image_file"/>
+                                                <button class="btn btn-design" type="button" onclick="document.getElementById('image_file').click()">Select Image</button>-->
                                     </div>
                                     <p id="reported_by"></p>
                                     <p v-if="showCenterName">Note: This will be reported to: {{selected_center}}</p>
@@ -377,24 +380,29 @@ export default {
       lname:'',
       citizen_name:'',
       images: [],
-      file: [],
+      imageList: [],
       showIncidentRepSuccessModal: false,
-      selecter_center: '',
+      selected_center: '',
       showCenterName: false,
-      showAttachImage: false,
-      maxImages: 2,
-      addImage: 'button.add-image',
-      selectedFiles: [],
+      //showAttachImage: false,
+      //maxImages: 2,
+      //addImage: 'button.add-image',
       showEditReportIncidentModal: false,
       repincident_data:[],
       showConfirmDeleteModal: false,
       deleteRep: false,
       report_id: '',
       report_index: 0 ,
-      imagesInfo: [],
+      url: [],
       rptimg1: '',
       rptimg2: '',
-      showIncidentReportImagesModal: false
+      showIncidentReportImagesModal: false,
+      files:[],
+      showImageError: false,
+      image_error: '',
+      imageData:'',
+      image:'',
+      key:''
     }
   },
   methods: {
@@ -645,7 +653,7 @@ export default {
             this.images.splice(i, 1);
         }*/
     },
-    attachImage(){
+    /*attachImage(){
         if(this.showAttachImage === false){
             this.showAttachImage = true
             document.getElementById('attach_image').innerHTML = "Cancel"
@@ -653,22 +661,24 @@ export default {
             this.showAttachImage = false
             document.getElementById('attach_image').innerHTML = "Attach Image"
         }
-    },
+    },*/
     /*uploadImage(e){
-        let vm = this
-        var selectedFiles = e.target.files;
-        for (let i=0; i < selectedFiles.length; i++){
-            console.log(selectedFiles[i]);
-            this.images.push(selectedFiles[i]);
-        }
-        for (let i=0; i<this.images.length; i++){
-            let reader = new FileReader(); //instantiate a new file reader
-            reader.addEventListener('load', function(){
-            this.$refs['image' + parseInt( i )][0].src = reader.result;
-            reader.readAsDataURL(this.images[i]);
-            }.bind(this), false);  //add event listener
-
-            reader.readAsDataURL(this.images[i]);
+        let vm = this;
+        if(this.images.length === 2) {
+            alert('Maximum of 2 images can be uploaded.')
+        } else {
+            var selectedFiles = e.target.files;
+            for (let i = 0; i < selectedFiles.length; i++){
+                console.log(selectedFiles[i]);
+                this.images.push(selectedFiles[i]);
+            }
+            for (let i = 0; i <this.images.length; i++){
+                let reader = new FileReader(); //instantiate a new file reader
+                reader.addEventListener('load', function(){
+                this.$refs['image' + parseInt(i)][0].src = reader.result;
+                }.bind(this), false);  //add event listener
+                reader.readAsDataURL(this.images[i]);
+            }
         }
     },*/
     uploadImage(e) {
@@ -681,19 +691,42 @@ export default {
             console.log(selectedFiles[i])
             this.images.push(selectedFiles[i]);
         }
+
         for (let i = 0; i < this.images.length; i++) {
             let reader = new FileReader();
             reader.onload = (e) => {
-                this.$refs.image[i].src = reader.result;
-                console.log(this.$refs.image[i].src);
+                this.$refs.imageData[i].src = reader.result;
+                //this.imageData = e.target.result
+                console.log(this.$refs.imageData[i].src);
             };
             reader.readAsDataURL(this.images[i]);
         }
       }
     },
+    handleImages(e){
+        this.imagesList = [];
+        var selectedFiles = e.target.files;
+        for (let i = 0; i < selectedFiles.length; i++) {
+            console.log(selectedFiles[i])
+            this.images.push(selectedFiles[i]);
+        }
+        let fileList = Array.prototype.slice.call(e.target.files);
+        fileList.forEach(f => {
+            if(!f.type.match("image.*")) {
+                return;
+            }			
+        let reader = new FileReader();
+        let that = this;
+        reader.onload = function (e) {
+          that.imagesList.push(e.target.result);
+        }
+        reader.readAsDataURL(f); 
+      });
+    },
     removeImage(index) {
-      this.images.splice(index, 1);
-      this.$refs.images[index].name = ""
+        alert('hello')
+        this.imagesList.splice(index, 1);
+        this.$refs.images[index].name = ""
     },
     getIncidentReport(id){
         this.getReportedIncident(id)
@@ -738,6 +771,20 @@ export default {
             this.myreports = res.data
         })
     },
+    updated(){
+        const fileSelect = document.getElementById("fileSelect"),
+        fileElem = document.getElementById("fileElem"),
+        fileList = document.getElementById("fileList");
+
+        fileSelect.addEventListener("click", function (e) {
+        if (fileElem) {
+            fileElem.click();
+        }
+        e.preventDefault(); // prevent navigation to "#"
+        }, false);
+
+        fileElem.addEventListener("change", handleFiles, false);
+    },
     computed: {
         filteredReports() {
             return this.myreports.filter((report) => {
@@ -752,6 +799,7 @@ export default {
                 report.reported_on.toLowerCase().match(this.search.toLowerCase())
             })
         }
+    
     }
 }
 </script>
@@ -841,5 +889,15 @@ table{
 }
 .btn-actions{
     width: 70%;
+}
+.preview{
+    width: 200px;
+    height: 100px;
+}
+.input-guide{
+    color:red;
+    line-height: 0%;
+    font-style: italic;
+    font-size: 10pt;
 }
 </style>

@@ -1,7 +1,7 @@
 <template>
   <div class = "sidebar">
     <div class = "header">
-      <router-link to="/home">
+      <router-link :to="{name:'home', params:{id: user._id}}">
         <img :src="require('../assets/images/dswd_logo.png')" height="30" width="30">
         <p id = "dswd_name">DSWD INCIDENT REPORTING</p>
       </router-link>
@@ -19,13 +19,16 @@
                 <router-link :to="{name: 'userprofile', params: {id: user._id}}">Account Details</router-link>
                 <p id="centerID" style="display:none">{{user.center_id}}</p>
               </li>
+              <li class="nav-sublink-item" id="sublink3">
+                <router-link to="">View Logs</router-link>
+              </li>
               <li class = "nav-sublink-item" id ="sublink2">
                 <button type="button" id="btn_logout" class="btn ml-5" @click="logoutUser">Logout</button>
               </li>
             </ul>
         </li>
         <li class="nav-link-item">
-          <router-link to ="/dashboard"><i class = "fas fa-tachometer-alt fa-3x"></i><br />Dashboard</router-link>
+          <router-link :to ="{name: 'dashboard', params: {id: user._id}}"><i class = "fas fa-tachometer-alt fa-3x"></i>Dashboard</router-link>
           </li>
         <li class="nav-link-item">
           <router-link :to ="{name: 'centersinstitutionslist', params:{uid:user._id}}"><i class = "fas fa-house-user fa-3x"></i><br />Centers & Insitutions</router-link>

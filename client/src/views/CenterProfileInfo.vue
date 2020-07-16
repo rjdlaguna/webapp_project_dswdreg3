@@ -4,6 +4,7 @@
         <div class="page_title">
             <div class="col-md-12 pt-3" id = "menu_content">
                 <h4 class = "mb-4" id = "centers_label">Center or Institution Name: {{center_profile.center_name}}</h4>
+                <button v-if="isShown" type="button" class="btn mb-3" id="btn_archive" click=""><i class = "fas fa-archive fa-1x" id="archive_icon" name = 'edit_center_info'></i>Send to Archive</button>
             </div>
         </div>
         <div id="centerinfo_section">
@@ -52,8 +53,9 @@
                     </transition>
                 </div>
 
-                <div>
+                <div class = "section">
                     <label for="Description" class="field_label">Description</label>
+                    <button v-if="isShown" type="button" class="btn mb-3" id="btn_editcenter" @click="showEditCenterInfoModal1=true"><i class = "fas fa-edit fa-1x" id="edit_icon" name = 'edit_center_info'></i>Edit</button>
                     <p id="desc_content">{{center_profile.center_desc}}</p>
                     <div class = "center_info">
                         <div id = "center_info_item1">
@@ -98,9 +100,8 @@
             <div id ="center_btnaction" class ="mt-5">
                 <p id="centerID" style="display:none">{{user_profile.center_id}}</p>
                 <p id="usertype" style="display:none">{{user_profile.user_type}}</p>
-                <button v-if="isShown" type="button" class="btn mb-3" id="btn_user" @click="displayCenterUserAccounts">User Accounts</button>
-                <button v-if="isShown" type="button" class="btn mb-3" id="btn_incident">Incident Reports</button>
-                <button v-if="isShown" type="button" class="btn mb-3" id="btn_editcenter" @click="showEditCenterInfoModal1=true">Edit Information</button>
+                <button v-if="isShown" type="button" class="btn mb-3 btn-actions" id="btn_user" @click="displayCenterUserAccounts">User Accounts</button>
+                <button v-if="isShown" type="button" class="btn mb-3 btn-actions" id="btn_incident">Incident Reports</button>
             </div>
         </div>
 
@@ -118,9 +119,23 @@
                           </button>
                       </div>
                       <div class="modal-body">
-                          <ul class="" v-for="user in centerusers" v-bind:key = user._id>
-                              <li>{{user.first_name + ' ' + user.last_name}}</li>
-                          </ul>
+                        <table>
+                          <tr v-for="user in centerusers" v-bind:key = user._id>
+                            <td>
+                              <span class="mr-5">{{user.first_name + ' ' + user.last_name}}</span>
+                            </td>
+                            <td>
+                              <button type="button" class="btn btn-primary ml-5 btn-action" style="font-size: 10pt">Edit</button>
+                              <button type="button" class="btn btn-danger ml-2 btn-action" style="font-size: 10pt">Deactivate</button>
+                            </td>
+                          </tr>
+                        </table>
+                          <!--<ul class="" v-for="user in centerusers" v-bind:key = user._id>
+                              <li>
+                                <span>{{user.first_name + ' ' + user.last_name}}</span>
+                                <button type="button" class="btn btn-primary">Edit</button>
+                              </li>
+                          </ul>-->
                       </div>
                       <div class="modal-footer">
                         <div class form-group>
@@ -672,7 +687,7 @@ export default {
           // Create the autocomplete object, restricting the search to geographical
           // location types.
           this.autocomplete = new google.maps.places.Autocomplete(
-              /** @type {!HTMLInputElement} */(document.getElementById('center_location')),
+              /** @type {!HTMLInputElement} */(document.getElementById('input_address')),
               {types: ['geocode'],
               componentRestrictions: { country: "ph" }
               });
@@ -843,17 +858,42 @@ side-bar{
 #centerinfo_section{
     display: flex;
 }
-#btn_user, #btn_incident, #btn_editcenter{
+#btn_user, #btn_incident{
     text-decoration: none;
     background:#042331;
     color: white;
     border-radius: 4px;
     padding: 9px;
+    font-size: 10pt;
+    width: 130px;
 }
-#btn_user:hover, #btn_incident:hover, #btn_editcenter:hover{
+#btn_user:hover, #btn_incident:hover, #btn_editcenter:hover, #btn_archive:hover{
     background: white;
     color: #042331;
     border:1px solid #042331;
+}
+#btn_editcenter{
+  text-decoration: none;
+  background:#042331;
+  color: white;
+  border-radius: 4px;
+  font-size: 10pt;
+  position: absolute;
+  right: 0;
+  margin-right: 100px;
+  margin-top: 10px;
+}
+#btn_archive{
+  text-decoration: none;
+  background:#042331;
+  color: white;
+  position: absolute;
+  right: 0;
+  top: 10px;
+  font-size: 10pt;
+}
+button{
+  font-size: 10pt;
 }
 .row_labels{
     padding-right: 50px;

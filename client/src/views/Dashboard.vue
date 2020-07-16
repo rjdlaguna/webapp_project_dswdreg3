@@ -6,16 +6,38 @@
             <h4 class = "mb-4" id = "dashboard_label">Dashboard</h4>
         </div>
     </div>
-    <div class = "row">
-        
+    <div class = "section">
+        <div class = "page_content centers col-sm-4 mt-3">
+            <b-card text-variant="white" class="cards">
+                <h1>{{countReports}}</h1>
+                <b-card-text>
+                    Number of Incidents You Reported 
+                </b-card-text>
+            </b-card>
+        </div>
+        <div class = "page_content centers col-sm-4 mt-3">
+            <b-card text-variant="white" class="cards">
+                <h1>{{countCenters}}</h1>
+                <b-card-text>
+                    Number of Centers and Institutions 
+                </b-card-text>
+            </b-card>
+        </div>
     </div>
 </div>
 </template>
 
 <script>
 import SideBarMenu from '../components/Sidebar'
+import { mapActions } from 'vuex'
 //import axios from 'axios'
 export default {
+    name: 'dashboard',
+    props: {
+        id: {
+            required: true
+        }
+    },
   data () {
     return {
       first_name: '',
@@ -24,14 +46,34 @@ export default {
       email: '',
       search: '',
       index: 0,
-      reportslist: []
+      reportslist: [],
+      centerslist: []
     }
   },
   methods: {
-    
+      ...mapActions(['getMyIncidentReports', 'displayCenters'])
+  },
+  created () {
+      this.getMyIncidentReports(this.id)
+      .then(res => {
+          this.reportslist = res.data
+      })
+
+    this.displayCenters()
+    .then(res => {
+        this.centerslist = res.data
+    })
   },
   components: {
       'sidebar-menu': SideBarMenu
+  },
+  computed : {
+      countReports () {
+          return this.reportslist && this.reportslist.length
+      },
+      countCenters () {
+          return this.centerslist && this.centerslist.length
+      }
   }
 }
 </script>
@@ -51,7 +93,14 @@ export default {
     color:#042331;
     border-bottom:2px solid #042331;
 }
+.page_content{
+    float: left;
+}
 .b-button{
     background: #063146;
+}
+.cards{
+    background: #042331;
+    padding: 2em 0 3em 0;
 }
 </style>

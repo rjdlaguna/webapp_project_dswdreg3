@@ -28,7 +28,7 @@
       </div>
       <div style="display:block;"><button id="btn_addCenter" v-if="showAddButton" type="button" class="btn btn-primary ml-5 mt-3" @click="showCenterRegisterModal1=true">Add Center or Institution</button></div>
       <div class = "row ml-3 mt-2">
-          <div class = "centers col-sm-4" v-for="center in centerslist" v-bind:key = center._id>
+          <div class = "centers col-sm-4" v-for="(center) in filteredCenters" v-bind:key = center._id>
               <b-card
                   :title="center.center_name"
                   :img-src="getCenterImageURL(center.image_name)"
@@ -454,7 +454,18 @@ export default {
   },
   components: {
       'sidebar-menu': SideBarMenu
-  }
+  },
+  computed : {
+        filteredCenters() {
+            return this.centerslist.filter((center) => {
+                return center.center_name.toLowerCase().match(this.search.toLowerCase()) ||
+                center.center_desc.toLowerCase().match(this.search.toLowerCase()) ||
+                center.center_gender.toLowerCase().match(this.search.toLowerCase()) ||
+                center.center_indivtype.toLowerCase().match(this.search.toLowerCase())
+            })
+        }
+    
+    }
 }
 </script>
 

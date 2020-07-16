@@ -175,6 +175,10 @@ localize({
       },
       rep_location: {
         required: 'Location is required.'
+      },
+      emailadd: {
+        required: 'Email address is required.',
+        email: 'Email address is invalid.'
       }
     }
   }

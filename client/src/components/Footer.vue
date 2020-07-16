@@ -17,19 +17,27 @@ export default {
 </script>
 
 <style scoped>
+*,
+*::before,
+*::after{
+	margin: 0;
+	padding: 0;
+	box-sizing: 0;
+}
 .footer{
     background: #042331;
     color:wheat;
     text-align: center;
-    right: 0;
     bottom: 0;
     left: 0;
-    padding: 1rem;
     width: 100%;
-    height: 100%;
-    grid-row-start: 2;
-    grid-row-end: 3;
-    position: inherit;
-    margin-top:9em;
+    display: block;
+    margin-top: 1em;
+    padding: 2rem;
+}
+@media (max-width:414px){
+  .title-caption{
+    margin-top: 620px
+  }
 }
 </style>

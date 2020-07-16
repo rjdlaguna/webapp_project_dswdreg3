@@ -1,64 +1,72 @@
 <template>
-      <div class = "main">
+    <div class = "main">
         <app-navbar/>
         <div class = 'container'>
-          <div class = "banner">
-             <image-slider>
-                  <transition-group name='fade' tag='carousel'>
-                    <div
-                    v-for="number in [currentNumber]"
-                    :key='number'
-                    >
-                      <img
-                          :src="currentImage"
-                          v-on:mouseover="stopRotation"
-                          v-on:mouseout="startRotation"
-                          width = "1305"
-                          height = "500"
-                          class = "carousel ml-2"
-                          />
-                  </div>
-                </transition-group>
-              </image-slider>
+
+          <div class = "row">
+              <div class = "banner">
+                <div class="banner-content">
+                  <h1 id = "welcome_msg">Welcome to DSWD Region III Centers and Institutions Records Management and Incident Reporting</h1>
+                </div>
+                      <!-- <transition-group name='fade' tag='carousel'>
+                        <div
+                        v-for="number in [currentNumber]"
+                        :key='number'
+                        >
+                          <img
+                              :src="currentImage"
+                              v-on:mouseover="stopRotation"
+                              v-on:mouseout="startRotation"
+                              width = "1305"
+                              height = "500"
+                              class = "carousel ml-2"
+                              />
+                      </div>
+                    </transition-group> -->
+              </div> 
           </div>
-          <div class = "centered"><p id = "welcome_msg">Welcome to DSWD Region III Centers and Institutions Record Management</p></div>
-          <div class="row">
-          <div class="col-sm-4">
-            <div class="card ml-3 mt-1">
-              <div class="card-body">
-                <h5 class="card-title">Incident Reporting</h5>
-                <p class="card-text">The website lets concerned citizens to report abused or neglected individuals encountered to respective centers or institutions.</p>
-                <a href="#" class="btn btn-warning">See more details</a>
+          
+          <div class="row title-caption" >
+            <div class="col-sm-4">
+              <div class="card mt-1">
+                <div class="card-body">
+                  <h5 class="card-title">Incident Reporting</h5>
+                  <p class="card-text">The website lets concerned citizens to report abused or neglected individuals encountered to respective centers or institutions.</p>
+                  <!--<a href="#" class="btn btn-warning">See more details</a>-->
+                </div>
+              </div>
+            </div>
+
+            <div class="col-sm-4">
+              <div class="card mt-1">
+                <div class="card-body">
+                  <h5 class="card-title">Centers and Institutions</h5>
+                  <p class="card-text">The website contains the different centers and institutions located in the Region III which are licensed by the DSWD Region III.</p>
+                  <!--<a href="#" class="btn btn-warning">See more details</a>-->
+                </div>
+              </div>
+            </div>
+          
+            <div class="col-sm-4">
+              <div class="card mt-1">
+                <div class="card-body">
+                  <h5 class="card-title">Records Management</h5>
+                  <p class="card-text">The respective centers and institutions and regional office can management the records of the reported individuals</p>
+                  <!--<a href="#" class="btn btn-warning">See more details</a>-->
+                </div>
               </div>
             </div>
           </div>
-          <div class="col-sm-4">
-            <div class="card mt-1">
-              <div class="card-body">
-                <h5 class="card-title">Centers and Institutions</h5>
-                <p class="card-text">The website contains the different centers and institutions located in the Region III which are licensed by the DSWD Region III.</p>
-                <a href="#" class="btn btn-warning">See more details</a>
-              </div>
-            </div>
-          </div>
-          <div class="col-sm-4">
-            <div class="card mr-3 mt-1">
-              <div class="card-body">
-                <h5 class="card-title">Records Management</h5>
-                <p class="card-text">The respective centers and institutions and regional office can managem= the records of the reported individuals</p>
-                <a href="#" class="btn btn-warning">See more details</a>
-              </div>
-            </div>
-          </div>
-        </div>
-   </div>
+
+          <app-footer/>
+      </div>
   </div>
 </template>
 
 <script>
 import Navbar from '../components/Navbar.vue'
+import Footer from '../components/Footer.vue'
 export default {
-  el: 'image-slider',
   data () {
     return {
       images: [
@@ -72,7 +80,8 @@ export default {
     }
   },
   components: {
-    'app-navbar': Navbar
+    'app-navbar': Navbar,
+    'app-footer' : Footer
   },
   mounted: function () {
     this.startRotation()
@@ -107,20 +116,62 @@ export default {
 *::after{
 	margin: 0;
 	padding: 0;
-	box-sizing: inherit;
+	box-sizing: border-box;
 }
 .container{
   max-width: 100%;
+  height: 100%;
   height:575px;
   position: relative;
   text-align:center;
   color:whitesmoke;
-  /* background: #000066; */
+  display: flex;
+  flex-direction: column;
 }
+
 .banner{
+  background: url("../assets/images/banner_pic4.jpg") no-repeat center center; 
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  height: 600px;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  filter: brightness(80%);
+}
+
+/*.banner{
+	width: 100%;
+	height: 560px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+  background: url("../assets/images/banner_pic4.jpg") no-repeat top center;
+  background-position: center center;
+  /*filter: brightness(30%);
+}*/
+
+.banner-content {
+  text-align: center;
+  color: white;
+}
+
+.banner_content h1{
+  color: #fff;
+  filter: brightness(100%);
+}
+
+.title-caption{
+  display: flex;
+	margin-top: 30px;
+  justify-content: space-around;
   position: relative;
 }
-.fade-enter-active, .fade-leave-active {
+
+/*.fade-enter-active, .fade-leave-active {
   transition: all 0.3s ease;
   overflow: hidden;
   visibility: visible;
@@ -136,23 +187,29 @@ img{
   filter: brightness(30%);
   display: block;
   position: relative;
-}
+}*/
+
 #welcome_msg{
   font-size: 35pt;
   font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
   z-index: 999;
 }
-.centered {
-  position: absolute;
-  top: 30%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width:60em;
-}
 .card{
-  border:.05em solid #000066;
-  color: #000066;
-  position: relative;
+  color: #042331;
   display: block;
+  background: #f0f5f5;
 }
+.card_text{
+  max-height: 100%;
+}
+.card, .card-title, .card-text{
+  overflow: hidden;
+  position: relative;
+}
+@media (max-width:414px){
+  .title-caption{
+    margin-top: 620px
+  }
+}
+
 </style>

@@ -21,18 +21,35 @@ const storage = multer.diskStorage({
     }
 })
 
+const mailgun = require("mailgun-js");
+const DOMAIN = 'sandboxe039ea87ce5d45a08f1734680cc6919c.mailgun.org';
+const mg = mailgun({apiKey: process.env.MAILGUN_APIKEY, domain: DOMAIN});
+
+/*const fileFilter = (req, file, cb) => {
+    const allowedTypes = ["image/jpeg","image/png","image/gif","image/jpg"]
+    if (!allowedTypes.includes(file.mimetype)){
+        const error = new Error("Wrong file type")
+        error.code = "LIMIT_FILE_TYPES"
+        return cb(error, false)
+    }
+    cb(null, true)
+}*/
+
 const fileFilter = (req, file, cb) => {
-    if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png'){
+    const allowedTypes = ["image/jpeg","image/png","image/gif","image/jpg"]
+    if (!allowedTypes.includes(file.mimetype)){
+        cb(error, false)
+    }else {
         cb(null, true)
-    }else{
-        cb(null, false)
     }
 }
 
+
+const MAX_SIZE = 2000000
 const upload = multer({
     storage: storage, 
     limits: {
-    fileSize: 1024 * 1024 * 5
+    fileSize: MAX_SIZE
     },
     fileFilter: fileFilter
 });
@@ -64,10 +81,170 @@ users.get('/getapikey', (req, res) => {
     res.json(myAPIKey)
 })
 
+/*users.use(function(err, req, res, next) {
+    if(err.code === "LIMIT_FILE_TYPE") {
+        res.status(422).json({error: "Only images are allowed..."})
+        return
+    }
+
+    if(err.code === "LIMIT_FILE_SIZE") {
+        res.status(422).json({error: `Too large. Max size is ${MAX_SIZE / 1000}Kb`})
+        return
+    }
+})*/
+
 //User Registration (Working)
+// users.post('/registeruser', (req, res) => {
+//     var user_type = 'citizen'
+//     const created = new Date()
+//     let {
+//         first_name,
+//         middle_initial,
+//         last_name,
+//         mobile_no,
+//         birthdate,
+//         address,
+//         email,
+//         username,
+//         password,
+//         confirm_password
+//     } = req.body
+
+//     //Check for the unique username
+//     User.findOne({
+//         username: username
+//     }).then(user => {
+//         if(user) {
+//             console.log('Username is already taken...')
+//             return res.status(500).json({
+//                 error: "true",
+//                 msg: "Username is already taken."
+//             })
+//         } else {
+//                 //Check for the unique email
+//                 User.findOne({
+//                     email: email
+//                 }).then(user => {
+//                     if(user) {
+//                         console.log('Email is already registered...')
+//                         return res.status(500).json({
+//                             failed: 'true',
+//                             msg: "Email is already registered."
+//                         })
+//                     } else {
+//                             //The data is valid and user can be registered       
+//                             let newUser = new User({
+//                                 first_name,
+//                                 middle_initial,
+//                                 last_name,
+//                                 mobile_no,
+//                                 birthdate,
+//                                 address,
+//                                 email,
+//                                 username,
+//                                 password,
+//                                 confirm_password,
+//                                 user_type,
+//                                 created,
+//                             });
+//                             bcrypt.genSalt(10, (err, salt) => {
+//                                 bcrypt.hash(newUser.password, salt, (err, hash) => {
+//                                     if(err) throw err;
+//                                     newUser.password = hash;
+//                                     newUser.save().then(user => {
+//                                         // console.log('Saving picture')
+//                                         //Save Temporary Profile Picture
+//                                         User.findOne().sort({created: -1}).exec(function(err, info) {
+//                                             if (err) {return err}
+//                                             u_id = info.id
+//                                             console.log(info.id)
+//                                         var img = fs.readFileSync('../webapp_project/client/src/assets/images/temp_pic.jpg')
+//                                         var encode_image = img.toString('base64')
+
+//                                         /*let imgtype = '"image/*"'
+//                                         let imgdata = Buffer.from(encode_image).toString('base64')
+//                                         let imgpath = '@/assets/images/temp_pic.jpg'
+//                                         let imgname = 'temp_pic.jpg'*/
+                                        
+//                                         const TempPicData = {
+//                                             profile_pic: {
+//                                                 contentType: '"image/jpg"',
+//                                                 data: Buffer.from(encode_image).toString('base64')
+//                                             },
+//                                             user_id: u_id,
+//                                             image_path: '@/assets/images/temp_pic.jpg',
+//                                             image_name: 'temp_pic.jpg'
+//                                         }
+                                        
+//                                         /* let profimage = new ProfilePicture({
+//                                             profile_pic:{
+//                                                 imgtype,
+//                                                 imgdata
+//                                             },
+//                                             u_id,
+//                                             imgpath,
+//                                             imgname
+//                                         })
+//                                         profimage.save()
+//                                         .then(temppic=> {
+//                                             console.log('Temporary Profile Picture Saved.')
+//                                         }) */
+
+//                                         ProfilePicture.create(TempPicData)
+//                                         .then(temppic=> {
+//                                             // res.json({ status: user.email + ' registered' })
+//                                             console.log('Temporary Profile Picture Saved.')
+//                                         })
+
+//                                         //Create the verification token for the user
+//                                         /*var token = new Token({ 
+//                                             _userId: user._id, 
+//                                             token: crypto.randomBytes(16).toString('hex') 
+//                                         })
+//                                         //Save the token
+//                                         token.save(function(err) {
+//                                             if (err) {
+//                                                 return res.status(500).send({msg: err.message})
+//                                             }
+//                                             var transporter = nodemailer.createTransport({
+//                                                 service: 'Sendgrid', 
+//                                                 auth: {user: process.env.SENDGRID_USERNAME,
+//                                                 pass: process.env.SENDGRID_PASSWORD
+//                                             }
+//                                             })
+//                                             var mailOptions = {
+//                                                 from: 'rondelacruz2020@gmail.com',
+//                                                 to: user.email, 
+//                                                 Subject: 'Account Verification Token',
+//                                                 text: 'Hello, ' + user.first_name + ' ' + user.last_name + '. Please verify your account by clicking the link: \nhttp:\/\/' + req.headers.host + '\/confirmation\/' + token.token + '.\n' 
+//                                             }
+//                                             transporter.sendMail(mailOptions, function(err) {
+//                                                 if (err) {
+//                                                     return res.status(500).send({msg: err.message})
+//                                                 }
+//                                                 res.status(200).send('A verification email has been sent to '+ user.email + '.')
+//                                             })
+//                                         }) */
+//                                     })
+                                        
+//                                         return res.status(201).json({
+//                                             success: 'true',
+//                                             msg: "User is successfully registered."
+//                                         })
+//                                     })
+//                                 })
+//                             })
+//                     }
+//                 })
+//         }
+//     })
+
+// })
+
 users.post('/registeruser', (req, res) => {
     var user_type = 'citizen'
     const created = new Date()
+    const isVerified = false
     let {
         first_name,
         middle_initial,
@@ -103,6 +280,25 @@ users.post('/registeruser', (req, res) => {
                             msg: "Email is already registered."
                         })
                     } else {
+                        const token = jwt.sign({first_name,last_name,email,password}, process.env.JWT_ACC_ACTIVATE,{expiresIn:'20m'})
+
+                        const data = {
+                            from: 'admin@dswdregion3centersandinstitutions.com',
+                            to: email,
+                            subject: 'Account Activation Link',
+                            html:`
+                            <h3>Please click on the provided link to activate your account</h3>
+                            <a href = '${process.env.CLIENT_URL}/verifyemail/${token}'>Verify Email Address</a>
+                            ` 
+                        };
+                        mg.messages().send(data, function (error, body) {
+                            if(error) {
+                                return res.json({
+                                    error: err.message
+                                })
+                            }
+                            // return res.json({message: 'Kindly check your email to activate your account.'})
+                        });
                             //The data is valid and user can be registered       
                             let newUser = new User({
                                 first_name,
@@ -117,25 +313,19 @@ users.post('/registeruser', (req, res) => {
                                 confirm_password,
                                 user_type,
                                 created,
+                                isVerified
                             });
                             bcrypt.genSalt(10, (err, salt) => {
                                 bcrypt.hash(newUser.password, salt, (err, hash) => {
                                     if(err) throw err;
                                     newUser.password = hash;
                                     newUser.save().then(user => {
-                                        // console.log('Saving picture')
-                                        //Save Temporary Profile Picture
                                         User.findOne().sort({created: -1}).exec(function(err, info) {
                                             if (err) {return err}
                                             u_id = info.id
                                             console.log(info.id)
                                         var img = fs.readFileSync('../webapp_project/client/src/assets/images/temp_pic.jpg')
                                         var encode_image = img.toString('base64')
-
-                                        /*let imgtype = '"image/*"'
-                                        let imgdata = Buffer.from(encode_image).toString('base64')
-                                        let imgpath = '@/assets/images/temp_pic.jpg'
-                                        let imgname = 'temp_pic.jpg'*/
                                         
                                         const TempPicData = {
                                             profile_pic: {
@@ -146,61 +336,17 @@ users.post('/registeruser', (req, res) => {
                                             image_path: '@/assets/images/temp_pic.jpg',
                                             image_name: 'temp_pic.jpg'
                                         }
-                                        
-                                        /* let profimage = new ProfilePicture({
-                                            profile_pic:{
-                                                imgtype,
-                                                imgdata
-                                            },
-                                            u_id,
-                                            imgpath,
-                                            imgname
-                                        })
-                                        profimage.save()
-                                        .then(temppic=> {
-                                            console.log('Temporary Profile Picture Saved.')
-                                        }) */
 
                                         ProfilePicture.create(TempPicData)
                                         .then(temppic=> {
                                             // res.json({ status: user.email + ' registered' })
                                             console.log('Temporary Profile Picture Saved.')
                                         })
-
-                                        //Create the verification token for the user
-                                        /*var token = new Token({ 
-                                            _userId: user._id, 
-                                            token: crypto.randomBytes(16).toString('hex') 
-                                        })
-                                        //Save the token
-                                        token.save(function(err) {
-                                            if (err) {
-                                                return res.status(500).send({msg: err.message})
-                                            }
-                                            var transporter = nodemailer.createTransport({
-                                                service: 'Sendgrid', 
-                                                auth: {user: process.env.SENDGRID_USERNAME,
-                                                pass: process.env.SENDGRID_PASSWORD
-                                            }
-                                            })
-                                            var mailOptions = {
-                                                from: 'rondelacruz2020@gmail.com',
-                                                to: user.email, 
-                                                Subject: 'Account Verification Token',
-                                                text: 'Hello, ' + user.first_name + ' ' + user.last_name + '. Please verify your account by clicking the link: \nhttp:\/\/' + req.headers.host + '\/confirmation\/' + token.token + '.\n' 
-                                            }
-                                            transporter.sendMail(mailOptions, function(err) {
-                                                if (err) {
-                                                    return res.status(500).send({msg: err.message})
-                                                }
-                                                res.status(200).send('A verification email has been sent to '+ user.email + '.')
-                                            })
-                                        }) */
                                     })
                                         
                                         return res.status(201).json({
                                             success: 'true',
-                                            msg: "User is successfully registered."
+                                            msg: "User is successfully registered. Kindly check your email to activate your account."
                                         })
                                     })
                                 })
@@ -210,6 +356,83 @@ users.post('/registeruser', (req, res) => {
         }
     })
 
+})
+
+users.post('/emailactivate/:token', (req, res) => {
+    // const {token} = req.body;
+    const token = req.params.token
+    console.log(token)
+    if(token){
+        jwt.verify(token, process.env.JWT_ACC_ACTIVATE, function(err, decodedToken) {
+            if(err){
+                return res.status(400).json({error: 'Incorrect or Expired link.'})
+            }
+            const {first_name, last_name, email, password} = decodedToken;
+
+            User.findOne({email}).exec((err, user) => {
+                if(user) {
+                    // return res.status(400).json({error: 'User with email already exists.'})
+                    user.isVerified = true
+                    user.save().then(()=>{
+                        return res.status(201).json({
+                            success: 'true',
+                            msg: "Email successfully verified."
+                        })
+                    })
+
+                } 
+            })
+        })
+
+    } else{
+        return res.json({error: "Something went wrong..."})
+    }
+})
+
+//Resetting Password
+users.post('/resetpassword', (req,res) => {
+    let email = req.body.email
+    let password = req.body.password
+    let confirm_pass = req.body.password
+    console.log(email + ' '  + password)
+    User.findOne({
+        email: email
+    }).then( user => {
+        if(!user) {
+            res.json({error: 'Email address does not exist.'})
+        } else {
+            bcrypt.genSalt(10, (err, salt) => {
+                bcrypt.hash(password, salt, (err, hash) => {
+                    password = hash;
+                    user.password = password
+                    user.confirm_password = confirm_pass
+                    const data = {
+                        from: 'admin@dswdregion3centersandinstitutions.com',
+                        to: email,
+                        subject: 'Reset Password',
+                        html:`
+                        <h3>Below is your new password and you can change this anytime</h3>
+                        <p>New Password: ${confirm_pass}</p>
+                        ` 
+                    };
+                    mg.messages().send(data, function (error, body) {
+                        if(error) {
+                            return res.json({
+                                error: err.message
+                            })
+                        }
+                        // return res.json({message: 'Kindly check your email to activate your account.'})
+                    });
+                    user.save().then(()=>{
+                        return res.status(201).json({
+                            success: 'true',
+                            msg: "Password successfully reset."
+                        })
+                    })
+                })
+            })
+        }
+    })
 })
 
 users.get('/edituserdata/:id', (req, res) => {
@@ -233,13 +456,11 @@ users.post('/login', (req, res) => {
                 success: false
             });*/
         }
-        /*
         if(!user.isVerified) {
-            return res.status(401).json({
-                type: 'not verified',
-                msg: 'Your account has not been verified.'
+            return res.json({
+                error: 'User account not verified.'
             });
-        }*/
+        }
         bcrypt.compare(req.body.loginpassword, user.password).then(isMatch=> {
             if (isMatch) {
                 const payload = {
@@ -952,7 +1173,6 @@ users.post("/sendincidentreport", upload.array('imageFiles', 4), (req,res) => {
 })
 users.get('/getmyincidentreports/:id', (req, res) => {
     let id = req.params.id
-    //console.log(id)
     CitizenReport.find({user_id: id}, function (err, report){
         if(err) {
             res.json(err)

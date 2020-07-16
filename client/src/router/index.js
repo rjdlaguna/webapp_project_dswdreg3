@@ -15,6 +15,7 @@ import CentersInstitutionsList from '../views/CentersInstitutionsList'
 import CenterRegistration from '../views/CenterRegistration'
 import CenterProfileInfo from '../views/CenterProfileInfo'
 import CenterIncidentReports from '../views/CenterIncidentReports'
+import VerifyEmail from '../views/VerifyEmail'
 import store from '../store'
 
 Vue.use(VueRouter)
@@ -26,9 +27,10 @@ const routes = [
     component: Welcome
   },
   {
-    path: '/home',
+    path: '/home/:id',
     name: 'home',
-    component: Home
+    component: Home,
+    props: true
   },
   {
     path: '/login',
@@ -73,9 +75,10 @@ const routes = [
     props: true
   },
   {
-    path: '/dashboard',
+    path: '/dashboard/:id',
     name: 'dashboard',
-    component: Dashboard
+    component: Dashboard,
+    props: true
   },
   {
     path: '/centersinstitutionslist/:uid',
@@ -98,6 +101,12 @@ const routes = [
     path: '/centerincidentreports/:id',
     name: 'centerincidentreports',
     component: CenterIncidentReports,
+    props: true
+  },
+  {
+    path: '/verifyemail/:token',
+    name: 'verifyemail',
+    component: VerifyEmail,
     props: true
   }
 ]

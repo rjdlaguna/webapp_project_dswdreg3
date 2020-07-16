@@ -30,7 +30,7 @@
                       <td>{{center_rep.gender}}</td>
                       <td>{{center_rep.location}}</td>
                       <td>{{center_rep.description}}</td>
-                      <td></td>
+                      <td>{{center_rep.status}}</td>
                     </tr>
                 </tbody>
             </table>

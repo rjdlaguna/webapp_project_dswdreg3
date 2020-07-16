@@ -8,7 +8,7 @@ const cookieParser = require('cookie-parser');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const fs = require('fs')
-
+require('dotenv').config();
 const app = express();
 
 app.use(bodyParser.urlencoded({
@@ -16,6 +16,7 @@ app.use(bodyParser.urlencoded({
 }))
 
 app.use(bodyParser.json());
+app.use(express.json());
 
 app.use(cors())
 app.use(cookieParser());
@@ -40,7 +41,7 @@ app.use("/api/citizenreports",citizenreports)
 const db = require('./config/keys').mongoURI;
 
 mongoose.connect(db, { useFindAndModify: false });
-mongoose.createConnection(db, {useNewUrlParser: true})
+mongoose.createConnection(db, {useUnifiedTopology: true})
 .then(() => {
     console.log(`Database connected successfully ${db}`)
 }).catch(err => {

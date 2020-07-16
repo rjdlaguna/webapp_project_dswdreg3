@@ -1,24 +1,23 @@
 <template>
-    <nav class="navbar navbar-expand-lg navbar-dark">
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar1" aria-controls="navbar1"
-            aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-       <router-link id = "dswd_homelink" class = "ml-5" to="/"><img :src="require('../assets/images/dswd_logo.png')" width="50" height="50" alt="" id = "logo"/><span id = "dswd_home">DSWD</span></router-link>
-        <div class="collapse navbar-collapse" id="navbar1">
-            <div id = "menu">
-              <ul class = "nav list-inline ml-4">
-                <li class = "list-inline-item mt-2"><router-link to= "/centersandinstitutions" class = "nav-link">CENTERS AND INSTITUTIONS</router-link></li>
-                <li class = "list-inline-item mt-2"><router-link to= "/aboutcenters" class = "nav-link">ABOUT</router-link></li>
-                </ul>
-            </div>
-            <div class="collapse navbar-collapse" id="navbar2">
-              <ul class="nav list-inline">
-                  <b-button type= "button" id = "btn_login" @click="showLoginModal = true">LOGIN</b-button>
-                  <b-button type= "button" id = "btn_register" @click="showRegisterModal = true">REGISTER</b-button>
-              </ul>
-            </div>
-        </div>
+<div>
+      <div class = "b-navbar">
+        <b-navbar toggleable="lg" type="dark">
+          <b-navbar-brand><router-link id="dswd_homelink" to="/"><img :src="require('../assets/images/dswd_logo.png')" width="50" height="50" alt="" id = "logo"/><span id="dswd_home">DSWD R3</span></router-link></b-navbar-brand>
+          <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
+          <b-collapse id="nav-collapse" is-nav>
+            <!--<b-navbar-nav>
+              <b-nav-item class="nav-link">CENTERS AND INSTITUTIONS</b-nav-item>
+              <b-nav-item class="nav-link">ABOUT</b-nav-item>
+            </b-navbar-nav>-->
+
+            <!-- Right aligned nav items -->
+            <b-navbar-nav class="ml-auto">
+              <b-button type="button" id="btn_login" @click="showLoginModal = true">LOGIN</b-button>
+              <b-button type="button" id="btn_register" @click="showRegisterModal = true">REGISTER</b-button>
+            </b-navbar-nav>
+          </b-collapse>
+        </b-navbar>
+      </div>
 
         <!-- Login Modal -->
         <div v-if="showLoginModal">
@@ -50,7 +49,7 @@
                           </ValidationProvider>
                         </div>
                         <div id ="forgotpass">
-                          <p>Forgot your password? <router-link to = "">Click here</router-link></p>
+                          <p>Forgot your password? <button type="button" class="btn btn-primary" @click="showForgotPasswordModal=true; showLoginModal=false">Click here</button></p>
                         </div>
                       </div>
                       <div class="modal-footer">
@@ -252,12 +251,12 @@
                           </button>
                       </div>
                       <div class="modal-body">
-                         <p>User account successfully created. You can now login to your account.</p>
+                         <p>Activate your account by clicking the link sent to your email.</p>
                       </div>
                       <div class="modal-footer">
                         <div class form-group>
-                          <button type="button" class="btn btn-primary mr-3" @click="showLoginModal=true; showRegistrationSuccessModal = false">Go to Login</button>
-                          <button type="button" class="btn btn-secondary" @click="showRegistrationSuccessModal = false">Close</button>
+                          <button type="button" class="btn btn-primary mr-3" @click="showRegistrationSuccessModal = false">OK</button>
+                          <!--<button type="button" class="btn btn-secondary" @click="showRegistrationSuccessModal = false">Close</button>-->
                         </div>
                       </div>
                     </div>
@@ -268,7 +267,38 @@
         </div>
         <!--Successful Registration Modal-->
 
-    </nav>
+        <div v-if="showForgotPasswordModal">
+          <transition name="modal">
+            <div class="modal-mask">
+              <div class="modal-wrapper">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                          <h5 class="modal-title">Forgot Password</h5>
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true" @click="showForgotPasswordModal = false">&times;</span>
+                          </button>
+                      </div>
+                      <div class="modal-body">
+                         <ValidationProvider name = "emailadd" rules="required|email" v-slot="{ errors }">
+                            <label for="email">Email Address</label>
+                            <input type = "text" class="form-control" id = "emailadd" v-model="emailadd" name="emailadd" />
+                            <p class = "err_message">{{ errors[0] }}</p>
+                          </ValidationProvider>
+                      </div>
+                      <div class="modal-footer">
+                        <div class form-group>
+                          <button type="button" class="btn btn-primary mr-3" @click="resetPass">Reset Password</button>
+                          <button type="button" class="btn btn-secondary" @click="showForgotPasswordModal = false; showLoginModal=true">Cancel</button>
+                        </div>
+                      </div>
+                    </div>
+                </div>
+              </div>
+            </div>
+          </transition>
+        </div>
+    </div>
 </template>
 <script src="https://maps.googleapis.com/maps/api/js?key=getGoogleMapAPI&libraries=places&callback=initAutocomplete&language=nl&output=json" async defer></script>
 <script>
@@ -304,6 +334,7 @@ export default {
       showRegisterModal: false,
       showRegisterModal2: false,
       showRegistrationSuccessModal: false,
+      showForgotPasswordModal: false,
       loginemail: '',
       loginpassword:'',
       error_login:'',
@@ -335,10 +366,12 @@ export default {
       showCheck4:false,
       showCheck5:false,
       pass_num: 0,
+      logdata: '',
+      emailadd: ''
     }
   },
   methods: {
-    ...mapActions(['getProfile', 'getCenterID']),
+    ...mapActions(['getProfile', 'getCenterID', 'resetPassword']),
     logout () {
       axios.get('users/logout', {
         first_name: this.first_name,
@@ -380,8 +413,12 @@ export default {
       this.login(user)
       //this.$store.dispatch('login', user)
         .then(res => {
+          this.logdata = Object.values(res.data)
           if (res.data.success) {
-            router.push({ name: 'home' })
+            // router.push({ name: 'home' })
+            router.push({ name: 'home', params:{id: res.data.user._id}})
+          } else if(String(this.logdata) === 'User account not verified.') {
+            this.error_login = "Email address not verified"
           } else {
             this.errorLogin()
           }
@@ -408,7 +445,7 @@ export default {
       this.confirm_password === '') {
         // this.scrollToTop()
       } else {
-        this.mobile_no = "63" + this.mobile_no
+        //this.mobile_no = "63" + this.mobile_no
         let user = {
         first_name: this.first_name,
         middle_initial: this.middle_initial,
@@ -611,24 +648,59 @@ export default {
         this.showCheck5 = false
         this.specialchar_textColor = red
       }
+    },
+    resetPass() {
+      // var email = this.emailadd
+      var random_pass = this.randomPassword()
+      let pass_data = {
+        email: this.emailadd, 
+        password: random_pass
+      }
+      this.resetPassword(pass_data)
+      .then(res => {
+        if(res.data.success) {
+          alert('Password successfully reset. Check your email for the new password.')
+          this.showForgotPasswordModal = false
+        }
+      })
+    },
+    randomPassword(){
+      var chars = "abcdefghijklmnopqrstuvwxyz!@#$%^&*()-+<>ABCDEFGHIJKLMNOP1234567890"
+      var pass = ""
+      for (var x = 0; x < 10; x++) {
+          var i = Math.floor(Math.random() * chars.length)
+          pass += chars.charAt(i);
+      }
+      return pass;
     }
   },
   created () {
     this.getProfile()
-  }
+  },
 }
 </script>
 
 <style scoped>
-.navbar{
+.b-navbar{
   background:#042331;
   padding:1.5em;
+  position: relative;
 }
-#login, #register, #btn_login, #btn_register{
-  background: #ffff00;
-  color:#000;
+#btn_login:hover, #btn_register:hover{
+  background: #fff;
+  color:#042331;
   font-weight:500;
   margin-right:0.5em;
+  border: 1px solid #fff;
+  margin-top: 5px
+}
+#btn_login, #btn_register{
+  background: #042331;
+  color:#fff;
+  font-weight:500;
+  margin-right:0.5em;
+  border: 1px solid #fff;
+  margin-top: 5px
 }
 #dswd_home{
   font-size: 20pt;

@@ -8,27 +8,27 @@
     </div>
     <div class = "section">
         <div class = "page_content centers col-sm-4 mt-3">
-            <b-card bg-variant="dark" text-variant="white" title="Dashboard">
+            <b-card text-variant="white" title="Dashboard" class="cards">
                 <b-card-text>
-                    Display the number of incidents reported in the Region III and number of centers and institutions. 
+                    Display the number of incidents reported by a specific user and the number of centers and institutions. 
                 </b-card-text>
-                <b-button href="#" variant="primary">Click here</b-button>
+                <router-link :to="{name:'dashboard', params:{id:id}}" class="btn btn-primary">Click here</router-link>
             </b-card>
         </div>
         <div class = "page_content centers col-sm-4 mt-3">
-            <b-card bg-variant="dark" text-variant="white" title="Centers and Institutions">
+            <b-card text-variant="white" title="Centers and Institutions" class="cards">
                 <b-card-text>
                     Enable to report to specific centers or institution. Displays the different centers and institutions in Region III.
                 </b-card-text>
-                <b-button href="#" variant="primary">Click here</b-button>
+                <router-link :to="{name:'centersinstitutionslist', params:{uid:id}}" class="btn btn-primary">Click here</router-link>
             </b-card>
         </div>
         <div class = "page_content centers col-sm-4 mt-3">
-            <b-card bg-variant="dark" text-variant="white" title="My Incident Reports">
+            <b-card text-variant="white" title="My Incident Reports" class="cards">
                 <b-card-text>
                     Enable you to send report an incident and show all the incidents you have reported.
                 </b-card-text>
-                <b-button href="#" variant="primary">Click here</b-button>
+                <router-link :to="{name:'myincidentreports', params:{id:id}}" class="btn btn-primary">Click here</router-link>
             </b-card>
         </div>
     </div>
@@ -39,6 +39,12 @@
 import SideBarMenu from '../components/Sidebar'
 //import axios from 'axios'
 export default {
+    name: 'home',
+    props: {
+        id: {
+            required: true
+        }
+    },
   data () {
     return {
       first_name: '',
@@ -81,5 +87,8 @@ export default {
 
 .b-button{
     background: #063146;
+}
+.cards{
+    background: #042331;
 }
 </style>
