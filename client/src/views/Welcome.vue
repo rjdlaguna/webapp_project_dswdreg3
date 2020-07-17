@@ -218,8 +218,8 @@ img{
   margin: 15px;
 }
 @media (max-width: 375px){
-  .banner-content h1{
-    font-size: 13pt;
+  #welcome_msg{
+    font-size: 20pt;
   }
   .overview{
     display: flex;
