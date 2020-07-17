@@ -25,32 +25,35 @@
               </div> 
           </div>
           
-          <div class="row title-caption" >
+          <div class="overview" >
             <div class="col-sm-4">
-              <div class="card mt-1">
-                <div class="card-body">
-                  <h5 class="card-title">Incident Reporting</h5>
-                  <p class="card-text">The website lets concerned citizens to report abused or neglected individuals encountered to respective centers or institutions.</p>
+              <div class="overview-card mt-1">
+                <div class="overview-card-body">
+                  <i class = "fas fa-blender-phone fa-3x icons"></i>
+                  <h5 class="overview-card-title">Incident Reporting</h5>
+                  <p class="overview-card-text">The website lets concerned citizens to report abused or neglected individuals encountered to respective centers or institutions.</p>
                   <!--<a href="#" class="btn btn-warning">See more details</a>-->
                 </div>
               </div>
             </div>
 
             <div class="col-sm-4">
-              <div class="card mt-1">
-                <div class="card-body">
-                  <h5 class="card-title">Centers and Institutions</h5>
-                  <p class="card-text">The website contains the different centers and institutions located in the Region III which are licensed by the DSWD Region III.</p>
+              <div class="overview-card mt-1">
+                <div class="overview-card-body">
+                  <i class = "fas fa-house-user fa-3x icons"></i>
+                  <h5 class="overview-card-title">Centers and Institutions</h5>
+                  <p class="overview-card-text">The website contains the different centers and institutions located in the Region III which are licensed by the DSWD Region III.</p>
                   <!--<a href="#" class="btn btn-warning">See more details</a>-->
                 </div>
               </div>
             </div>
           
             <div class="col-sm-4">
-              <div class="card mt-1">
-                <div class="card-body">
-                  <h5 class="card-title">Records Management</h5>
-                  <p class="card-text">The respective centers and institutions and regional office can management the records of the reported individuals</p>
+              <div class="overview-card mt-1">
+                <div class="overview-card-body">
+                  <i class="fas fa-file-alt fa-3x icons"></i>
+                  <h5 class="overview-card-title">Records Management</h5>
+                  <p class="overview-card-text">The respective centers and institutions and regional office can management the records of the reported individuals</p>
                   <!--<a href="#" class="btn btn-warning">See more details</a>-->
                 </div>
               </div>
@@ -161,11 +164,10 @@ export default {
   filter: brightness(100%);
 }
 
-.title-caption{
+.overview{
   display: flex;
 	margin-top: 30px;
   justify-content: space-around;
-  position: relative;
 }
 
 /*.fade-enter-active, .fade-leave-active {
@@ -191,20 +193,21 @@ img{
   font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
   z-index: 999;
 }
-.card{
+.overview-card{
   color: #042331;
   display: block;
-  background: #f0f5f5;
+  padding: 1em;
 }
-.card_text{
+
+.overview-card-text{
   max-height: 100%;
 }
-.card, .card-title, .card-text{
-  overflow: hidden;
-  position: relative;
+.icons{
+  margin: 15px;
 }
+
 @media (max-width:414px){
-  .title-caption{
+  .overview{
     margin-top: 620px
   }
 }
