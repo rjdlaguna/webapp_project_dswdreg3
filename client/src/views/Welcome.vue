@@ -223,6 +223,7 @@ img{
   }
   .overview{
     display: flex;
+    flex-direction: column;
   }
 }
 </style>
