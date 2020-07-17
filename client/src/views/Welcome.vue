@@ -1,7 +1,7 @@
 <template>
     <div class = "main">
         <app-navbar/>
-        <div class = 'container'>
+        <div class = 'main-content'>
           <div class = "row">
               <div class = "banner">
                 <div class="banner-content">
@@ -25,7 +25,7 @@
               </div> 
           </div>
           
-          <div class="row overview" >
+          <div class="overview" >
             <div class="col-sm-4">
               <div class="overview-card mt-1">
                 <div class="overview-card-body">
@@ -59,8 +59,8 @@
               </div>
             </div>
           </div>
-          <app-footer/>
       </div>
+      <app-footer/>
   </div>
 </template>
 
@@ -112,12 +112,22 @@ export default {
 </script>
 
 <style scoped>
+
 *,
 *::before,
 *::after{
 	margin: 0;
 	padding: 0;
 	box-sizing: border-box;
+}
+.main-content
+{
+  text-align: center;
+  max-width: 100%;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
 }
 .container{
   max-width: 100%;
@@ -142,6 +152,7 @@ export default {
   display: flex;
   filter: brightness(80%);
   position:relative;
+  width: auto;
 }
 
 /*.banner{
@@ -168,6 +179,7 @@ export default {
 
 .overview{
   display: flex;
+  flex-direction: column;
 	margin-top: 30px;
   justify-content: space-around;
   position: relative;
@@ -208,9 +220,4 @@ img{
 .icons{
   margin: 15px;
 }
-
-@media (max-width:414px){
-
-}
-
 </style>
