@@ -5,7 +5,7 @@
           <div class = "row">
               <div class = "banner">
                 <div class="banner-content">
-                  <h1 id = "welcome_msg">Welcome to DSWD Region III Centers and Institutions Records Management and Incident Reporting</h1>
+                  <p id = "welcome_msg">Welcome to DSWD Region III Centers and Institutions Records Management and Incident Reporting</p>
                 </div>
                       <!-- <transition-group name='fade' tag='carousel'>
                         <div
@@ -174,15 +174,12 @@ export default {
 .banner_content h1{
   color: #fff;
   filter: brightness(100%);
-  position:relative;
 }
 
 .overview{
   display: flex;
-  flex-direction: column;
 	margin-top: 30px;
   justify-content: space-around;
-  position: relative;
 }
 
 /*.fade-enter-active, .fade-leave-active {
@@ -219,5 +216,13 @@ img{
 }
 .icons{
   margin: 15px;
+}
+@media (max-width: 375px){
+  .banner-content h1{
+    font-size: 13pt;
+  }
+  .overview{
+    display: flex;
+  }
 }
 </style>
