@@ -1,7 +1,7 @@
 <template>
     <div class = "main">
         <app-navbar/>
-        <div class = 'main_content'>
+        <div class = 'container'>
           <div class = "row">
               <div class = "banner">
                 <div class="banner-content">
@@ -25,7 +25,7 @@
               </div> 
           </div>
           
-          <div class="overview" >
+          <div class="row overview" >
             <div class="col-sm-4">
               <div class="overview-card mt-1">
                 <div class="overview-card-body">
@@ -59,7 +59,6 @@
               </div>
             </div>
           </div>
-
           <app-footer/>
       </div>
   </div>
@@ -120,7 +119,7 @@ export default {
 	padding: 0;
 	box-sizing: border-box;
 }
-.main_content{
+.container{
   max-width: 100%;
   max-height: 100%;
   height:575px;
@@ -142,6 +141,7 @@ export default {
   align-items: center;
   display: flex;
   filter: brightness(80%);
+  position:relative;
 }
 
 /*.banner{
@@ -157,17 +157,20 @@ export default {
 
 .banner-content {
   color: white;
+  position: relative;
 }
 
 .banner_content h1{
   color: #fff;
   filter: brightness(100%);
+  position:relative;
 }
 
 .overview{
   display: flex;
 	margin-top: 30px;
   justify-content: space-around;
+  position: relative;
 }
 
 /*.fade-enter-active, .fade-leave-active {
@@ -207,9 +210,7 @@ img{
 }
 
 @media (max-width:414px){
-  .overview{
-    margin-top: 620px
-  }
+
 }
 
 </style>
