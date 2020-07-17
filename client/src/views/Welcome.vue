@@ -1,8 +1,7 @@
 <template>
     <div class = "main">
         <app-navbar/>
-        <div class = 'container'>
-
+        <div class = 'main_content'>
           <div class = "row">
               <div class = "banner">
                 <div class="banner-content">
@@ -118,7 +117,7 @@ export default {
 	padding: 0;
 	box-sizing: border-box;
 }
-.container{
+.main_content{
   max-width: 100%;
   max-height: 100%;
   height:575px;
