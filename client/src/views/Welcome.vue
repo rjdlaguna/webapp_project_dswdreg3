@@ -120,7 +120,7 @@ export default {
 }
 .container{
   max-width: 100%;
-  height: 100%;
+  max-height: 100%;
   height:575px;
   position: relative;
   text-align:center;
@@ -130,15 +130,14 @@ export default {
 }
 
 .banner{
-  background: url("../assets/images/banner_pic4.jpg") no-repeat center center; 
+  background: url("../assets/images/banner_pic4.jpg") no-repeat center; 
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
   background-size: cover;
   height: 600px;
-  width: 100%;
+  max-width: 100%;
   align-items: center;
-  justify-content: center;
   display: flex;
   filter: brightness(80%);
 }
@@ -155,7 +154,6 @@ export default {
 }*/
 
 .banner-content {
-  text-align: center;
   color: white;
 }
 
