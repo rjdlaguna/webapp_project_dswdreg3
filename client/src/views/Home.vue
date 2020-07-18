@@ -1,4 +1,5 @@
 <template>
+<div class = "main">
 <div class = "container">
     <sidebar-menu/>
     <div class="page_title">
@@ -33,10 +34,13 @@
         </div>
     </div>
 </div>
+<app-footer/>
+</div>
 </template>
 
 <script>
 import SideBarMenu from '../components/Sidebar'
+import Footer from '../components/Footer'
 //import axios from 'axios'
 export default {
     name: 'home',
@@ -60,7 +64,8 @@ export default {
     
   },
   components: {
-      'sidebar-menu': SideBarMenu
+      'sidebar-menu': SideBarMenu,
+      'app-footer': Footer
   }
 }
 </script>

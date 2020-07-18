@@ -1,248 +1,256 @@
 <template>
-<div class = "container">
-    <sidebar-menu/>
-    <div class = "section">
-      <div class="col-md-12 pt-3 page-title"  id= "menu_content">
-            <h4 class = "mb-4" id = "label_centers">Centers and Institutions</h4>
-            <div class="form-group row" id = "search_section">
-                <label for="search" class="col-form-label">Search</label>
-                <div class="col-4">
-                    <input class="form-control" v-model = "search" type="text" value="" id="search" name = "search">
+  <div class = "main">
+    <div class = "container">
+        <sidebar-menu/>
+        <div class = "section">
+          <div class="col-md-12 pt-3 page-title"  id= "menu_content">
+                <h4 class = "mb-4" id = "label_centers">Centers and Institutions</h4>
+                <div class="form-group row" id = "search_section">
+                    <label for="search" class="col-form-label">Search</label>
+                    <div class="col-4">
+                        <input class="form-control" v-model = "search" type="text" value="" id="search" name = "search">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-design">Go</button>
+                  <!--<div>
+                    <label for="View">View</label>
+                    <select class ="form-control">
+                      <option disabled value="">Select</option>
+                      <option>All</option>
+                      <option>For Male</option>
+                      <option>For Female</option>
+                      <option>For Children</option>
+                      <option>For Teenager</option>
+                      <option>For Adult</option>
+                      <option>For Elderly</option>
+                      <option>For Disabled</option>
+                    </select>
+                  </div>-->
+              </div>
+          </div>
+          <div style="display:block;"><button id="btn_addCenter" v-if="showAddButton" type="button" class="btn btn-primary ml-5 mt-3" @click="showCenterRegisterModal1=true">Add Center or Institution</button></div>
+          <div class = "row ml-3 mt-2">
+              <div class = "centers col-sm-4" v-for="(center) in filteredCenters" v-bind:key = center._id>
+                  <b-card
+                      :title="center.center_name"
+                      :img-src="getCenterImageURL(center.image_name)"
+                      img-height=110
+                      img-top
+                      tag="article"
+                      style="max-width: 18rem;"
+                      class="mb-2"
+                  >
+                      <b-card-text>
+                      </b-card-text>
+                      <router-link :to="{name: 'centerprofileinfo', params: {id: center._id , uid: uid}}" id="see_center_profile">See Profile</router-link>          
+                      <!--<b-button variant="primary" class = "btn_center_details"><router-link :to="{name: 'centerprofileinfo', params: {id: center._id}}" id="see_center_profile">See Profile</router-link></b-button>-->
+                      <!--<b-button href="#" variant  ="primary" class = "btn_report_incident">Add User Account</b-button>-->
+                  </b-card>
+              </div>
+          </div>
+        </div>
+        
+        <!--Center Registration Modal 1-->
+        <div v-if = "showCenterRegisterModal1">
+              <transition name = "modal">
+                <div class="modal-mask">
+                  <div class="modal-wrapper">
+                    <div class = "modal-dialog modal-md modal-dialog-scrollable" role="document">
+                      <form>
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title">Step 1 of 2: Add Center or Institution</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true" @click="showCenterRegisterModal1=false">&times;</span>
+                            </button>
+                          </div>
+                          <p class = "err_message ml-3">{{required_fields}}</p>
+                          <div class="modal-body">
+                            <div class="form-group">
+                              <ValidationProvider name = "center_name" rules="required" v-slot="{ errors }">
+                                <label for="Name">Name<span class = 'required_data'>*</span></label>
+                                <input type="text" v-model="center_name" class="form-control" name="center_name" placeholder="Enter center or institution name">
+                                <span class = "err_message">{{ errors[0] }}</span>
+                              </ValidationProvider>
+                            </div>
+                            <div class="form-group">
+                              <ValidationProvider name = "center_desc" rules="required" v-slot="{ errors }">
+                                <label for="Description">Description<span class = 'required_data'>*</span></label>
+                                <textarea type="text" v-model="center_desc" class="form-control" name="center_desc" placeholder="Enter center or institution description"></textarea>
+                                <span class = "err_message">{{ errors[0] }}</span>
+                              </ValidationProvider>
+                            </div>
+                            <div class="form-group">
+                                <label for="Name of Head">Name of Head<span class = 'required_data'>*</span></label>
+                                <ValidationProvider name = "center_head_firstname" rules="required" v-slot="{ errors }">
+                                    <input type="text" v-model="center_head_firstname" class="form-control mb-2" name="center_head_firstname" placeholder="First Name">
+                                    <span class = "err_message">{{ errors[0] }}</span>
+                                </ValidationProvider>
+                                <ValidationProvider name = "center_head_middleinitial" rules="" v-slot="{ errors }">
+                                    <input type="text" v-model="center_head_middleinitial" class="form-control mb-2" name="center_head_middleinitial" placeholder="Middle Initial">
+                                    <span class = "err_message">{{ errors[0] }}</span>
+                                </ValidationProvider>
+                                <ValidationProvider name = "center_head_lastname" rules="required" v-slot="{ errors }">
+                                    <input type="text" v-model="center_head_lastname" class="form-control" name="center_head_lastname" placeholder="Last Name">
+                                    <span class = "err_message">{{ errors[0] }}</span>
+                                </ValidationProvider>
+                            </div>
+                            <div class="form-group">
+                                <ValidationProvider name = "center_indivtype" rules="required" v-slot="{ errors }">
+                                    <label for="center_indivtype">Type of Individuals: <span class = 'required_data'>*</span></label>
+                                    <select class="form-control" id="center_indivtype" v-model="center_indivtype" name="center_indivtype" placeholder="Select One">
+                                        <option disabled value="">Select One</option>
+                                        <option>Child</option>
+                                        <option>Teenager</option>
+                                        <option>Adult</option>
+                                        <option>Elderly</option>
+                                        <option>Disabled</option>
+                                    </select>
+                                    <span class = "err_message">{{ errors[0] }}</span>
+                                </ValidationProvider>
+                            </div>
+                            </div>
+                          <div class="modal-footer">
+                            <div class = "form-group col text-center">
+                              <button class="btn btn-primary btn-inline mr-3" type="button" @click="hideRegisterCenterModal1">Next</button>
+                            </div>
+                          </div>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
                 </div>
-                <button type="submit" class="btn btn-primary btn-design">Go</button>
-              <!--<div>
-                <label for="View">View</label>
-                <select class ="form-control">
-                  <option disabled value="">Select</option>
-                  <option>All</option>
-                  <option>For Male</option>
-                  <option>For Female</option>
-                  <option>For Children</option>
-                  <option>For Teenager</option>
-                  <option>For Adult</option>
-                  <option>For Elderly</option>
-                  <option>For Disabled</option>
-                </select>
-              </div>-->
-          </div>
-      </div>
-      <div style="display:block;"><button id="btn_addCenter" v-if="showAddButton" type="button" class="btn btn-primary ml-5 mt-3" @click="showCenterRegisterModal1=true">Add Center or Institution</button></div>
-      <div class = "row ml-3 mt-2">
-          <div class = "centers col-sm-4" v-for="(center) in filteredCenters" v-bind:key = center._id>
-              <b-card
-                  :title="center.center_name"
-                  :img-src="getCenterImageURL(center.image_name)"
-                  img-height=110
-                  img-top
-                  tag="article"
-                  style="max-width: 18rem;"
-                  class="mb-2"
-              >
-                  <b-card-text>
-                  </b-card-text>
-                  <router-link :to="{name: 'centerprofileinfo', params: {id: center._id , uid: uid}}" id="see_center_profile">See Profile</router-link>          
-                  <!--<b-button variant="primary" class = "btn_center_details"><router-link :to="{name: 'centerprofileinfo', params: {id: center._id}}" id="see_center_profile">See Profile</router-link></b-button>-->
-                  <!--<b-button href="#" variant  ="primary" class = "btn_report_incident">Add User Account</b-button>-->
-              </b-card>
-          </div>
-      </div>
+              </transition>
+            </div>
+            <!--End of Center Registration Modal-->
+
+            <!--Center Registration Modal 2-->
+            <div v-if = "showCenterRegisterModal2">
+              <transition name = "modal">
+                <div class="modal-mask">
+                  <div class="modal-wrapper">
+                    <div class = "modal-dialog modal-md modal-dialog-scrollable" role="document">
+                      <form @submit.prevent="registerNewCenter">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title">Step 2 of 2: Add Center or Institution</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true" @click="showCenterRegisterModal2=false">&times;</span>
+                            </button>
+                          </div>
+                          <div class="modal-body">
+                            <div class="form-group">
+                                <ValidationProvider name = "center_gender" rules="required" v-slot="{ errors }">
+                                    <label for="Gender">Gender: <span class = 'required_data'>*</span></label>
+                                    <select class="form-control" id="center_gender" v-model="center_gender" name="center_gender" placeholder="">
+                                        <option disabled value="">Select Gender</option>
+                                        <option>Male</option>
+                                        <option>Female</option>
+                                        <option>Male and Female</option>
+                                    </select>
+                                    <span class = "err_message">{{ errors[0] }}</span>
+                                </ValidationProvider>
+                            </div>
+                            <div class="form-group">
+                              <ValidationProvider name = "center_location" rules="required" v-slot="{ errors }">
+                                <label for="Location">Location<span class = 'required_data'>*</span></label>
+                                <input ref="location" type="text" v-model="center_location" id="center_location" class="form-control" @focus="initAutocomplete" name="center_location" placeholder="Enter location">
+                                <p id = "latitude"></p>
+                                <p id = "longitude"></p>
+                                <span class = "err_message">{{ errors[0] }}</span>
+                              </ValidationProvider>
+                            </div>
+                            <div class="form-group">
+                              <ValidationProvider name = "center_yearfounded" rules="required" v-slot="{ errors }">
+                                <label for="Year Founded">Year Founded<span class = 'required_data'>*</span></label>
+                                <!--<select id="center_yearfounded" v-model="center_yearfounded" class="form-control" name="center_yearfounded" @mousedown="generateLatLong" placeholder="Enter year founded"></select>-->
+                                <input type="text" v-model="center_yearfounded" class="form-control" name="center_yearfounded" @mousedown="generateLatLong" placeholder="Enter year founded">
+                                <span class = "err_message">{{ errors[0] }}</span>
+                              </ValidationProvider>
+                            </div>
+                            <div class="form-group">
+                              <ValidationProvider name = "center_email" rules="required|email" v-slot="{ errors }">
+                                <label for="Email Address">Email Address<span class = 'required_data'>*</span></label>
+                                <input type="text" v-model="center_email" class="form-control" name="center_email" placeholder="Enter email address">
+                                <span class = "err_message">{{ errors[0] }}</span>
+                              </ValidationProvider>
+                            </div>
+                            <div class="form-group">
+                              <ValidationProvider name = "center_telno" rules="required" v-slot="{ errors }">
+                                <label for="Telephone No.">Telephone No.<span class = 'required_data'>*</span></label>
+                                <input type="text" v-model="center_telno" class="form-control" name="center_telno" placeholder="Enter telephone no.">
+                                <span class = "err_message">{{ errors[0] }}</span>
+                              </ValidationProvider>
+                            </div>
+                            <div class="form-group">
+                              <ValidationProvider name = "center_mobileno" rules="required" v-slot="{ errors }">
+                                <label for="Mobile No.">Mobile No.<span class = 'required_data'>*</span></label>
+                                <input type="text" v-model="center_mobileno" class="form-control" name="center_mobileno" placeholder="Enter mobile no">
+                                <span class = "err_message">{{ errors[0] }}</span>
+                              </ValidationProvider>
+                            </div>
+                            </div>
+                          <div class="modal-footer">
+                            <div class = "form-group col text-center">
+                              <button class="btn btn-primary btn-inline mr-3" type="button" @click="showCenterRegisterModal1=true;showCenterRegisterModal2=false">Go Back</button>
+                              <button class="btn btn-primary btn-inline mr-3" type="submit" >Save</button>
+                            </div>
+                          </div>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </transition>
+            </div>
+            <!--End of Center Registration Modal 2-->
+
+            <!--Successful Center Registration Modal-->
+            <div v-if="showCenterRegistrationSuccessModal">
+              <transition name="modal">
+                <div class="modal-mask">
+                  <div class="modal-wrapper">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                              <h5 class="modal-title">Center or Institution Registration</h5>
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true" @click="showCenterRegistrationSuccessModal = false">&times;</span>
+                              </button>
+                          </div>
+                          <div class="modal-body">
+                            <p>Center or Institution successfully created.</p>
+                          </div>
+                          <div class="modal-footer">
+                            <div class form-group>
+                              <button type="button" class="btn btn-secondary" @click="showCenterRegistrationSuccessModal = false">OK</button>
+                            </div>
+                          </div>
+                        </div>
+                    </div>
+                  </div>
+                </div>
+              </transition>
+            </div>
+            <!--Successful Center Registration Modal-->
     </div>
-    
-    <!--Center Registration Modal 1-->
-    <div v-if = "showCenterRegisterModal1">
-          <transition name = "modal">
-            <div class="modal-mask">
-              <div class="modal-wrapper">
-                <div class = "modal-dialog modal-md modal-dialog-scrollable" role="document">
-                  <form>
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <h5 class="modal-title">Step 1 of 2: Add Center or Institution</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                          <span aria-hidden="true" @click="showCenterRegisterModal1=false">&times;</span>
-                        </button>
-                      </div>
-                      <p class = "err_message ml-3">{{required_fields}}</p>
-                      <div class="modal-body">
-                        <div class="form-group">
-                          <ValidationProvider name = "center_name" rules="required" v-slot="{ errors }">
-                            <label for="Name">Name<span class = 'required_data'>*</span></label>
-                            <input type="text" v-model="center_name" class="form-control" name="center_name" placeholder="Enter center or institution name">
-                            <span class = "err_message">{{ errors[0] }}</span>
-                          </ValidationProvider>
-                        </div>
-                        <div class="form-group">
-                          <ValidationProvider name = "center_desc" rules="required" v-slot="{ errors }">
-                            <label for="Description">Description<span class = 'required_data'>*</span></label>
-                            <textarea type="text" v-model="center_desc" class="form-control" name="center_desc" placeholder="Enter center or institution description"></textarea>
-                            <span class = "err_message">{{ errors[0] }}</span>
-                          </ValidationProvider>
-                        </div>
-                        <div class="form-group">
-                            <label for="Name of Head">Name of Head<span class = 'required_data'>*</span></label>
-                            <ValidationProvider name = "center_head_firstname" rules="required" v-slot="{ errors }">
-                                <input type="text" v-model="center_head_firstname" class="form-control mb-2" name="center_head_firstname" placeholder="First Name">
-                                <span class = "err_message">{{ errors[0] }}</span>
-                            </ValidationProvider>
-                            <ValidationProvider name = "center_head_middleinitial" rules="" v-slot="{ errors }">
-                                <input type="text" v-model="center_head_middleinitial" class="form-control mb-2" name="center_head_middleinitial" placeholder="Middle Initial">
-                                <span class = "err_message">{{ errors[0] }}</span>
-                            </ValidationProvider>
-                            <ValidationProvider name = "center_head_lastname" rules="required" v-slot="{ errors }">
-                                <input type="text" v-model="center_head_lastname" class="form-control" name="center_head_lastname" placeholder="Last Name">
-                                <span class = "err_message">{{ errors[0] }}</span>
-                            </ValidationProvider>
-                        </div>
-                        <div class="form-group">
-                            <ValidationProvider name = "center_indivtype" rules="required" v-slot="{ errors }">
-                                <label for="center_indivtype">Type of Individuals: <span class = 'required_data'>*</span></label>
-                                <select class="form-control" id="center_indivtype" v-model="center_indivtype" name="center_indivtype" placeholder="Select One">
-                                    <option disabled value="">Select One</option>
-                                    <option>Child</option>
-                                    <option>Teenager</option>
-                                    <option>Adult</option>
-                                    <option>Elderly</option>
-                                    <option>Disabled</option>
-                                </select>
-                                <span class = "err_message">{{ errors[0] }}</span>
-                            </ValidationProvider>
-                        </div>
-                        </div>
-                      <div class="modal-footer">
-                        <div class = "form-group col text-center">
-                          <button class="btn btn-primary btn-inline mr-3" type="button" @click="hideRegisterCenterModal1">Next</button>
-                        </div>
-                      </div>
-                    </div>
-                  </form>
-                </div>
-              </div>
-            </div>
-          </transition>
-        </div>
-        <!--End of Center Registration Modal-->
-
-        <!--Center Registration Modal 2-->
-        <div v-if = "showCenterRegisterModal2">
-          <transition name = "modal">
-            <div class="modal-mask">
-              <div class="modal-wrapper">
-                <div class = "modal-dialog modal-md modal-dialog-scrollable" role="document">
-                  <form @submit.prevent="registerNewCenter">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <h5 class="modal-title">Step 2 of 2: Add Center or Institution</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                          <span aria-hidden="true" @click="showCenterRegisterModal2=false">&times;</span>
-                        </button>
-                      </div>
-                      <div class="modal-body">
-                        <div class="form-group">
-                            <ValidationProvider name = "center_gender" rules="required" v-slot="{ errors }">
-                                <label for="Gender">Gender: <span class = 'required_data'>*</span></label>
-                                <select class="form-control" id="center_gender" v-model="center_gender" name="center_gender" placeholder="">
-                                    <option disabled value="">Select Gender</option>
-                                    <option>Male</option>
-                                    <option>Female</option>
-                                    <option>Male and Female</option>
-                                </select>
-                                <span class = "err_message">{{ errors[0] }}</span>
-                            </ValidationProvider>
-                        </div>
-                        <div class="form-group">
-                          <ValidationProvider name = "center_location" rules="required" v-slot="{ errors }">
-                            <label for="Location">Location<span class = 'required_data'>*</span></label>
-                            <input ref="location" type="text" v-model="center_location" id="center_location" class="form-control" @focus="initAutocomplete" name="center_location" placeholder="Enter location">
-                            <p id = "latitude"></p>
-                            <p id = "longitude"></p>
-                            <span class = "err_message">{{ errors[0] }}</span>
-                          </ValidationProvider>
-                        </div>
-                        <div class="form-group">
-                          <ValidationProvider name = "center_yearfounded" rules="required" v-slot="{ errors }">
-                            <label for="Year Founded">Year Founded<span class = 'required_data'>*</span></label>
-                            <!--<select id="center_yearfounded" v-model="center_yearfounded" class="form-control" name="center_yearfounded" @mousedown="generateLatLong" placeholder="Enter year founded"></select>-->
-                            <input type="text" v-model="center_yearfounded" class="form-control" name="center_yearfounded" @mousedown="generateLatLong" placeholder="Enter year founded">
-                            <span class = "err_message">{{ errors[0] }}</span>
-                          </ValidationProvider>
-                        </div>
-                        <div class="form-group">
-                          <ValidationProvider name = "center_email" rules="required|email" v-slot="{ errors }">
-                            <label for="Email Address">Email Address<span class = 'required_data'>*</span></label>
-                            <input type="text" v-model="center_email" class="form-control" name="center_email" placeholder="Enter email address">
-                            <span class = "err_message">{{ errors[0] }}</span>
-                          </ValidationProvider>
-                        </div>
-                        <div class="form-group">
-                          <ValidationProvider name = "center_telno" rules="required" v-slot="{ errors }">
-                            <label for="Telephone No.">Telephone No.<span class = 'required_data'>*</span></label>
-                            <input type="text" v-model="center_telno" class="form-control" name="center_telno" placeholder="Enter telephone no.">
-                            <span class = "err_message">{{ errors[0] }}</span>
-                          </ValidationProvider>
-                        </div>
-                        <div class="form-group">
-                          <ValidationProvider name = "center_mobileno" rules="required" v-slot="{ errors }">
-                            <label for="Mobile No.">Mobile No.<span class = 'required_data'>*</span></label>
-                            <input type="text" v-model="center_mobileno" class="form-control" name="center_mobileno" placeholder="Enter mobile no">
-                            <span class = "err_message">{{ errors[0] }}</span>
-                          </ValidationProvider>
-                        </div>
-                        </div>
-                      <div class="modal-footer">
-                        <div class = "form-group col text-center">
-                          <button class="btn btn-primary btn-inline mr-3" type="button" @click="showCenterRegisterModal1=true;showCenterRegisterModal2=false">Go Back</button>
-                          <button class="btn btn-primary btn-inline mr-3" type="submit" >Save</button>
-                        </div>
-                      </div>
-                    </div>
-                  </form>
-                </div>
-              </div>
-            </div>
-          </transition>
-        </div>
-        <!--End of Center Registration Modal 2-->
-
-        <!--Successful Center Registration Modal-->
-        <div v-if="showCenterRegistrationSuccessModal">
-          <transition name="modal">
-            <div class="modal-mask">
-              <div class="modal-wrapper">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                          <h5 class="modal-title">Center or Institution Registration</h5>
-                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true" @click="showCenterRegistrationSuccessModal = false">&times;</span>
-                          </button>
-                      </div>
-                      <div class="modal-body">
-                         <p>Center or Institution successfully created.</p>
-                      </div>
-                      <div class="modal-footer">
-                        <div class form-group>
-                          <button type="button" class="btn btn-secondary" @click="showCenterRegistrationSuccessModal = false">OK</button>
-                        </div>
-                      </div>
-                    </div>
-                </div>
-              </div>
-            </div>
-          </transition>
-        </div>
-        <!--Successful Center Registration Modal-->
-</div>
+    <app-footer/>
+  </div>
 </template>
 <script src="https://maps.googleapis.com/maps/api/js?key=getGoogleMapAPI&libraries=places&callback=initAutocomplete&language=nl&output=json" async defer></script>
 <script src="https://maps.google.com/maps?file=api&amp;v=3&amp;sensor=false" type="text/javascript"></script>
 <script>
 import SideBarMenu from '../components/Sidebar'
+import Footer from '../components/Footer'
 import { mapActions } from 'vuex'
 export default {
   props: {
     uid: {
       required: true
     }
+  },
+  components: {
+      'sidebar-menu': SideBarMenu,
+      'app-footer': Footer
   },
   data () {
     return {
@@ -451,9 +459,6 @@ export default {
       }
       dropdown_years.value = currentYear
     }
-  },
-  components: {
-      'sidebar-menu': SideBarMenu
   },
   computed : {
         filteredCenters() {

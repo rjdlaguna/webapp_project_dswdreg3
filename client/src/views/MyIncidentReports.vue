@@ -1,343 +1,347 @@
 <template>
-<div class = "container">
-    <sidebar-menu/>
-    <div class="section">
-        <div class="col-md-12 pt-3 page-title"  id= "menu_content">
-            <h4 class = "mb-4" id = "label_reported_incidents">My Incident Reports</h4>
-            <div class="form-group row" id = "search_section">
-                <label for="search" class="col-form-label">Search</label>
-                <div class="col-4">
-                    <input class="form-control" v-model = "search" type="text" value="" id="search" name = "search">
+    <div class ="main">
+        <div class = "container">
+            <sidebar-menu/>
+            <div class="section">
+                <div class="col-md-12 pt-3 page-title"  id= "menu_content">
+                    <h4 class = "mb-4" id = "label_reported_incidents">My Incident Reports</h4>
+                    <div class="form-group row" id = "search_section">
+                        <label for="search" class="col-form-label">Search</label>
+                        <div class="col-4">
+                            <input class="form-control" v-model = "search" type="text" value="" id="search" name = "search">
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-design">Go</button>
+                    </div>
+                    
+                    <button type="button" class="btn btn-design" @click="showReportIncidentModal=true">Report an Incident</button>
+
+                    <table class="table col-md-12 mx-auto">
+                        <tr id = "row_header">
+                            <td>Date Reported</td>
+                            <td>Name of Individual</td>
+                            <td>Type of Individual</td>
+                            <td>Gender</td>
+                            <td>Location of Incident</td>
+                            <td>Description of Incident</td>
+                            <td>Sent To</td>
+                            <td>Status</td>
+                            <td></td>
+                        </tr>
+                        <tbody>
+                            <!--<tr v-for="report in myreports" v-bind:key="report._id">-->
+                            <tr v-for="(report,index) in filteredReports" v-bind:key="report._id">
+                                <td id="reptID" style = "display:none">{{report._id}}</td>
+                                <td>{{ formatBirthDate(report.reported_on) }}</td>
+                                <td>{{ report.first_name + ' ' + report.middle_initial + ' ' + report.last_name}}</td>
+                                <td>{{ report.individual_type }}</td>
+                                <td>{{ report.gender }}</td>
+                                <td>{{ report.location }}</td>
+                                <td>
+                                    {{report.description}}
+                                    <ul style="list-style:none; padding-left:0;">
+                                    <li style="display:inline;" v-for="(value,index) in report.report_image1 " v-bind:key='index'>
+                                            {{getValueByKey(value, index)}}<img :src="getReportImages(showReportImage())" v-if="index==='image_name'" width="50" height="50" />
+                                        </li>
+                                        <li style="display:inline;" v-for="(value,index) in report.report_image2 " v-bind:key='index'>
+                                            {{getValueByKey(value, index)}}<img :src="getReportImages(showReportImage())" v-if="index==='image_name'" width="50" height="50"/>
+                                        </li>
+                                    </ul>
+                                </td>
+                                <td>{{ report.center_name }}</td>
+                                <td>{{ report.status }}</td>
+                                <td>
+                                    <button type="button" class="btn btn-primary btn-actions" @click="getIncidentReport(report._id)">Edit</button>
+                                    <button type="button" class="btn btn-danger btn-actions" @click.prevent="confirmDelete(report._id, index)">Delete</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
-                <button type="submit" class="btn btn-primary btn-design">Go</button>
             </div>
-            
-            <button type="button" class="btn btn-design" @click="showReportIncidentModal=true">Report an Incident</button>
 
-            <table class="table col-md-12 mx-auto">
-                <tr id = "row_header">
-                    <td>Date Reported</td>
-                    <td>Name of Individual</td>
-                    <td>Type of Individual</td>
-                    <td>Gender</td>
-                    <td>Location of Incident</td>
-                    <td>Description of Incident</td>
-                    <td>Sent To</td>
-                    <td>Status</td>
-                    <td></td>
-                </tr>
-                <tbody>
-                    <!--<tr v-for="report in myreports" v-bind:key="report._id">-->
-                    <tr v-for="(report,index) in filteredReports" v-bind:key="report._id">
-                        <td id="reptID" style = "display:none">{{report._id}}</td>
-                        <td>{{ formatBirthDate(report.reported_on) }}</td>
-                        <td>{{ report.first_name + ' ' + report.middle_initial + ' ' + report.last_name}}</td>
-                        <td>{{ report.individual_type }}</td>
-                        <td>{{ report.gender }}</td>
-                        <td>{{ report.location }}</td>
-                        <td>
-                            {{report.description}}
-                            <ul style="list-style:none; padding-left:0;">
-                             <li style="display:inline;" v-for="(value,index) in report.report_image1 " v-bind:key='index'>
-                                    {{getValueByKey(value, index)}}<img :src="getReportImages(showReportImage())" v-if="index==='image_name'" width="50" height="50" />
-                                </li>
-                                <li style="display:inline;" v-for="(value,index) in report.report_image2 " v-bind:key='index'>
-                                    {{getValueByKey(value, index)}}<img :src="getReportImages(showReportImage())" v-if="index==='image_name'" width="50" height="50"/>
-                                </li>
-                            </ul>
-                        </td>
-                        <td>{{ report.center_name }}</td>
-                        <td>{{ report.status }}</td>
-                        <td>
-                            <button type="button" class="btn btn-primary btn-actions" @click="getIncidentReport(report._id)">Edit</button>
-                            <button type="button" class="btn btn-danger btn-actions" @click.prevent="confirmDelete(report._id, index)">Delete</button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
+            <div v-if="showReportIncidentModal" id="reportForm">
+                <transition name="modal">
+                    <div class="modal-mask">
+                    <div class="modal-wrapper">
+                        <div class="modal-dialog modal-md modal-dialog-scrollable" role="document">
+                            <form @submit.prevent="sendReport" enctype="multipart/form-data">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Report an Incident</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true" @click="showReportIncidentModal=false">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class = "modal-body-section1">
+                                            <div class="form-group">
+                                                <label for="first_name">Name of Indvidual</label>
+                                                <input type="text" v-model="first_name" class="form-control mt-2" id="first_name" placeholder="Enter First Name">
+                                                <input type="text" v-model="middle_initial" class="form-control mt-2" id="middle_initial" placeholder="Enter Middle Initial">
+                                                <input type="text" v-model="last_name" class="form-control mt-2" id="last_name" placeholder="Enter Last Name">
+                                            </div>
+                                            <div class="form-group">
+                                                <ValidationProvider name = "rep_indivtype" rules="required" v-slot="{ errors }">
+                                                    <label for="type_of_individual">Type of Individual</label>
+                                                    <select class="form-control" id="rep_indivtype" v-model="rep_indivtype">
+                                                        <option disabled value="">Select One</option>
+                                                        <option>Child</option>
+                                                        <option>Teenager</option>
+                                                        <option>Adult</option>
+                                                        <option>Elderly</option>
+                                                        <option>Disabled</option>
+                                                    </select>
+                                                    <span class = "err_message">{{ errors[0] }}</span>
+                                                </ValidationProvider>
+                                            </div>
+                                            <div class = "form-group">
+                                                <ValidationProvider name = "rep_location" rules="required" v-slot="{ errors }">
+                                                    <label for="Location">Location</label>
+                                                    <input type="text" placeholder="Type Location" class="form-control" id = "rep_location" name="rep_location" v-model="rep_location" @focus="initAutocomplete()"/>
+                                                    <button type="button" class="btn btn-design" style="display:block" @click="getMyLocation">Get my location</button>
+                                                    <p id="latitude" style="display:none"></p>
+                                                    <p id="longitude" style="display:none"></p>
+                                                    <p id="distance" style="display:none"></p>
+                                                    <span class = "err_message">{{ errors[0] }}</span>
+                                                </ValidationProvider>
+                                            </div>
+                                        </div>
+                                        <div class = "modal-body-section2">
+                                            <div class="form-group">
+                                                <ValidationProvider name = "rep_gender" rules="required" v-slot="{ errors }">
+                                                    <label for="gender">Gender</label>
+                                                    <select class="form-control" id="rep_gender" v-model="rep_gender" placeholder="Select Gender" @mousedown="generateLatLong" @click="filterCenters" @change="filterCenters">
+                                                        <option selected="selected" disabled value="Select Gender">Select One</option>
+                                                        <option>Male</option>
+                                                        <option>Female</option>
+                                                    </select>
+                                                    <span class = "err_message">{{ errors[0] }}</span>
+                                                </ValidationProvider>
+                                            </div>
+                                            <div class="form-group">
+                                                <ValidationProvider name = "rep_desc" rules="required" v-slot="{ errors }">
+                                                    <label for="Description">Description</label>
+                                                    <textarea class="form-control" id="rep_desc" rows="3" v-model="rep_desc"></textarea>
+                                                    <span class = "err_message">{{ errors[0] }}</span>
+                                                </ValidationProvider>
+                                            </div>       
 
-    <div v-if="showReportIncidentModal" id="reportForm">
-          <transition name="modal">
-            <div class="modal-mask">
-              <div class="modal-wrapper">
-                <div class="modal-dialog modal-md modal-dialog-scrollable" role="document">
-                    <form @submit.prevent="sendReport" enctype="multipart/form-data">
-                        <div class="modal-content">
+                                            <div class="form-group">
+                                                <label for="attach" class="file-label">Attach Image (optional)</label>
+                                                <p class="input-guide">Note: You can attach up to 2 images</p>
+                                                <input type="file" multiple accept="image/*" @change="handleImages" ref="image" name="images"/>
+                                                <div v-for="(image,key) in imagesList" :key="key">
+                                                    <button class="close" @click="removeImage(key)">&times;</button>
+                                                    <div>
+                                                        <img :src="image" class="preview" width="200" height="200" :ref="images"/>
+                                                        <span>{{image.name}}</span>
+                                                    </div>
+                                                </div>
+
+                                                <!--<label for="attach" class="file-label">Attach Image (optional)</label>
+                                                    <p class="input-guide">Note: You can attach up to 2 images</p>
+                                                        <div v-for="(image, key) in images" :key="key">
+                                                            <button class="close" @click.prevent="removeImage(key, $event)">&times;</button>
+                                                            <div>
+                                                                <img class="preview" :src="image" :key="'image'"/>
+                                                                {{ image.name }}
+                                                            </div>
+                                                        </div>
+                                                        <input type="file" multiple accept="image/*" ref="images" @change="uploadImage" id="image_file"/>
+                                                        <button class="btn btn-design" type="button" onclick="document.getElementById('image_file').click()">Select Image</button>-->
+                                            </div>
+                                            <p id="reported_by"></p>
+                                            <p v-if="showCenterName">Note: This will be reported to: {{selected_center}}</p>
+                                        </div>                                        
+                                    </div>
+                                    <div class="modal-footer">
+                                        <div class form-group>
+                                            <button class="btn btn-primary mr-3 btn-design" type="submit">Send Report</button>
+                                            <button type="button" class="btn btn-secondary" @click="showReportIncidentModal=false">Cancel</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    </div>
+                </transition>
+            </div>
+
+            <div v-if="showIncidentRepSuccessModal">
+                <transition name="modal">
+                    <div class="modal-mask">
+                    <div class="modal-wrapper">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
                             <div class="modal-header">
                                 <h5 class="modal-title">Report an Incident</h5>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true" @click="showReportIncidentModal=false">&times;</span>
+                                    <span aria-hidden="true" @click="showIncidentRepSuccessModal = false">&times;</span>
                                 </button>
                             </div>
                             <div class="modal-body">
-                                <div class = "modal-body-section1">
-                                    <div class="form-group">
-                                        <label for="first_name">Name of Indvidual</label>
-                                        <input type="text" v-model="first_name" class="form-control mt-2" id="first_name" placeholder="Enter First Name">
-                                        <input type="text" v-model="middle_initial" class="form-control mt-2" id="middle_initial" placeholder="Enter Middle Initial">
-                                        <input type="text" v-model="last_name" class="form-control mt-2" id="last_name" placeholder="Enter Last Name">
-                                    </div>
-                                    <div class="form-group">
-                                        <ValidationProvider name = "rep_indivtype" rules="required" v-slot="{ errors }">
-                                            <label for="type_of_individual">Type of Individual</label>
-                                            <select class="form-control" id="rep_indivtype" v-model="rep_indivtype">
-                                                <option disabled value="">Select One</option>
-                                                <option>Child</option>
-                                                <option>Teenager</option>
-                                                <option>Adult</option>
-                                                <option>Elderly</option>
-                                                <option>Disabled</option>
-                                            </select>
-                                            <span class = "err_message">{{ errors[0] }}</span>
-                                        </ValidationProvider>
-                                    </div>
-                                    <div class = "form-group">
-                                        <ValidationProvider name = "rep_location" rules="required" v-slot="{ errors }">
-                                            <label for="Location">Location</label>
-                                            <input type="text" placeholder="Type Location" class="form-control" id = "rep_location" name="rep_location" v-model="rep_location" @focus="initAutocomplete()"/>
-                                            <button type="button" class="btn btn-design" style="display:block" @click="getMyLocation">Get my location</button>
-                                            <p id="latitude" style="display:none"></p>
-                                            <p id="longitude" style="display:none"></p>
-                                            <p id="distance" style="display:none"></p>
-                                            <span class = "err_message">{{ errors[0] }}</span>
-                                        </ValidationProvider>
-                                    </div>
+                                <p>Incident successfully sent.</p>
+                            </div>
+                            <div class="modal-footer">
+                                <div class form-group>
+                                <button type="button" id="btn_ok" class="btn btn-secondary" @click="showIncidentRepSuccessModal = false">OK</button>
                                 </div>
-                                <div class = "modal-body-section2">
-                                    <div class="form-group">
-                                        <ValidationProvider name = "rep_gender" rules="required" v-slot="{ errors }">
-                                            <label for="gender">Gender</label>
-                                            <select class="form-control" id="rep_gender" v-model="rep_gender" placeholder="Select Gender" @mousedown="generateLatLong" @click="filterCenters" @change="filterCenters">
-                                                <option selected="selected" disabled value="Select Gender">Select One</option>
-                                                <option>Male</option>
-                                                <option>Female</option>
-                                            </select>
-                                            <span class = "err_message">{{ errors[0] }}</span>
-                                        </ValidationProvider>
-                                    </div>
-                                    <div class="form-group">
-                                        <ValidationProvider name = "rep_desc" rules="required" v-slot="{ errors }">
-                                            <label for="Description">Description</label>
-                                            <textarea class="form-control" id="rep_desc" rows="3" v-model="rep_desc"></textarea>
-                                            <span class = "err_message">{{ errors[0] }}</span>
-                                        </ValidationProvider>
-                                    </div>       
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+                </transition>
+                </div>
 
-                                    <div class="form-group">
-                                        <label for="attach" class="file-label">Attach Image (optional)</label>
-                                        <p class="input-guide">Note: You can attach up to 2 images</p>
-                                        <input type="file" multiple accept="image/*" @change="handleImages" ref="image" name="images"/>
-                                        <div v-for="(image,key) in imagesList" :key="key">
-                                            <button class="close" @click="removeImage(key)">&times;</button>
-                                            <div>
-                                                <img :src="image" class="preview" width="200" height="200" :ref="images"/>
-                                                <span>{{image.name}}</span>
+                <div v-if="showEditReportIncidentModal">
+                <transition name="modal">
+                    <div class="modal-mask">
+                    <div class="modal-wrapper">
+                        <div class="modal-dialog modal-md modal-dialog-scrollable" role="document">
+                            <form @submit.prevent="" enctype="multipart/form-data">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Edit Reported Incident</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true" @click="showEditReportIncidentModal=false">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class = "modal-body-section1">
+                                            <div class="form-group">
+                                                <label for="first_name">Name of Indvidual</label>
+                                                <input type="text" v-model="repincident_data.first_name" class="form-control mt-2" id="ed_first_name" placeholder="Enter First Name">
+                                                <input type="text" v-model="repincident_data.middle_initial" class="form-control mt-2" id="ed_middle_initial" placeholder="Enter Middle Initial">
+                                                <input type="text" v-model="repincident_data.last_name" class="form-control mt-2" id="ed_last_name" placeholder="Enter Last Name">
+                                            </div>
+                                            <div class="form-group">
+                                                <ValidationProvider name = "rep_indivtype" rules="required" v-slot="{ errors }">
+                                                    <label for="type_of_individual">Type of Individual</label>
+                                                    <select class="form-control" id="edit_rep_indivtype" v-model="repincident_data.individual_type">
+                                                        <option disabled value="">Select One</option>
+                                                        <option>Child</option>
+                                                        <option>Teenager</option>
+                                                        <option>Adult</option>
+                                                        <option>Elderly</option>
+                                                        <option>Disabled</option>
+                                                    </select>
+                                                    <span class = "err_message">{{ errors[0] }}</span>
+                                                </ValidationProvider>
+                                            </div>
+                                            <div class = "form-group">
+                                                <ValidationProvider name = "rep_location" rules="required" v-slot="{ errors }">
+                                                    <label for="Location">Location</label>
+                                                    <input type="text" placeholder="Type Location" class="form-control" id = "ed_rep_location" name="rep_location" v-model="repincident_data.location" @focus="initAutocomplete()"/>
+                                                    <button type="button" class="btn btn-design" style="display:block" @click="getMyLocation">Get my location</button>
+                                                    <p id="latitude" style="display:none"></p>
+                                                    <p id="longitude" style="display:none"></p>
+                                                    <p id="distance" style="display:none"></p>
+                                                    <span class = "err_message">{{ errors[0] }}</span>
+                                                </ValidationProvider>
                                             </div>
                                         </div>
-
-                                        <!--<label for="attach" class="file-label">Attach Image (optional)</label>
-                                            <p class="input-guide">Note: You can attach up to 2 images</p>
-                                                <div v-for="(image, key) in images" :key="key">
-                                                    <button class="close" @click.prevent="removeImage(key, $event)">&times;</button>
-                                                    <div>
-                                                        <img class="preview" :src="image" :key="'image'"/>
-                                                        {{ image.name }}
+                                        <div class = "modal-body-section2">
+                                            <div class="form-group">
+                                                <ValidationProvider name = "rep_gender" rules="required" v-slot="{ errors }">
+                                                    <label for="gender">Gender</label>
+                                                    <select class="form-control" id="ed_rep_gender" v-model="repincident_data.gender" placeholder="Select Gender" @mousedown="generateLatLong" @click="filterCenters" @change="filterCenters">
+                                                        <option selected="selected" disabled value="Select Gender">Select One</option>
+                                                        <option>Male</option>
+                                                        <option>Female</option>
+                                                    </select>
+                                                    <span class = "err_message">{{ errors[0] }}</span>
+                                                </ValidationProvider>
+                                            </div>
+                                            <div class="form-group">
+                                                <ValidationProvider name = "rep_desc" rules="required" v-slot="{ errors }">
+                                                    <label for="Description">Description</label>
+                                                    <textarea class="form-control" id="ed_rep_desc" rows="3" v-model="repincident_data.description"></textarea>
+                                                    <span class = "err_message">{{ errors[0] }}</span>
+                                                </ValidationProvider>
+                                            </div>       
+                                            <div class="form-group">
+                                                    <!--<div v-if="showAttachImage">
+                                                        <label for="image">Images (maximum of 4)</label>
+                                                            <div v-for="(image, key) in images" :key="key">
+                                                                <button class="close" @click.prevent="removeImage(index, $event)">&times;</button>
+                                                                <div>
+                                                                    <img class="preview" :ref="'image'" width="200" height="100"/>
+                                                                    {{ image.name }}
+                                                                </div>
+                                                            </div>
+                                                            <input
+                                                                type="file"
+                                                                multiple
+                                                                accept="image/*"
+                                                                @change="uploadImage"
+                                                                class = "images[]"
+                                                                name = "imageFiles"
+                                                            />
                                                     </div>
-                                                </div>
-                                                <input type="file" multiple accept="image/*" ref="images" @change="uploadImage" id="image_file"/>
-                                                <button class="btn btn-design" type="button" onclick="document.getElementById('image_file').click()">Select Image</button>-->
+                                                    <button type="button" class="btn btn-design">Attach Image</button>-->
+                                            </div>
+                                            <p v-if="showCenterName">Note: This will be reported to: {{selected_center}}</p>
+                                        </div>                                        
                                     </div>
-                                    <p id="reported_by"></p>
-                                    <p v-if="showCenterName">Note: This will be reported to: {{selected_center}}</p>
-                                </div>                                        
-                            </div>
-                            <div class="modal-footer">
-                                <div class form-group>
-                                    <button class="btn btn-primary mr-3 btn-design" type="submit">Send Report</button>
-                                    <button type="button" class="btn btn-secondary" @click="showReportIncidentModal=false">Cancel</button>
+                                    <div class="modal-footer">
+                                        <div class form-group>
+                                            <button class="btn btn-primary mr-3 btn-design" type="submit">Update Report</button>
+                                            <button type="button" class="btn btn-secondary" @click="showEditReportIncidentModal=false">Cancel</button>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
+                            </form>
                         </div>
-                    </form>
-                </div>
-              </div>
-            </div>
-        </transition>
-    </div>
-
-    <div v-if="showIncidentRepSuccessModal">
-          <transition name="modal">
-            <div class="modal-mask">
-              <div class="modal-wrapper">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                          <h5 class="modal-title">Report an Incident</h5>
-                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true" @click="showIncidentRepSuccessModal = false">&times;</span>
-                          </button>
-                      </div>
-                      <div class="modal-body">
-                         <p>Incident successfully sent.</p>
-                      </div>
-                      <div class="modal-footer">
-                        <div class form-group>
-                          <button type="button" id="btn_ok" class="btn btn-secondary" @click="showIncidentRepSuccessModal = false">OK</button>
-                        </div>
-                      </div>
                     </div>
-                </div>
-              </div>
+                    </div>
+                </transition>
             </div>
-          </transition>
-        </div>
 
-        <div v-if="showEditReportIncidentModal">
-          <transition name="modal">
-            <div class="modal-mask">
-              <div class="modal-wrapper">
-                <div class="modal-dialog modal-md modal-dialog-scrollable" role="document">
-                    <form @submit.prevent="" enctype="multipart/form-data">
-                        <div class="modal-content">
+            <div v-if="showConfirmDeleteModal">
+                <transition name="modal">
+                    <div class="modal-mask">
+                    <div class="modal-wrapper">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title">Edit Reported Incident</h5>
+                                <h5 class="modal-title">Delete Reported Incident</h5>
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true" @click="showEditReportIncidentModal=false">&times;</span>
+                                    <span aria-hidden="true" @click="showConfirmDeleteModal=false">&times;</span>
                                 </button>
                             </div>
                             <div class="modal-body">
-                                <div class = "modal-body-section1">
-                                    <div class="form-group">
-                                        <label for="first_name">Name of Indvidual</label>
-                                        <input type="text" v-model="repincident_data.first_name" class="form-control mt-2" id="ed_first_name" placeholder="Enter First Name">
-                                        <input type="text" v-model="repincident_data.middle_initial" class="form-control mt-2" id="ed_middle_initial" placeholder="Enter Middle Initial">
-                                        <input type="text" v-model="repincident_data.last_name" class="form-control mt-2" id="ed_last_name" placeholder="Enter Last Name">
-                                    </div>
-                                    <div class="form-group">
-                                        <ValidationProvider name = "rep_indivtype" rules="required" v-slot="{ errors }">
-                                            <label for="type_of_individual">Type of Individual</label>
-                                            <select class="form-control" id="edit_rep_indivtype" v-model="repincident_data.individual_type">
-                                                <option disabled value="">Select One</option>
-                                                <option>Child</option>
-                                                <option>Teenager</option>
-                                                <option>Adult</option>
-                                                <option>Elderly</option>
-                                                <option>Disabled</option>
-                                            </select>
-                                            <span class = "err_message">{{ errors[0] }}</span>
-                                        </ValidationProvider>
-                                    </div>
-                                    <div class = "form-group">
-                                        <ValidationProvider name = "rep_location" rules="required" v-slot="{ errors }">
-                                            <label for="Location">Location</label>
-                                            <input type="text" placeholder="Type Location" class="form-control" id = "ed_rep_location" name="rep_location" v-model="repincident_data.location" @focus="initAutocomplete()"/>
-                                            <button type="button" class="btn btn-design" style="display:block" @click="getMyLocation">Get my location</button>
-                                            <p id="latitude" style="display:none"></p>
-                                            <p id="longitude" style="display:none"></p>
-                                            <p id="distance" style="display:none"></p>
-                                            <span class = "err_message">{{ errors[0] }}</span>
-                                        </ValidationProvider>
-                                    </div>
-                                </div>
-                                <div class = "modal-body-section2">
-                                    <div class="form-group">
-                                        <ValidationProvider name = "rep_gender" rules="required" v-slot="{ errors }">
-                                            <label for="gender">Gender</label>
-                                            <select class="form-control" id="ed_rep_gender" v-model="repincident_data.gender" placeholder="Select Gender" @mousedown="generateLatLong" @click="filterCenters" @change="filterCenters">
-                                                <option selected="selected" disabled value="Select Gender">Select One</option>
-                                                <option>Male</option>
-                                                <option>Female</option>
-                                            </select>
-                                            <span class = "err_message">{{ errors[0] }}</span>
-                                        </ValidationProvider>
-                                    </div>
-                                    <div class="form-group">
-                                        <ValidationProvider name = "rep_desc" rules="required" v-slot="{ errors }">
-                                            <label for="Description">Description</label>
-                                            <textarea class="form-control" id="ed_rep_desc" rows="3" v-model="repincident_data.description"></textarea>
-                                            <span class = "err_message">{{ errors[0] }}</span>
-                                        </ValidationProvider>
-                                    </div>       
-                                    <div class="form-group">
-                                            <!--<div v-if="showAttachImage">
-                                                <label for="image">Images (maximum of 4)</label>
-                                                    <div v-for="(image, key) in images" :key="key">
-                                                        <button class="close" @click.prevent="removeImage(index, $event)">&times;</button>
-                                                        <div>
-                                                            <img class="preview" :ref="'image'" width="200" height="100"/>
-                                                            {{ image.name }}
-                                                        </div>
-                                                    </div>
-                                                    <input
-                                                        type="file"
-                                                        multiple
-                                                        accept="image/*"
-                                                        @change="uploadImage"
-                                                        class = "images[]"
-                                                        name = "imageFiles"
-                                                    />
-                                            </div>
-                                            <button type="button" class="btn btn-design">Attach Image</button>-->
-                                    </div>
-                                    <p v-if="showCenterName">Note: This will be reported to: {{selected_center}}</p>
-                                </div>                                        
+                                <p>Do you really want to delete this reported incident?</p>
                             </div>
                             <div class="modal-footer">
                                 <div class form-group>
-                                    <button class="btn btn-primary mr-3 btn-design" type="submit">Update Report</button>
-                                    <button type="button" class="btn btn-secondary" @click="showEditReportIncidentModal=false">Cancel</button>
+                                <button type="button" id="btn_yes" class="btn btn-danger" @click="deleteIncidentReport(report_id, report_index)">Yes</button>
+                                <button type="button" id="btn_no" class="btn btn-secondary" @click="hideConfirmDelete">No</button>
                                 </div>
                             </div>
+                            </div>
                         </div>
-                    </form>
-                </div>
-              </div>
-            </div>
-        </transition>
-    </div>
-
-        <div v-if="showConfirmDeleteModal">
-          <transition name="modal">
-            <div class="modal-mask">
-              <div class="modal-wrapper">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                          <h5 class="modal-title">Delete Reported Incident</h5>
-                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true" @click="showConfirmDeleteModal=false">&times;</span>
-                          </button>
-                      </div>
-                      <div class="modal-body">
-                         <p>Do you really want to delete this reported incident?</p>
-                      </div>
-                      <div class="modal-footer">
-                        <div class form-group>
-                          <button type="button" id="btn_yes" class="btn btn-danger" @click="deleteIncidentReport(report_id, report_index)">Yes</button>
-                          <button type="button" id="btn_no" class="btn btn-secondary" @click="hideConfirmDelete">No</button>
-                        </div>
-                      </div>
                     </div>
-                </div>
-              </div>
+                    </div>
+                </transition>
             </div>
-          </transition>
         </div>
-
-</div>
+        <app-footer/>
+    </div>
 </template>
 
 <script src="https://maps.googleapis.com/maps/api/js?key=getGoogleMapAPI&libraries=geometry,places&callback=initAutocomplete&language=nl&output=json" async defer></script>
 <script>
 import SideBarMenu from '../components/Sidebar'
+import Footer from '../components/Footer'
 import { mapActions, mapGetters } from 'vuex'
 import VueGoogleAutocomplete from 'vue-google-autocomplete'
 import moment from 'moment'
 export default {
     components: {
       'sidebar-menu': SideBarMenu,
+      'app-footer': Footer,
       VueGoogleAutocomplete
   },
   computed: mapGetters([

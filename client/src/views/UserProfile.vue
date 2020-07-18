@@ -1,327 +1,330 @@
 <template>
-<div class = "container">
-    <sidebar-menu/>
-    <div class="page_title">
-        <div class="col-md-12 pt-3" id = "menu_content">
-            <h4 class = "mb-4" id = "my_profile_label">My Profile</h4>
-        </div>
-    </div>
-    <div class = "row" id = "profile-pic-form">
-        <div class="col-md-4 ml-3">
-          <form enctype="multipart/form-data">
-            <b-card title="" style = "width:15rem">
-                <img :src="getPicURL(displayImage)" name ="profile_image" id="profile_image" class = "m-auto" width = "200" height = "200"/>
-                <button type="button" class = "btn" title="Upload Picture" id = "upload_pic" @click="showUploadPicModal=true"><i class = "fas fa-upload fa-2x" name = 'profile_pic'></i></button>
-            </b-card>
-          </form>
-        </div>
-    </div>
+  <div class="main">
+    <div class = "container">
+      <sidebar-menu/>
+      <div class="page_title">
+          <div class="col-md-12 pt-3" id = "menu_content">
+              <h4 class = "mb-4" id = "my_profile_label">My Profile</h4>
+          </div>
+      </div>
+      <div class = "row" id = "profile-pic-form">
+          <div class="col-md-4 ml-3">
+            <form enctype="multipart/form-data">
+              <b-card title="" style = "width:15rem">
+                  <img :src="getPicURL(displayImage)" name ="profile_image" id="profile_image" class = "m-auto" width = "200" height = "200"/>
+                  <button type="button" class = "btn" title="Upload Picture" id = "upload_pic" @click="showUploadPicModal=true"><i class = "fas fa-upload fa-2x" name = 'profile_pic'></i></button>
+              </b-card>
+            </form>
+          </div>
+      </div>
 
-    <div v-if="showUploadPicModal">
-          <transition name="modal">
-            <div class="modal-mask">
-              <div class="modal-wrapper">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                          <h5 class="modal-title">Select your Profile Picture</h5>
-                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true" @click="closeUploadModal()">&times;</span>
-                          </button>
+      <div v-if="showUploadPicModal">
+            <transition name="modal">
+              <div class="modal-mask">
+                <div class="modal-wrapper">
+                  <div class="modal-dialog" role="document">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Select your Profile Picture</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true" @click="closeUploadModal()">&times;</span>
+                            </button>
+                        </div>
+                        <form v-on:submit.prevent="uploadProfilePicture" enctype="multipart/form-data" id="imageForm">
+                          <div class="modal-body flex">
+                            <b-card title = "" style="width: 15rem;" id = "profile_image-container">
+                              <input type="hidden" v-model = "user_id" id = "user_id" name ="user_id"/>
+                              <img :src="showImage(displayImage)" name = 'profile_image' id = "profile_image" class = "m-auto" width = "200" height = "200"/>
+                              <input type='file' id="image_file" name="image_file" style="display:none" ref="file" accept="image/*" v-on:change="handleFileUpload()" />
+                              <button class="btn btn-primary ml-5 mt-3" onclick="document.getElementById('image_file').click()">Select Image</button>
+                              <span class="err_message">{{noImageSelected}}</span>
+                            </b-card>                                                
+                          </div>
+                          <div class="modal-footer">
+                            <div class form-group>
+                              <button class="btn btn-primary mr-3" type="submit">Upload Image</button>
+                              <button type="button" class="btn btn-secondary" @click="closeUploadModal()">Close</button>
+                            </div>
+                          </div>
+                        </form>
                       </div>
-                      <form v-on:submit.prevent="uploadProfilePicture" enctype="multipart/form-data" id="imageForm">
-                        <div class="modal-body flex">
-                          <b-card title = "" style="width: 15rem;" id = "profile_image-container">
-                            <input type="hidden" v-model = "user_id" id = "user_id" name ="user_id"/>
-                            <img :src="showImage(displayImage)" name = 'profile_image' id = "profile_image" class = "m-auto" width = "200" height = "200"/>
-                            <input type='file' id="image_file" name="image_file" style="display:none" ref="file" accept="image/*" v-on:change="handleFileUpload()" />
-                            <button class="btn btn-primary ml-5 mt-3" onclick="document.getElementById('image_file').click()">Select Image</button>
-                            <span class="err_message">{{noImageSelected}}</span>
-                          </b-card>                                                
+                  </div>
+                </div>
+              </div>
+          </transition>
+      </div>
+
+      <div id="account-details-container">
+          <div class = "form-group">
+              <h3>Account Details</h3>
+              <div id = "useraccount_info" class ="mt-4">
+                <div class="account_items">
+                  <h5>Personal Information</h5>
+                  <input type="hidden" v-model="user._id" id="id" />
+                  <p><label for="Name">Name: {{user.first_name + ' ' + user.middle_initial + '. ' + user.last_name}}</label></p>
+                  <p><label for="Birthdate">Birthdate {{formatBirthDate(user.birthdate)}}</label></p>
+                  <p><label for="Address">Address: {{user.address}}</label></p>
+                  <p><label for="Mobile Number">Mobile number: {{user.mobile_no}}</label></p>
+                </div>
+                <div class="account_btn">
+                  <button type="button" id="btn_editinfo" class ="btn btn-primary" @click="showEditInfoModal=true">Edit Information</button>
+                </div>
+              </div>
+              <div id="useraccount_cred" class ="mt-4">
+                <div class="account_items">
+                  <h5> User Account Credentials</h5>
+                  <p><label for="Email">Email address: {{user.email}}</label></p>
+                  <p><label for="Username">Username: {{user.username}}</label></p>
+                  <p><label for="Password">Password: {{this.password}}</label></p>
+                </div>
+                <div class ="account_btn">
+                  <button type="button" id="btn_changepw" class = "btn btn-primary" @click="showChangePasswordModal=true">Change Password</button>
+                </div>
+              </div>
+          </div>
+      </div>
+
+      <div v-if="showEditInfoModal">
+            <transition name = "modal">
+              <div class = "modal-mask">
+                <div class="modal-wrapper">
+                  <div class="modal-dialog modal-dialog-scrollable" role = "document">
+                    <form>
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title">Edit User Information</h5>
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true" @click="showEditInfoModal = false">&times;</span>
+                          </button>
+                        </div>
+                        <div class="modal-body">
+                          <div class="modal-body-section1">
+                            <div class="form-group">
+                              <ValidationProvider name = "first_name" rules="required" v-slot="{ errors }">
+                                  <label for="first_name">First Name<span class = 'required_data'>*</span></label>
+                                  <input type="text" v-model="user.first_name" class="form-control" id = "first_name" name="first_name" placeholder="Enter First Name">
+                                  <p v-if="false">{{first_name = user.first_name}}</p>
+                                  <span class = "err_message">{{ errors[0] }}</span>
+                              </ValidationProvider>
+                            </div>
+                            <div class="form-group">
+                              <ValidationProvider name = "middle_initial" rules="" v-slot="{ errors }">
+                                <label for="middle_initial">Middle Initial</label>
+                                <input type="text" v-model="user.middle_initial" class="form-control" id="middle_initial" name="middle_initial" placeholder="Enter Middle Initial">
+                                <p v-if="false">{{middle_initial=user.middle_initial}}</p>
+                                <span class = "err_message">{{ errors[0] }}</span>
+                              </ValidationProvider>
+                            </div>
+                            <div class="form-group">
+                              <ValidationProvider name = "last_name" rules="required" v-slot="{ errors }">
+                                <label for="last_name">Last Name<span class = 'required_data'>*</span></label>
+                                <input type="text" v-model="user.last_name" class="form-control" id="last_name" name="last_name" placeholder="Enter Last Name">
+                                <p v-if="false">{{last_name=user.last_name}}</p>
+                                <span class = "err_message">{{ errors[0] }}</span>
+                              </ValidationProvider>
+                            </div>
+                          </div>
+                          <div class="modal-body-section2">
+                            <div class="form-group">
+                              <ValidationProvider name = "mobile_no" rules="required|digits:11" v-slot="{ errors }">
+                                <label for="mobilephone_no">Mobile Phone No.<span class = 'required_data'>*</span></label>
+                                <input type="text" v-model="user.mobile_no" v-bind="mobile_no" maxlength="11" class="form-control" id="mobile_no" name="mobile_no" placeholder="09xx3456789">
+                                <p v-if="false">{{mobile_no = user.mobile_no}}</p>
+                                <span class = "err_message">{{ errors[0] }}</span>
+                              </ValidationProvider>
+                            </div>
+                            <div class="form-group">
+                              <ValidationProvider name = "birthdate" rules="required" v-slot="{ errors }">
+                                <label for="birthdate">Date of birth:<span class = 'required_data'>*</span></label>
+                                <input type="date" v-model="birthdate" class="form-control" name="birthdate">
+                                <p>{{birthdate=formatBirthDate2(user.birthdate)}}</p>
+                                <span class = "err_message">{{ errors[0] }}</span>
+                              </ValidationProvider>
+                            </div>
+                            <div class="form-group">
+                              <ValidationProvider name = "user_address" rules="required" v-slot="{ errors }">
+                                <label for = "address">Address<span class = 'required_data'>*</span></label>
+                                <div id = "address_details">
+                                  <input type="hidden" id="loc_lat" />
+                                  <input type="hidden" id="loc_long" />
+                                  <input id="user_address" v-model="user.address" name="address" placeholder="Enter your address" @focus="initAutocomplete()" type="text" class="form-control">
+                                  <p v-if="false">{{address=user.address}}</p>
+                                  <span class = "err_message">{{ errors[0] }}</span>
+                                </div>
+                                </ValidationProvider>
+                            </div>
+                          </div>
                         </div>
                         <div class="modal-footer">
                           <div class form-group>
-                            <button class="btn btn-primary mr-3" type="submit">Upload Image</button>
-                            <button type="button" class="btn btn-secondary" @click="closeUploadModal()">Close</button>
+                            <button type="button" id="btn_update" class="btn btn-primary mr-3" @click="updateAccount">Update</button>
+                            <button type="button" class="btn btn-secondary" @click="showEditInfoModal=false">Close</button>
                           </div>
                         </div>
-                      </form>
-                    </div>
+                      </div>
+                    </form>
+                  </div>
                 </div>
               </div>
-            </div>
-        </transition>
-    </div>
+            </transition>
+          </div>
 
-    <div id="account-details-container">
-        <div class = "form-group">
-            <h3>Account Details</h3>
-            <div id = "useraccount_info" class ="mt-4">
-              <div class="account_items">
-                <h5>Personal Information</h5>
-                <input type="hidden" v-model="user._id" id="id" />
-                <p><label for="Name">Name: {{user.first_name + ' ' + user.middle_initial + '. ' + user.last_name}}</label></p>
-                <p><label for="Birthdate">Birthdate {{formatBirthDate(user.birthdate)}}</label></p>
-                <p><label for="Address">Address: {{user.address}}</label></p>
-                <p><label for="Mobile Number">Mobile number: {{user.mobile_no}}</label></p>
-              </div>
-              <div class="account_btn">
-                <button type="button" id="btn_editinfo" class ="btn btn-primary" @click="showEditInfoModal=true">Edit Information</button>
-              </div>
-            </div>
-            <div id="useraccount_cred" class ="mt-4">
-              <div class="account_items">
-                <h5> User Account Credentials</h5>
-                <p><label for="Email">Email address: {{user.email}}</label></p>
-                <p><label for="Username">Username: {{user.username}}</label></p>
-                <p><label for="Password">Password: {{this.password}}</label></p>
-              </div>
-              <div class ="account_btn">
-                <button type="button" id="btn_changepw" class = "btn btn-primary" @click="showChangePasswordModal=true">Change Password</button>
-              </div>
-            </div>
-        </div>
-    </div>
-
-    <div v-if="showEditInfoModal">
-          <transition name = "modal">
-            <div class = "modal-mask">
-              <div class="modal-wrapper">
-                <div class="modal-dialog modal-dialog-scrollable" role = "document">
-                  <form>
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <h5 class="modal-title">Edit User Information</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                          <span aria-hidden="true" @click="showEditInfoModal = false">&times;</span>
-                        </button>
-                      </div>
-                      <div class="modal-body">
-                        <div class="modal-body-section1">
-                          <div class="form-group">
-                            <ValidationProvider name = "first_name" rules="required" v-slot="{ errors }">
-                                <label for="first_name">First Name<span class = 'required_data'>*</span></label>
-                                <input type="text" v-model="user.first_name" class="form-control" id = "first_name" name="first_name" placeholder="Enter First Name">
-                                <p v-if="false">{{first_name = user.first_name}}</p>
-                                <span class = "err_message">{{ errors[0] }}</span>
-                            </ValidationProvider>
-                          </div>
-                          <div class="form-group">
-                            <ValidationProvider name = "middle_initial" rules="" v-slot="{ errors }">
-                              <label for="middle_initial">Middle Initial</label>
-                              <input type="text" v-model="user.middle_initial" class="form-control" id="middle_initial" name="middle_initial" placeholder="Enter Middle Initial">
-                              <p v-if="false">{{middle_initial=user.middle_initial}}</p>
-                              <span class = "err_message">{{ errors[0] }}</span>
-                            </ValidationProvider>
-                          </div>
-                          <div class="form-group">
-                            <ValidationProvider name = "last_name" rules="required" v-slot="{ errors }">
-                              <label for="last_name">Last Name<span class = 'required_data'>*</span></label>
-                              <input type="text" v-model="user.last_name" class="form-control" id="last_name" name="last_name" placeholder="Enter Last Name">
-                              <p v-if="false">{{last_name=user.last_name}}</p>
-                              <span class = "err_message">{{ errors[0] }}</span>
-                            </ValidationProvider>
-                          </div>
+      <div v-if="showChangePasswordModal">
+            <transition name="modal">
+              <div class="modal-mask">
+                <div class="modal-wrapper">
+                  <div class="modal-dialog" role="document">
+                    <form @submit.prevent="changePassword">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Change Password</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true" @click="showChangePasswordModal=false">&times;</span>
+                            </button>
                         </div>
-                        <div class="modal-body-section2">
-                          <div class="form-group">
-                            <ValidationProvider name = "mobile_no" rules="required|digits:11" v-slot="{ errors }">
-                              <label for="mobilephone_no">Mobile Phone No.<span class = 'required_data'>*</span></label>
-                              <input type="text" v-model="user.mobile_no" v-bind="mobile_no" maxlength="11" class="form-control" id="mobile_no" name="mobile_no" placeholder="09xx3456789">
-                              <p v-if="false">{{mobile_no = user.mobile_no}}</p>
-                              <span class = "err_message">{{ errors[0] }}</span>
-                            </ValidationProvider>
-                          </div>
-                          <div class="form-group">
-                            <ValidationProvider name = "birthdate" rules="required" v-slot="{ errors }">
-                              <label for="birthdate">Date of birth:<span class = 'required_data'>*</span></label>
-                              <input type="date" v-model="birthdate" class="form-control" name="birthdate">
-                              <p>{{birthdate=formatBirthDate2(user.birthdate)}}</p>
-                              <span class = "err_message">{{ errors[0] }}</span>
-                            </ValidationProvider>
-                          </div>
-                          <div class="form-group">
-                            <ValidationProvider name = "user_address" rules="required" v-slot="{ errors }">
-                              <label for = "address">Address<span class = 'required_data'>*</span></label>
-                              <div id = "address_details">
-                                <input type="hidden" id="loc_lat" />
-                                <input type="hidden" id="loc_long" />
-                                <input id="user_address" v-model="user.address" name="address" placeholder="Enter your address" @focus="initAutocomplete()" type="text" class="form-control">
-                                <p v-if="false">{{address=user.address}}</p>
-                                <span class = "err_message">{{ errors[0] }}</span>
-                              </div>
+                        <div class="modal-body">
+                          <div class = "form-group">
+                            <ValidationObserver>
+                              <ValidationProvider name = "curr_password" rules="required" v-slot="{ errors }">
+                                <label for="Current Password">Current Password</label>
+                                <input type = "password" class="form-control" id = "curr_password" v-model="curr_password" name="curr_password" />
+                                <p class = "err_message">{{ errors[0] }}</p>
                               </ValidationProvider>
+                              <ValidationProvider name = "new_password" rules="required" v-slot="{ errors }">
+                                <label for="New Password">New Password</label>
+                                <input type = "password" class="form-control" id = "new_password" v-model="new_password" name="new_password" @input="checkStrongPassword()"/>
+                                <ul class = "pass_list">
+                                  <li>
+                                    <span>Password must have:</span>
+                                  </li>
+                                <li>
+                                  <span class="cross" v-if="!showCheck1">&#10006;</span><span class="check" v-if="showCheck1">&#10004;</span><span :style="{color:passlen_textColor}" id="pass_len" class="password_criteria">Atleast 8 characters</span> 
+                                </li>
+                                <li>
+                                  <span class="cross" v-if="!showCheck2">&#10006;</span><span class="check" v-if="showCheck2">&#10004;</span><span :style="{color:upperc_textColor}" id="upper_char" class="password_criteria">Uppercase letters</span>
+                                </li>
+                                <li>
+                                  <span class="cross" v-if="!showCheck3">&#10006;</span><span class="check" v-if="showCheck3">&#10004;</span><span :style="{color:lowerc_textColor}" id="lower_char" class="password_criteria">Lowecase letters</span> 
+                                </li>
+                                <li>
+                                  <span class="cross" v-if="!showCheck4">&#10006;</span><span class="check" v-if="showCheck4">&#10004;</span><span :style="{color:numchar_textColor}" id="num_char" class="password_criteria">Numbers</span>
+                                </li>
+                                <li>
+                                <span class="cross" v-if="!showCheck5">&#10006;</span><span class="check" v-if="showCheck5">&#10004;</span><span :style="{color:specialchar_textColor}" id="special_char" class="password_criteria">Special characters</span>
+                                </li>
+                                </ul>
+                                <p class = "err_message">{{ errors[0] }}</p>
+                              </ValidationProvider>
+                              <ValidationProvider name = "retyped_new_password" rules="required|retyped_new_password:@new_password" v-slot="{ errors }">
+                                <label for="Retype New Password">Retype New Password</label>
+                                <input type = "password" class="form-control" id = "retyped_new_password" v-model="retyped_new_password" name="retyped_new_password" />
+                                <p class = "err_message">{{ errors[0] }}</p>
+                              </ValidationProvider>
+                            </ValidationObserver>
+                          </div>
+                        </div>
+                        <div class="modal-footer">
+                          <div class form-group>
+                            <input type="submit" id="btn_save" class="btn btn-primary mr-3" value="Save" @click="changePassword">
+                            <button type="button" class="btn btn-secondary" @click="showChangePasswordModal=false">Close</button>
                           </div>
                         </div>
                       </div>
-                      <div class="modal-footer">
-                        <div class form-group>
-                          <button type="button" id="btn_update" class="btn btn-primary mr-3" @click="updateAccount">Update</button>
-                          <button type="button" class="btn btn-secondary" @click="showEditInfoModal=false">Close</button>
-                        </div>
-                      </div>
-                    </div>
-                  </form>
+                    </form>
+                  </div>
                 </div>
               </div>
-            </div>
-          </transition>
-        </div>
+            </transition>
+          </div>
 
-    <div v-if="showChangePasswordModal">
-          <transition name="modal">
-            <div class="modal-mask">
-              <div class="modal-wrapper">
-                <div class="modal-dialog" role="document">
-                  <form @submit.prevent="changePassword">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                          <h5 class="modal-title">Change Password</h5>
-                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true" @click="showChangePasswordModal=false">&times;</span>
-                          </button>
-                      </div>
-                      <div class="modal-body">
-                        <div class = "form-group">
-                          <ValidationObserver>
-                            <ValidationProvider name = "curr_password" rules="required" v-slot="{ errors }">
-                              <label for="Current Password">Current Password</label>
-                              <input type = "password" class="form-control" id = "curr_password" v-model="curr_password" name="curr_password" />
-                              <p class = "err_message">{{ errors[0] }}</p>
-                            </ValidationProvider>
-                            <ValidationProvider name = "new_password" rules="required" v-slot="{ errors }">
-                              <label for="New Password">New Password</label>
-                              <input type = "password" class="form-control" id = "new_password" v-model="new_password" name="new_password" @input="checkStrongPassword()"/>
-                              <ul class = "pass_list">
-                                <li>
-                                  <span>Password must have:</span>
-                                </li>
-                               <li>
-                                 <span class="cross" v-if="!showCheck1">&#10006;</span><span class="check" v-if="showCheck1">&#10004;</span><span :style="{color:passlen_textColor}" id="pass_len" class="password_criteria">Atleast 8 characters</span> 
-                               </li>
-                               <li>
-                                 <span class="cross" v-if="!showCheck2">&#10006;</span><span class="check" v-if="showCheck2">&#10004;</span><span :style="{color:upperc_textColor}" id="upper_char" class="password_criteria">Uppercase letters</span>
-                               </li>
-                               <li>
-                                 <span class="cross" v-if="!showCheck3">&#10006;</span><span class="check" v-if="showCheck3">&#10004;</span><span :style="{color:lowerc_textColor}" id="lower_char" class="password_criteria">Lowecase letters</span> 
-                               </li>
-                               <li>
-                                 <span class="cross" v-if="!showCheck4">&#10006;</span><span class="check" v-if="showCheck4">&#10004;</span><span :style="{color:numchar_textColor}" id="num_char" class="password_criteria">Numbers</span>
-                               </li>
-                               <li>
-                               <span class="cross" v-if="!showCheck5">&#10006;</span><span class="check" v-if="showCheck5">&#10004;</span><span :style="{color:specialchar_textColor}" id="special_char" class="password_criteria">Special characters</span>
-                               </li>
-                               </ul>
-                              <p class = "err_message">{{ errors[0] }}</p>
-                            </ValidationProvider>
-                            <ValidationProvider name = "retyped_new_password" rules="required|retyped_new_password:@new_password" v-slot="{ errors }">
-                              <label for="Retype New Password">Retype New Password</label>
-                              <input type = "password" class="form-control" id = "retyped_new_password" v-model="retyped_new_password" name="retyped_new_password" />
-                              <p class = "err_message">{{ errors[0] }}</p>
-                            </ValidationProvider>
-                          </ValidationObserver>
+          <div v-if="showUserProfileEditSuccessModal">
+            <transition name="modal">
+              <div class="modal-mask">
+                <div class="modal-wrapper">
+                  <div class="modal-dialog" role="document">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Update Profile Information</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true" @click="showUserProfileEditSuccessModal = false">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                          <p>User Profile successfully updated.</p>
+                        </div>
+                        <div class="modal-footer">
+                          <div class form-group>
+                            <button type="button" id="btn_ok" class="btn btn-secondary" @click="showUserProfileEditSuccessModal = false">OK</button>
+                          </div>
                         </div>
                       </div>
-                      <div class="modal-footer">
-                        <div class form-group>
-                          <input type="submit" id="btn_save" class="btn btn-primary mr-3" value="Save" @click="changePassword">
-                          <button type="button" class="btn btn-secondary" @click="showChangePasswordModal=false">Close</button>
-                        </div>
-                      </div>
-                    </div>
-                  </form>
+                  </div>
                 </div>
               </div>
-            </div>
-          </transition>
-        </div>
+            </transition>
+          </div>
 
-        <div v-if="showUserProfileEditSuccessModal">
-          <transition name="modal">
-            <div class="modal-mask">
-              <div class="modal-wrapper">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                          <h5 class="modal-title">Update Profile Information</h5>
-                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true" @click="showUserProfileEditSuccessModal = false">&times;</span>
-                          </button>
-                      </div>
-                      <div class="modal-body">
-                         <p>User Profile successfully updated.</p>
-                      </div>
-                      <div class="modal-footer">
-                        <div class form-group>
-                          <button type="button" id="btn_ok" class="btn btn-secondary" @click="showUserProfileEditSuccessModal = false">OK</button>
+          <div v-if="showChangePasswordMessageModal">
+            <transition name="modal">
+              <div class="modal-mask">
+                <div class="modal-wrapper">
+                  <div class="modal-dialog" role="document">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Change Password</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true" @click="showChangePasswordMessageModal = false">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                          <p id = "changepw_prompt">Password was successfully changed.</p>
+                        </div>
+                        <div class="modal-footer">
+                          <div class form-group>
+                            <button type="button" id="btn_ok" class="btn btn-secondary" @click="showChangePasswordMessageModal = false">OK</button>
+                          </div>
                         </div>
                       </div>
-                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          </transition>
-        </div>
+            </transition>
+          </div>
 
-        <div v-if="showChangePasswordMessageModal">
-          <transition name="modal">
-            <div class="modal-mask">
-              <div class="modal-wrapper">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                          <h5 class="modal-title">Change Password</h5>
-                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true" @click="showChangePasswordMessageModal = false">&times;</span>
-                          </button>
-                      </div>
-                      <div class="modal-body">
-                         <p id = "changepw_prompt">Password was successfully changed.</p>
-                      </div>
-                      <div class="modal-footer">
-                        <div class form-group>
-                          <button type="button" id="btn_ok" class="btn btn-secondary" @click="showChangePasswordMessageModal = false">OK</button>
+          <div v-if="showUploadProfilePicSuccessModal">
+            <transition name="modal">
+              <div class="modal-mask">
+                <div class="modal-wrapper">
+                  <div class="modal-dialog" role="document">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Uplad Profile Picture</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true" @click="showUploadProfilePicSuccessModal = false">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                          <p id = "changepw_prompt">Profile picture successfully uploaded.</p>
+                        </div>
+                        <div class="modal-footer">
+                          <div class form-group>
+                            <button type="button" id="btn_ok" class="btn btn-secondary" @click="showUploadProfilePicSuccessModal = false">OK</button>
+                          </div>
                         </div>
                       </div>
-                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          </transition>
-        </div>
-
-        <div v-if="showUploadProfilePicSuccessModal">
-          <transition name="modal">
-            <div class="modal-mask">
-              <div class="modal-wrapper">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                          <h5 class="modal-title">Uplad Profile Picture</h5>
-                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true" @click="showUploadProfilePicSuccessModal = false">&times;</span>
-                          </button>
-                      </div>
-                      <div class="modal-body">
-                         <p id = "changepw_prompt">Profile picture successfully uploaded.</p>
-                      </div>
-                      <div class="modal-footer">
-                        <div class form-group>
-                          <button type="button" id="btn_ok" class="btn btn-secondary" @click="showUploadProfilePicSuccessModal = false">OK</button>
-                        </div>
-                      </div>
-                    </div>
-                </div>
-              </div>
-            </div>
-          </transition>
-        </div>
-
-</div>
+            </transition>
+          </div>
+    </div>
+    <app-footer/>      
+  </div>
 </template>
 <script src="https://maps.googleapis.com/maps/api/js?key=getGoogleMapAPI&libraries=places&callback=initAutocomplete&language=nl&output=json" async defer></script>
 <script>
 import SideBarMenu from '../components/Sidebar'
+import Footer from '../components/Footer'
 import { mapActions, mapGetters } from 'vuex'
 // import axios from 'axios'
 import moment from 'moment'
@@ -382,7 +385,8 @@ export default {
     'imgdata'
     ]),
   components: {
-      'sidebar-menu': SideBarMenu
+      'sidebar-menu': SideBarMenu,
+      'app-footer': Footer
       },
     created() {
       this.getProfile().then( res => {

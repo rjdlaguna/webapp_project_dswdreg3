@@ -1,34 +1,38 @@
 <template>
-<div class = "container">
-    <sidebar-menu/>
-    <div class="page_title">
-        <div class="col-md-12 pt-3" id = "menu_content">
-            <h4 class = "mb-4" id = "dashboard_label">Dashboard</h4>
+    <div class = "main">
+        <div class = "container">
+            <sidebar-menu/>
+            <div class="page_title">
+                <div class="col-md-12 pt-3" id = "menu_content">
+                    <h4 class = "mb-4" id = "dashboard_label">Dashboard</h4>
+                </div>
+            </div>
+            <div class = "section">
+                <div class = "page_content centers col-sm-4 mt-3">
+                    <b-card text-variant="white" class="cards">
+                        <h1>{{countReports}}</h1>
+                        <b-card-text>
+                            Number of Incidents You Reported 
+                        </b-card-text>
+                    </b-card>
+                </div>
+                <div class = "page_content centers col-sm-4 mt-3">
+                    <b-card text-variant="white" class="cards">
+                        <h1>{{countCenters}}</h1>
+                        <b-card-text>
+                            Number of Centers and Institutions 
+                        </b-card-text>
+                    </b-card>
+                </div>
+            </div>
         </div>
+        <app-footer/>
     </div>
-    <div class = "section">
-        <div class = "page_content centers col-sm-4 mt-3">
-            <b-card text-variant="white" class="cards">
-                <h1>{{countReports}}</h1>
-                <b-card-text>
-                    Number of Incidents You Reported 
-                </b-card-text>
-            </b-card>
-        </div>
-        <div class = "page_content centers col-sm-4 mt-3">
-            <b-card text-variant="white" class="cards">
-                <h1>{{countCenters}}</h1>
-                <b-card-text>
-                    Number of Centers and Institutions 
-                </b-card-text>
-            </b-card>
-        </div>
-    </div>
-</div>
 </template>
 
 <script>
 import SideBarMenu from '../components/Sidebar'
+import Footer from '../components/Footer'
 import { mapActions } from 'vuex'
 //import axios from 'axios'
 export default {
@@ -65,7 +69,8 @@ export default {
     })
   },
   components: {
-      'sidebar-menu': SideBarMenu
+      'sidebar-menu': SideBarMenu,
+      'app-footer': Footer
   },
   computed : {
       countReports () {
