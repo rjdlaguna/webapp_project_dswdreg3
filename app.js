@@ -10,6 +10,8 @@ const LocalStrategy = require('passport-local').Strategy;
 const fs = require('fs')
 require('dotenv').config();
 const app = express();
+const http = require('http')
+const https = require('https')
 
 app.use(bodyParser.urlencoded({
     extended: false
@@ -50,6 +52,39 @@ mongoose.createConnection(db, {useUnifiedTopology: true})
 
 const PORT = process.env.PORT || 9000;
 
-app.listen(PORT, () => {
-    console.log(`Server started on port ${PORT}`)
-})
+//SSL Configuration
+if(process.env.NODE_ENV === 'production') {
+    const privateKey = fs.readFileSync('/etc/letsencrypt/live/dswdregion3centersandinstitutions.com/privkey.pem', 'utf8');
+    const certificate = fs.readFileSync('/etc/letsencrypt/live/dswdregion3centersandinstitutions.com/cert.pem', 'utf8');
+    const ca = fs.readFileSync('/etc/letsencrypt/live/dswdregion3centersandinstitutions.com/chain.pem', 'utf8');
+    const credentials = {
+        key: privateKey,
+        cert: certificate,
+        ca: ca
+    };
+
+    https.createServer(credentials, app).listen(443,() => {
+        console.log('HTTPS Server running on port 443');
+    })
+    
+    http.createServer(function (req, res) {
+        res.writeHead(301, { "Location": "https://" + req.headers['host'] + req.url });
+        res.end();
+    }).listen(80);
+} else if (process.env.NODE_ENV === 'development') {
+    app.listen(PORT, () => {
+        console.log(`Server started on port ${PORT}`)
+    })
+} else {
+    app.listen(PORT, () => {
+        console.log(`Server started on port ${PORT}`)
+    })
+}
+
+
+
+
+
+
+
+
