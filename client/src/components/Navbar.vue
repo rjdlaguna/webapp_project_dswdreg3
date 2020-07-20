@@ -515,6 +515,7 @@ export default {
       .then(res =>{
         mapAPIkey = res.data
       })
+      alert(mapAPIkey)
       return mapAPIkey
     },
     initAutocomplete(){
