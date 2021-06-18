@@ -1,40 +1,132 @@
 <template>
 <div class = "container">
     <sidebar-menu/>
-    <div class="section">
+    <div class="main">
         <div class="col-md-12 pt-3 page-title"  id= "menu_content">
-            <h4 class = "mb-4" id = "label_reported_incidents">Incident Reports</h4>
-            <div class="form-group row" id = "search_section">
+          <div class = "header_section">
+            <h4 class ="mb-4" id = "label_reported_incidents">Incident Reports</h4>
+            <div class="form-group row" id = "search_section" style="display:flex;">
                 <label for="search" class="col-form-label">Search</label>
                 <div class="col-4">
                     <input class="form-control" v-model = "search" type="text" value="" id="search" name = "search">
                 </div>
                 <button type="submit" class="btn btn-primary btn-design">Go</button>
             </div>
-            <table class="table col-md-12 mx-auto">
-                <tr id = "row_header">
-                    <td>Date Reported</td>
-                    <td>Name of Individual</td>
-                    <td>Type of Individual</td>
-                    <td>Gender</td>
-                    <td>Location of Incident</td>
-                    <td>Description of Incident</td>
-                    <td>Status</td>
-                    <td></td>
-                </tr>
-                <tbody>
-                    <tr v-for="center_rep in incidentrepdata" v-bind:key="center_rep._id">
-                      <td>{{formatDate(center_rep.reported_on)}}</td>
-                      <td>{{center_rep.first_name + ' ' + center_rep.middle_initial + ' ' + center_rep.last_name}}</td>
-                      <td>{{center_rep.individual_type}}</td>
-                      <td>{{center_rep.gender}}</td>
-                      <td>{{center_rep.location}}</td>
-                      <td>{{center_rep.description}}</td>
-                      <td>{{center_rep.status}}</td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="form-group row" id="filter_section" style="display:flex;">
+                <label for="Display" class="col-form-label">Display:</label>
+                <div class="col-2">
+                  <select class="form-control" id="filter_status">
+                      <option value="All">All</option>
+                      <option value="Reported" selected>Reported</option>
+                      <option value="Viewed">Viewed</option>
+                      <option value="Accepted">Accepted</option>
+                      <option value="Rejected">Rejected</option>
+                  </select>
+                  
+                </div>
+            </div>
+          </div>
+
+            <div class="section">
+              <div class ="row_header_container">
+                <ul class = "row_header">
+                  <li>Date Reported</li>
+                  <li>Name of Individual</li>
+                  <li>Type of Individual</li>
+                  <li>Gender</li>
+                  <li>Location of Incident</li>
+                  <li>Description of Incident</li>
+                  <li>Status</li>
+                  <li></li>
+                </ul>
+              </div>
+
+              <div class ="row_records">
+                <ul class= "rept_header" v-for="center_rep in incidentrepdata" v-bind:key="center_rep._id">
+                  <li class="rept_info">{{formatDate(center_rep.reported_on)}}</li>
+                  <li class="rept_info">{{center_rep.first_name + ' ' + center_rep.middle_initial + ' ' + center_rep.last_name}}</li>
+                  <li class="rept_info">{{center_rep.individual_type}}</li>
+                  <li class="rept_info">{{center_rep.gender}}</li>
+                  <li class="rept_info">{{center_rep.location}}</li>
+                  <li class="rept_info">{{center_rep.description}}
+                    <ul class = "rept_images">
+                        <li style="display:inline;" v-for="(value,index) in center_rep.report_image1 " v-bind:key='index'>
+                            {{getValueByKey(value, index)}}<a title="Click image to enlarge"><img class="image_rept" @click="zoomInImage(value)" :src="getReportImages(showReportImage())" v-if="index==='image_name'" width="50" height="50" /></a>
+                        </li>
+                        <li style="display:inline;" v-for="(value,index) in center_rep.report_image2 " v-bind:key='index'>
+                            {{getValueByKey2(value, index)}}<a title="Click image to enlarge"><img class="image_rept" @click="zoomInImage(value)" :src="getReportImages(showReportImage2())" v-if="index==='image_name'" width="50" height="50"/></a>
+                        </li>
+                    </ul>
+                  </li>
+                   
+                  <li class="rept_info">
+                    <select class="form-control" id="rep_status" v-model="center_rep.status" @change="enableSaveBtn(center_rep._id)">
+                        <option>Reported</option>
+                        <option>Viewed</option>
+                        <option>Accepted</option>
+                        <option>Rejected</option>
+                    </select>
+                  </li>
+                  <li class="rept_info">
+                    <button disabled type="button" class="btn btn-primary btn-actions" :id="center_rep._id" @click="showConfirmUpdateModal=true">Save</button>
+                  </li>
+                </ul>
+              </div>
+            </div>
         </div>
+
+        <div v-if="showZoomInImageModal" v-on:close="showZoomInImageModal=false">
+            <transition name="modal">
+                <div class="modal-mask" v-on:click="$emit('close')">
+                <div class="modal-wrapper">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Image Preview</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close" v-on:click="$emit('close')">
+                                <span aria-hidden="true" @click="showZoomInImageModal=false">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <img :src="getReportImages(rept_image)" :style="{width:w_size,height:h_size}" @click="show">
+                        </div>
+                        <div class="modal-footer">
+                            
+                        </div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+            </transition>
+        </div>
+
+        <div v-if="showConfirmUpdateModal">
+              <transition name="modal">
+                  <div class="modal-mask">
+                  <div class="modal-wrapper">
+                      <div class="modal-dialog" role="document">
+                          <div class="modal-content">
+                          <div class="modal-header">
+                              <h5 class="modal-title">Update Incident Report Status</h5>
+                              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                  <span aria-hidden="true" @click="cancelUpdateIncidentRepStatus">&times;</span>
+                              </button>
+                          </div>
+                          <div class="modal-body">
+                              <p>Do you really want to update the status of this incident report?</p>
+                          </div>
+                          <div class="modal-footer">
+                              <div class form-group>
+                              <button type="button" id="btn_yes" class="btn btn-danger" @click="saveIncidentReport(savebtn_id)">Yes</button>
+                              <button type="button" id="btn_no" class="btn btn-secondary" @click="cancelUpdateIncidentRepStatus">No</button>
+                              </div>
+                          </div>
+                          </div>
+                      </div>
+                  </div>
+                  </div>
+              </transition>
+          </div>
     </div>
 
 </div>
@@ -60,14 +152,125 @@ export default {
   },
   data () {
     return {
-      incidentrepdata: [] 
+      incidentrepdata: [],
+      rptimg1: "",
+      rptimg2: "" ,
+      h_size: "",
+      w_size: "",
+      rept_image: "",
+      showZoomInImageModal: false,
+      showCancelBtn: false,
+      showSaveBtn: false,
+      showUpdateBtn: true,
+      incidentrepdata_id: "",
+      status_update: "",
+      status_assigned: "",
+      showConfirmUpdateModal: false,
+      savebtn_id: ''
     }
   },
   methods: {
-      ...mapActions(['getCenterIncidentReports']),
-      formatDate (date) {
-          return moment(date, 'YYYY-MM-DD').format('MM-DD-YYYY')
+    ...mapActions(['getCenterIncidentReports', 'getReportedIncident','saveUpdatedIncidentReport','saveUpdatedIncidentReport2']),
+    formatDate (date) {
+        return moment(date, 'YYYY-MM-DD').format('MM-DD-YYYY')
+    },
+    getReportImages(pic){
+        return require('@/assets/images/' + pic)
+    },
+      getValueByKey(v, i) {
+      if(i === 'image_name') {
+          //let myimg = v
+          this.rptimg1 = v
       }
+    },
+    showReportImage(){
+        return this.rptimg1
+    },
+    getValueByKey2(v, i) {
+        if(i === 'image_name') {
+            //let myimg = v
+            this.rptimg2 = v
+        }
+    },
+    showReportImage2(){
+        return this.rptimg2
+    },
+    zoomInImage(a){
+        this.showZoomInImageModal = true
+        this.rept_image = a
+        this.w_size = "470px"
+        this.h_size = "400px"
+    },
+    enableSaveBtn(id){
+      document.getElementById(id).disabled = false
+      this.status_assigned = document.getElementById()
+      this.savebtn_id = id
+    },
+    updateIncidentReportStatus(){
+      this.selectStatus = document.getElementById('rep_status');
+      this.assigned_status = this.selectStatus.value
+      this.selectStatus.disabled = false
+      this.showCancelBtn=true; 
+      this.showSaveBtn=true; 
+      this.showUpdateBtn=false
+    },
+    cancelUpdateIncidentRepStatus(){ 
+      this.showConfirmUpdateModal = false
+    },
+    saveIncidentReport(id){
+      this.getReportedIncident(id)
+      .then(res => {
+        this.status_update = document.getElementById('rep_status').value;
+        let center_uid = this.id
+        this.incidentrepdata_id = res.data
+       
+        if(this.status_update === 'Viewed') {
+          let updatedincidentrep = {
+            user_id: id,
+            center_userid: center_uid,
+            report_id: this.incidentrepdata_id._id,
+            first_name: this.incidentrepdata_id.first_name,
+            middle_initial: this.incidentrepdata_id.middle_initial,
+            last_name: this.incidentrepdata_id.last_name,
+            individual_type: this.incidentrepdata_id.individual_type,
+            gender: this.incidentrepdata_id.gender,
+            location: this.incidentrepdata_id.location,
+            description: this.incidentrepdata_id.description,
+            status: this.status_update,
+            image1_data: this.incidentrepdata_id.report_image1.data,
+            image1_type: this.incidentrepdata_id.report_image1.contentType,
+            image1_path: this.incidentrepdata_id.report_image1.image_path,
+            image1_name: this.incidentrepdata_id.report_image1.image_name,
+            image2_data: this.incidentrepdata_id.report_image2.data,
+            image2_type: this.incidentrepdata_id.report_image2.contentType,
+            image2_path: this.incidentrepdata_id.report_image2.image_path,
+            image2_name: this.incidentrepdata_id.report_image2.image_name
+          }
+          this.saveUpdatedIncidentReport(updatedincidentrep)
+          .then(res => {
+            console.log(res.data)
+            alert("Incident report successfully updated...")
+            this.showSaveBtn = false
+          })
+        } else {
+          let updatedincidentrep = {
+            center_userid: center_uid,
+            report_id: this.incidentrepdata_id._id,
+            status: this.status_update
+          }
+          this.saveUpdatedIncidentReport2(updatedincidentrep)
+          .then(res => {
+            console.log(res.data)
+            alert("Incident report successfully updated...")
+            this.showSaveBtn = false
+            this.showCancelBtn = false
+            this.showUpdateBtn = true
+            this.selectStatus = document.getElementById('rep_status');
+            this.selectStatus.disabled = true
+          })
+        }
+      })
+    }
   },
   mounted() {
     this.getCenterIncidentReports(this.id)
@@ -108,6 +311,11 @@ table{
 #search_section{
     justify-content:flex-end;
     color:#042331;
+}
+#filter_section{
+  margin-right: 205px;
+  justify-content:flex-end;
+  color:#042331;
 }
 .btn{
   font-size: 10pt;
@@ -162,6 +370,49 @@ table{
   font-style: italic;
 }
 .btn-actions{
-    width: 70%;
+    width: 60%;
+}
+.row_header{
+    display: flex;
+    font-size: 14px;
+    padding: 0;
+    margin-top: 15px;
+}
+.row_header li{
+    font-size: 14px;
+    list-style-type: none;
+    width: 170px;
+    padding-right: 20px;
+    font-weight: 500;
+}
+.rept_header{
+    font-size: 14px;
+    padding: 0;
+    display: flex;
+}
+.rept_info{
+    font-size: 14px;
+    list-style-type: none;
+    width: 170px;
+    padding-right: 20px;
+}
+.rept_images{
+    list-style-type: none;
+    display: flex;
+    padding:0;
+    margin:0;
+}
+.row_header_container{
+    border-bottom: 1px solid grey;
+    margin-bottom: 10px;
+}
+#display{
+  display: inline;
+}
+#filter_status{
+  display: inline;
+}
+.header_section{
+  border-bottom: 1px solid gray;
 }
 </style>

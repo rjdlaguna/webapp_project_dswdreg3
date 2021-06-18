@@ -1,6 +1,6 @@
 const express = require('express')
 const mongoose = require('mongoose')
-const bodyParser = require('body-parser')
+//const bodyParser = require('body-parser')
 const path = require('path')
 const cors = require('cors')
 const multer = require("multer")
@@ -8,16 +8,27 @@ const cookieParser = require('cookie-parser');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const fs = require('fs')
+const cookieSession = require('cookie-session')
 require('dotenv').config();
 const app = express();
 const http = require('http')
 const https = require('https')
 
-app.use(bodyParser.urlencoded({
+app.use(express.urlencoded({
     extended: false
 }))
 
-app.use(bodyParser.json());
+app.use(cookieSession({
+    name: 'mysession',
+    keys: ['vueauthrandomkey'],
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+}))
+
+//Extending the bodyParser size
+//app.use(bodyParser.json());
+app.use(express.json({limit: '50mb'}))
+app.use(express.urlencoded({limit: '50mb', parameterLimit: 100000, extended: true}))
+
 app.use(express.json());
 
 app.use(cors())
@@ -26,6 +37,10 @@ app.use(cookieParser());
 //Setting up the static directory
 app.use('../vue/client/src/assets/images/', express.static('images'))
 app.use(express.static(path.join(__dirname, 'public')))
+
+//Extending the bodyParser size
+//app.use(bodyParser.json({limit: '50mb'}))
+//app.use(bodyParser.urlencoded({limit: '50mb', parameterLimit: 100000, extended: true}))
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -43,7 +58,12 @@ app.use("/api/citizenreports",citizenreports)
 const db = require('./config/keys').mongoURI;
 
 mongoose.connect(db, { useFindAndModify: false });
-mongoose.createConnection(db, {useUnifiedTopology: true})
+
+/*mongoose.createConnection(db, { useUnifiedTopology: true, useNewUrlParser: true }).
+  then(() => console.log('Connected')).
+  catch(err => console.log('Caught', err.stack)); */
+
+mongoose.createConnection(db, {useUnifiedTopology: true, useNewUrlParser: true})
 .then(() => {
     console.log(`Database connected successfully ${db}`)
 }).catch(err => {
@@ -51,9 +71,10 @@ mongoose.createConnection(db, {useUnifiedTopology: true})
 })
 
 const PORT = process.env.PORT || 9000;
+process.env.TZ = 'Asia/Manila';
 
 //SSL Configuration
-if(process.env.NODE_ENV === 'production') {
+/*if(process.env.NODE_ENV === 'production') {
     const privateKey = fs.readFileSync('/etc/letsencrypt/live/dswdregion3centersandinstitutions.com/privkey.pem', 'utf8');
     const certificate = fs.readFileSync('/etc/letsencrypt/live/dswdregion3centersandinstitutions.com/cert.pem', 'utf8');
     const ca = fs.readFileSync('/etc/letsencrypt/live/dswdregion3centersandinstitutions.com/chain.pem', 'utf8');
@@ -79,12 +100,9 @@ if(process.env.NODE_ENV === 'production') {
     app.listen(PORT, () => {
         console.log(`Server started on port ${PORT}`)
     })
-}
+}*/
 
-
-
-
-
-
-
+app.listen(PORT, () => {
+    console.log(`Server started on port ${PORT}`)
+})
 

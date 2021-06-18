@@ -19,10 +19,10 @@
     "vee-validate": "^3.3.3",
     "vue": "^2.6.10",
     "vue-google-autocomplete": "^1.1.0",
-    "vue-phone-number-input": "^1.1.9",
+    "vue-phone-number-input": "^1.1.10",
     "vue-router": "^3.3.3",
     "vue2-google-maps": "^0.10.7",
-    "vuex": "^3.4.0"
+    "vuex": "^3.5.1"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^4.4.3",

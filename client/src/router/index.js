@@ -15,7 +15,13 @@ import CentersInstitutionsList from '../views/CentersInstitutionsList'
 import CenterRegistration from '../views/CenterRegistration'
 import CenterProfileInfo from '../views/CenterProfileInfo'
 import CenterIncidentReports from '../views/CenterIncidentReports'
+import IndividualsList from '../views/IndividualsList'
+import CentersEmployees from '../views/CentersEmployees'
 import VerifyEmail from '../views/VerifyEmail'
+import IndividualsListInCustody from '../views/IndividualsListInCustody'
+import IndividualsListReleased from '../views/IndividualsListReleased'
+import IndividualsListMasterList from '../views/IndividualsListMasterList'
+import UserLogs from '../views/UserLogs'
 import store from '../store'
 
 Vue.use(VueRouter)
@@ -27,10 +33,9 @@ const routes = [
     component: Welcome
   },
   {
-    path: '/home/:id',
+    path: '/home',
     name: 'home',
-    component: Home,
-    props: true
+    component: Home
   },
   {
     path: '/login',
@@ -108,7 +113,40 @@ const routes = [
     name: 'verifyemail',
     component: VerifyEmail,
     props: true
+  },
+  {
+    path: '/individualslist',
+    name: 'individualslist',
+    component: IndividualsList
+  },
+  {
+    path: '/individualslist/incustody',
+    name: 'incustody',
+    component: IndividualsListInCustody
+  },
+  {
+    path: '/individualslist/released',
+    name: 'released',
+    component: IndividualsListReleased
+  },
+  {
+    path: '/individualslist/masterlist',
+    name: 'mastelist',
+    component: IndividualsListMasterList
+  },
+  {
+    path: '/centersemployees/:id',
+    name: 'centersemployees',
+    component: CentersEmployees,
+    props: true
+  },
+  {
+    path: '/userlogs/:id',
+    name: 'userlogs',
+    component: UserLogs,
+    props: true
   }
+
 ]
 
 const router = new VueRouter({
@@ -121,13 +159,13 @@ router.beforeEach((to, from, next) => {
   if (to.matched.some(record => record.meta.requiresAuth)) {
     if (!store.getters.isLoggedIn) {
       alert('You are not logged in.')
-      next('/login')
+      next('/')
     } else {
       next()
     }
   } else if (to.matched.some(record => record.meta.requiresGuest)) {
     if (store.getters.isLoggedIn) {
-      next('/myincidentreports')
+      next('/myincidentreports/:id')
     } else {
       next()
     }

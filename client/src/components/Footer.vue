@@ -32,9 +32,7 @@ export default {
     left: 0;
     width: 100%;
     display: block;
-    margin-top: 1em;
     padding: 2rem;
-    position: relative;
 }
 @media (max-width:414px){
   .title-caption{

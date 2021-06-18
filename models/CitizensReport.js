@@ -52,10 +52,10 @@ const CitizenReportSchema = new Schema({
         image_name: String 
     },
     report_image2: {
-        data: Buffer,
-        contentType: String,
-        image_path: String,
-        image_name: String 
+        data2: Buffer,
+        contentType2: String,
+        image_path2: String,
+        image_name2: String 
     },
 },{
     collection: 'citizen_reports'

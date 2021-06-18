@@ -5,10 +5,6 @@
           <b-navbar-brand><router-link id="dswd_homelink" to="/"><img :src="require('../assets/images/dswd_logo.png')" width="50" height="50" alt="" id = "logo"/><span id="dswd_home">DSWD R3</span></router-link></b-navbar-brand>
           <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
           <b-collapse id="nav-collapse" is-nav>
-            <!--<b-navbar-nav>
-              <b-nav-item class="nav-link">CENTERS AND INSTITUTIONS</b-nav-item>
-              <b-nav-item class="nav-link">ABOUT</b-nav-item>
-            </b-navbar-nav>-->
 
             <!-- Right aligned nav items -->
             <b-navbar-nav class="ml-auto">
@@ -49,7 +45,7 @@
                           </ValidationProvider>
                         </div>
                         <div id ="forgotpass">
-                          <p>Forgot your password? <button type="button" class="btn btn-primary" @click="showForgotPasswordModal=true; showLoginModal=false">Click here</button></p>
+                          <p>Forgot your password? <button type="button" class="btn btn-design" @click="showForgotPasswordModal=true; showLoginModal=false">Click here</button></p>
                         </div>
                       </div>
                       <div class="modal-footer">
@@ -106,18 +102,29 @@
                             </ValidationProvider>
                           </div>
                         </div>
+                        
                         <div class="modal-body-section2">
                           <div class="form-group">
                             <ValidationProvider name = "mobile_no" rules="required|digits:11" v-slot="{ errors }">
                               <label for="mobilephone_no">Mobile Phone No.<span class = 'required_data'>*</span></label>
-                              <input type="text" v-model="mobile_no" v-bind="mobile_no" maxlength="11" class="form-control" name="mobile_no" placeholder="09xx3456789">
+                              <VuePhoneNumberInput v-model="mobile_no" />
+                              <input type="tel" v-model="mobile_no" v-bind="mobile_no" maxlength="11" class="form-control" name="mobile_no" placeholder="09xx3456789" required pattern="[0-9]{11}" />
                               <span class = "err_message">{{ errors[0] }}</span>
                             </ValidationProvider>
                           </div>
                           <div class="form-group">
                             <ValidationProvider name = "birthdate" rules="required" v-slot="{ errors }">
                               <label for="birthdate">Date of birth:<span class = 'required_data'>*</span></label>
-                              <input type="date" v-model="birthdate" class="form-control" name="birthdate" placeholder="">
+                              <b-form-datepicker 
+                                id="birthdate"
+                                v-model="birthdate" 
+                                class="form-control mb-2"
+                                right
+                                :date-format-options="{ year: 'numeric', month: '2-digit', day: '2-digit' }"
+                                locale="en"
+                                name="birthdate"
+                                >
+                                </b-form-datepicker>
                               <span class = "err_message">{{ errors[0] }}</span>
                             </ValidationProvider>
                           </div>
@@ -177,13 +184,13 @@
                             <span class = "err_message">{{ errors[0] }}</span>
                           </ValidationProvider>
                         </div>
-                        <div class="form-group">
+                        <!--<div class="form-group">
                           <ValidationProvider name="username" rules="required" v-slot="{ errors }">
                             <label for="username">Username<span class = 'required_data'>*</span></label>
                             <input type="text" v-model="username" class="form-control" name="username" placeholder="Enter Username">
                             <span class = "err_message">{{ errors[0] }}</span>
                           </ValidationProvider>
-                        </div>
+                        </div>-->
                         <div class="form-group">
                             <ValidationProvider name = "password" rules="required" v-slot="{ errors }">
                               <label for="password">Password<span class = 'required_data'>*</span></label>
@@ -314,14 +321,14 @@ export default {
   ]), */
   components: { VueGoogleAutocomplete },
   computed: {
-    isLoggedIn () {
+    /*isLoggedIn () {
       // location.reload()
       return this.$store.getters.isLoggedIn
     },
     user () {
       return this.$store.getters.user
     },
-    isCharlen: false
+    isCharlen: false*/
   },
   data () {
     return {
@@ -346,7 +353,6 @@ export default {
       birthdate: '',
       address: '',
       email:'',
-      username:'',
       password:'',
       confirm_password:'',
       address_id: '',
@@ -371,7 +377,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['getProfile', 'getCenterID', 'resetPassword']),
+    ...mapActions(['login','logout','getProfile', 'getCenterID', 'resetPassword','register', 'getAPIkey']),
     logout () {
       axios.get('users/logout', {
         first_name: this.first_name,
@@ -384,7 +390,6 @@ export default {
         router.push({ name: 'Login' })
       })
     },
-    ...mapActions(['logout']),
     logoutUser () {
       this.logout()
       this.userLoggedIn = this.$store.getters.isLoggedIn
@@ -398,13 +403,12 @@ export default {
     },
     checkLogin () {
       if(this.loginemail === '' || this.loginpassword === ''){
-        this.error_login = 'Please enter your username and/or password.'
+        this.error_login = 'Please enter your email and/or password.'
       }
       else {
         this.loginUser()
       }
     },
-    ...mapActions(['login']),
     loginUser () {
       let user = {
         loginemail: this.loginemail,
@@ -428,11 +432,12 @@ export default {
     },
     errorLogin () {
       this.error_login = "Email or Password is incorrect. Please try again."
+      // this.loginemail = ""
+      // this.loginpassword = ""
     },
     loginMessage () {
       this.login_message = "User successfully registered. You can now login to your account."
     },
-    ...mapActions(['register', 'getAPIkey']),
     registerUser() {
       if (this.first_name === '' ||
       this.last_name === '' ||
@@ -440,7 +445,6 @@ export default {
       this.birthdate === '' ||
       this.address === '' ||
       this.email === '' ||
-      this.username === '' ||
       this.password === '' ||
       this.confirm_password === '') {
         // this.scrollToTop()
@@ -454,7 +458,6 @@ export default {
         birthdate: this.birthdate,
         address: this.address,
         email: this.email,
-        username: this.username,
         password: this.password,
         confirm_password: this.confirm_password
         }
@@ -467,7 +470,6 @@ export default {
             this.birthdate = ""
             this.address = ""
             this.email = ""
-            this.username = ""
             this.password = ""
             this.confirm_password = ""
             this.showRegisterModal2 = false
@@ -515,7 +517,6 @@ export default {
       .then(res =>{
         mapAPIkey = res.data
       })
-      alert(mapAPIkey)
       return mapAPIkey
     },
     initAutocomplete(){
@@ -676,7 +677,7 @@ export default {
     }
   },
   created () {
-    this.getProfile()
+    // this.getProfile()
   },
 }
 </script>
@@ -775,5 +776,14 @@ export default {
 }
 .check{
   color: green;
+}
+.btn-design{
+  background: #042331;
+  color:#fff;
+}
+.btn-design:hover{
+  color: #042331;
+  background:#fff;
+  border: 1px solid #042331;
 }
 </style>

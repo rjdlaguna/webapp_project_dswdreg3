@@ -11,7 +11,7 @@ const UserSchema = new Schema({
         type: String
     },
     mobile_no: {
-        type: Number
+        type: String
     },
     birthdate: {
         type: Date
@@ -21,20 +21,16 @@ const UserSchema = new Schema({
         required: true
     },
     email: {
-        type: String,
-        required: true
+        type: String
     },
-    username: {
-        type: String,
-        required: true
+    gender: {
+        type: String
     },
     password: {
-        type: String,
-        required: true
+        type: String
     },
     confirm_password: {
-        type: String,
-        required: true
+        type: String
     },
     user_type: {
         type: String,

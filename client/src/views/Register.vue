@@ -147,7 +147,7 @@ export default {
     getAddressData (addressData, placeResultData, id) {
                 this.address = addressData;
     },
-    ...mapActions('register'),
+    ...mapActions['register'],
     registerUser() {
       if (this.first_name === '' ||
       this.last_name === '' ||

@@ -1,9 +1,10 @@
 import Vue from 'vue'
+import Vuex from 'vuex'
 import App from './App.vue'
 import router from './router'
 import store from './store'
 import axios from 'axios'
-import BootstrapVue from 'bootstrap-vue'
+import { BootstrapVue, IconsPlugin }  from 'bootstrap-vue'
 import VueRouter from 'vue-router'
 import VueGoogleAutocomplete from 'vue-google-autocomplete'
 import { ValidationProvider , ValidationObserver} from 'vee-validate';
@@ -33,6 +34,12 @@ Vue.use(VueGoogleAutocomplete, {
   }
 }) 
 
+Vue.use(BootstrapVue)
+Vue.use(IconsPlugin)
+//Vue.use(axios)
+Vue.use(VueRouter)
+Vue.use(Vuex,axios)
+
 
 Vue.filter('formatDate', function(value){
   if (value) {
@@ -44,16 +51,15 @@ Vue.component('ValidationProvider', ValidationProvider);
 Vue.component('ValidationObserver', ValidationObserver);
 Vue.component('font-awesome-icon',FontAwesomeIcon);
 Vue.config.productionTip = false
+
 Vue.prototype.$http = axios
 
 const token = localStorage.getItem("token");
-if(token){
-  Vue.prototype.$http.default.headers.common['Authorization'] = token;
-}
 
-Vue.use(BootstrapVue)
-Vue.use(axios)
-Vue.use(VueRouter)
+if(token){
+  // Vue.prototype.$http.default.headers.common['Authorization'] = token;
+  axios.defaults.headers.common['Authorization'] = token
+}
 
 //Global variables
 

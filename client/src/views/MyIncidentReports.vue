@@ -1,61 +1,73 @@
 <template>
-    <div class ="main">
-        <div class = "container">
+    <div class ="main overflow-auto">
+        <div class = "container overflow-auto">
             <sidebar-menu/>
             <div class="section">
                 <div class="col-md-12 pt-3 page-title"  id= "menu_content">
                     <h4 class = "mb-4" id = "label_reported_incidents">My Incident Reports</h4>
-                    <div class="form-group row" id = "search_section">
+                    <div class="form-group row" id = "search_section" style="display:flex;">
                         <label for="search" class="col-form-label">Search</label>
                         <div class="col-4">
-                            <input class="form-control" v-model = "search" type="text" value="" id="search" name = "search">
+                            <input class="form-control" v-model="search" type="text" value="" id="search" name="search">
                         </div>
                         <button type="submit" class="btn btn-primary btn-design">Go</button>
                     </div>
-                    
                     <button type="button" class="btn btn-design" @click="showReportIncidentModal=true">Report an Incident</button>
+                        <div class = "row_header_container">
+                            <ul class = "row_header">
+                                <li class = "rept_info">Date Reported</li>
+                                <li>Name of Individual</li>
+                                <li>Type of Individual</li>
+                                <li>Gender</li>
+                                <li>Location of Incident</li>
+                                <li>Description of Incident</li>
+                                <li>Sent To</li>
+                                <li>Status</li>
+                                <li></li>
+                            </ul>
+                        </div>
 
-                    <table class="table col-md-12 mx-auto">
-                        <tr id = "row_header">
-                            <td>Date Reported</td>
-                            <td>Name of Individual</td>
-                            <td>Type of Individual</td>
-                            <td>Gender</td>
-                            <td>Location of Incident</td>
-                            <td>Description of Incident</td>
-                            <td>Sent To</td>
-                            <td>Status</td>
-                            <td></td>
-                        </tr>
-                        <tbody>
-                            <!--<tr v-for="report in myreports" v-bind:key="report._id">-->
-                            <tr v-for="(report,index) in filteredReports" v-bind:key="report._id">
-                                <td id="reptID" style = "display:none">{{report._id}}</td>
-                                <td>{{ formatBirthDate(report.reported_on) }}</td>
-                                <td>{{ report.first_name + ' ' + report.middle_initial + ' ' + report.last_name}}</td>
-                                <td>{{ report.individual_type }}</td>
-                                <td>{{ report.gender }}</td>
-                                <td>{{ report.location }}</td>
-                                <td>
-                                    {{report.description}}
-                                    <ul style="list-style:none; padding-left:0;">
-                                    <li style="display:inline;" v-for="(value,index) in report.report_image1 " v-bind:key='index'>
-                                            {{getValueByKey(value, index)}}<img :src="getReportImages(showReportImage())" v-if="index==='image_name'" width="50" height="50" />
-                                        </li>
-                                        <li style="display:inline;" v-for="(value,index) in report.report_image2 " v-bind:key='index'>
-                                            {{getValueByKey(value, index)}}<img :src="getReportImages(showReportImage())" v-if="index==='image_name'" width="50" height="50"/>
-                                        </li>
-                                    </ul>
-                                </td>
-                                <td>{{ report.center_name }}</td>
-                                <td>{{ report.status }}</td>
-                                <td>
+                        <div class = "row_records">
+                            <ul class="rept_header" v-for="(report,index) in lists" v-bind:key="report._id">
+                                <li class = "rept_info">{{ formatBirthDate(report.reported_on) }}</li>
+                                <li class = "rept_info">{{ report.first_name + ' ' + report.middle_initial + ' ' + report.last_name}}</li>
+                                <li class = "rept_info">{{ report.individual_type }}</li>
+                                <li class = "rept_info">{{ report.gender }}</li>
+                                <li class = "rept_info">{{ report.location }}</li>
+                                <li  class = "rept_info">
+                                    <span>{{report.description}}</span>
+                                    <div>
+                                    <a title="Click image to enlarge"><img class="image_rept" @click="zoomInImage(report.report_image1.image_name)" :src="getReportImages(showReportImage(report.report_image1.image_name))" width="50" height="50" /></a>
+                                    <a title="Click image to enlarge"><img class="image_rept" @click="zoomInImage(report.report_image2.image_name2)" :src="getReportImages(showReportImage(report.report_image2.image_name2))" width="50" height="50" /></a>
+                                    </div>
+                                </li>
+                                <li  class = "rept_info">{{ report.center_name }}</li>
+                                <li  class = "rept_info">{{ report.status }}</li>
+                                <li  class = "rept_info">
                                     <button type="button" class="btn btn-primary btn-actions" @click="getIncidentReport(report._id)">Edit</button>
                                     <button type="button" class="btn btn-danger btn-actions" @click.prevent="confirmDelete(report._id, index)">Delete</button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div style="text-align:center;">
+                            <b-pagination class="page-item" active-bg-color="#00ff00"
+                            v-model="currentPage"
+                            :total-rows="totalRows"
+                            :per-page="perPage"
+                            align="center"
+                            ></b-pagination>
+                            
+                            <b-table
+                            id="my-table"
+                            :items="items"
+                            :per-page="perPage"
+                            :current-page="currentPage"
+                            small
+                            ></b-table>
+                        
+                        </div>
+
                 </div>
             </div>
 
@@ -69,20 +81,21 @@
                                     <div class="modal-header">
                                         <h5 class="modal-title">Report an Incident</h5>
                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true" @click="showReportIncidentModal=false">&times;</span>
+                                            <span aria-hidden="true" @click="cancelReport">&times;</span>
                                         </button>
                                     </div>
+                                    <p class = "err_message ml-3">{{required_fields}}</p>
                                     <div class="modal-body">
                                         <div class = "modal-body-section1">
                                             <div class="form-group">
                                                 <label for="first_name">Name of Indvidual</label>
-                                                <input type="text" v-model="first_name" class="form-control mt-2" id="first_name" placeholder="Enter First Name">
+                                                <input type="text" v-model="first_name" class="form-control mt-2" id="first_name" placeholder="Enter First Name*">
                                                 <input type="text" v-model="middle_initial" class="form-control mt-2" id="middle_initial" placeholder="Enter Middle Initial">
-                                                <input type="text" v-model="last_name" class="form-control mt-2" id="last_name" placeholder="Enter Last Name">
+                                                <input type="text" v-model="last_name" class="form-control mt-2" id="last_name" placeholder="Enter Last Name*">
                                             </div>
                                             <div class="form-group">
                                                 <ValidationProvider name = "rep_indivtype" rules="required" v-slot="{ errors }">
-                                                    <label for="type_of_individual">Type of Individual</label>
+                                                    <label for="type_of_individual">Type of Individual*</label>
                                                     <select class="form-control" id="rep_indivtype" v-model="rep_indivtype">
                                                         <option disabled value="">Select One</option>
                                                         <option>Child</option>
@@ -96,8 +109,8 @@
                                             </div>
                                             <div class = "form-group">
                                                 <ValidationProvider name = "rep_location" rules="required" v-slot="{ errors }">
-                                                    <label for="Location">Location</label>
-                                                    <input type="text" placeholder="Type Location" class="form-control" id = "rep_location" name="rep_location" v-model="rep_location" @focus="initAutocomplete()"/>
+                                                    <label for="Location">Location*</label>
+                                                    <input type="text" placeholder="Type Location*" class="form-control" id = "rep_location" name="rep_location" v-model="rep_location" @focus="initAutocomplete()"/>
                                                     <button type="button" class="btn btn-design" style="display:block" @click="getMyLocation">Get my location</button>
                                                     <p id="latitude" style="display:none"></p>
                                                     <p id="longitude" style="display:none"></p>
@@ -109,9 +122,9 @@
                                         <div class = "modal-body-section2">
                                             <div class="form-group">
                                                 <ValidationProvider name = "rep_gender" rules="required" v-slot="{ errors }">
-                                                    <label for="gender">Gender</label>
-                                                    <select class="form-control" id="rep_gender" v-model="rep_gender" placeholder="Select Gender" @mousedown="generateLatLong" @click="filterCenters" @change="filterCenters">
-                                                        <option selected="selected" disabled value="Select Gender">Select One</option>
+                                                    <label for="gender">Gender*</label>
+                                                    <select class="form-control" id="rep_gender" v-model="rep_gender" @mousedown="generateLatLong" @change="filterCenters" @click="filterCenters">
+                                                        <option disabled value="Select Gender">Select One</option>
                                                         <option>Male</option>
                                                         <option>Female</option>
                                                     </select>
@@ -120,7 +133,7 @@
                                             </div>
                                             <div class="form-group">
                                                 <ValidationProvider name = "rep_desc" rules="required" v-slot="{ errors }">
-                                                    <label for="Description">Description</label>
+                                                    <label for="Description">Description*</label>
                                                     <textarea class="form-control" id="rep_desc" rows="3" v-model="rep_desc"></textarea>
                                                     <span class = "err_message">{{ errors[0] }}</span>
                                                 </ValidationProvider>
@@ -129,14 +142,12 @@
                                             <div class="form-group">
                                                 <label for="attach" class="file-label">Attach Image (optional)</label>
                                                 <p class="input-guide">Note: You can attach up to 2 images</p>
-                                                <input type="file" multiple accept="image/*" @change="handleImages" ref="image" name="images"/>
-                                                <div v-for="(image,key) in imagesList" :key="key">
-                                                    <button class="close" @click="removeImage(key)">&times;</button>
-                                                    <div>
-                                                        <img :src="image" class="preview" width="200" height="200" :ref="images"/>
+                                                    <input type="file" multiple accept="image/*" @change="handleImages" ref="images" name="imagesList" id="rept_images"/>
+                                                    <div v-for="(image,key) in imagesList" :key="key">
+                                                        <button class="close" @click="removeImage(key)">&times;</button>
+                                                        <img :src="image" class="preview"/>
                                                         <span>{{image.name}}</span>
                                                     </div>
-                                                </div>
 
                                                 <!--<label for="attach" class="file-label">Attach Image (optional)</label>
                                                     <p class="input-guide">Note: You can attach up to 2 images</p>
@@ -157,7 +168,7 @@
                                     <div class="modal-footer">
                                         <div class form-group>
                                             <button class="btn btn-primary mr-3 btn-design" type="submit">Send Report</button>
-                                            <button type="button" class="btn btn-secondary" @click="showReportIncidentModal=false">Cancel</button>
+                                            <button type="button" class="btn btn-secondary" @click="cancelReport">Cancel</button>
                                         </div>
                                     </div>
                                 </div>
@@ -197,7 +208,7 @@
 
                 <div v-if="showEditReportIncidentModal">
                 <transition name="modal">
-                    <div class="modal-mask">
+                    <div class="modal-mask" @click="showEditReportIncidentModal=false">
                     <div class="modal-wrapper">
                         <div class="modal-dialog modal-md modal-dialog-scrollable" role="document">
                             <form @submit.prevent="" enctype="multipart/form-data">
@@ -262,25 +273,11 @@
                                                 </ValidationProvider>
                                             </div>       
                                             <div class="form-group">
-                                                    <!--<div v-if="showAttachImage">
-                                                        <label for="image">Images (maximum of 4)</label>
-                                                            <div v-for="(image, key) in images" :key="key">
-                                                                <button class="close" @click.prevent="removeImage(index, $event)">&times;</button>
-                                                                <div>
-                                                                    <img class="preview" :ref="'image'" width="200" height="100"/>
-                                                                    {{ image.name }}
-                                                                </div>
-                                                            </div>
-                                                            <input
-                                                                type="file"
-                                                                multiple
-                                                                accept="image/*"
-                                                                @change="uploadImage"
-                                                                class = "images[]"
-                                                                name = "imageFiles"
-                                                            />
-                                                    </div>
-                                                    <button type="button" class="btn btn-design">Attach Image</button>-->
+                                                <div>
+                                                    <button class="close" @click="removeImage(key)">&times;</button>
+                                                    <img class="image_rept_edit" :src="getReportImages(showReportImage(repincident_data.report_image1.image_name))" width="50" height="50" />
+                                                    <img class="image_rept_edit" :src="getReportImages(showReportImage(repincident_data.report_image2.image_name2))" width="50" height="50" />
+                                                </div>
                                             </div>
                                             <p v-if="showCenterName">Note: This will be reported to: {{selected_center}}</p>
                                         </div>                                        
@@ -326,6 +323,62 @@
                     </div>
                 </transition>
             </div>
+
+            <div v-if="showCancelReportModal">
+                <transition name="modal">
+                    <div class="modal-mask">
+                    <div class="modal-wrapper">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Cancel Incident Report</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true" @click="cancelReport">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <p>Do you really want to cancel sending this incident report?</p>
+                            </div>
+                            <div class="modal-footer">
+                                <div class form-group>
+                                <button type="button" id="btn_yes" class="btn btn-danger" @click="confirmCancelReport">Yes</button>
+                                <button type="button" id="btn_no" class="btn btn-secondary" @click="hideCancelReport">No</button>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+                </transition>
+            </div>
+
+            <div v-if="showZoomInImageModal" v-on:close="showZoomInImageModal=false">
+                <transition name="modal">
+                    <div class="modal-mask" v-on:click="$emit('close')">
+                    <div class="modal-wrapper">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Image Preview</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close" v-on:click="$emit('close')">
+                                    <span aria-hidden="true" @click="showZoomInImageModal=false">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                               <img :src="getReportImages(rept_image)" :style="{width:w_size,height:h_size}" @click="show">
+                            </div>
+                            <div class="modal-footer">
+                               <!--  <div class form-group>
+                                <button type="button" id="btn_yes" class="btn btn-danger" @click="deleteIncidentReport(report_id, report_index)">Yes</button>
+                                <button type="button" id="btn_no" class="btn btn-secondary" @click="hideConfirmDelete">No</button>
+                                </div> -->
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+                </transition>
+            </div>
         </div>
         <app-footer/>
     </div>
@@ -353,7 +406,6 @@ export default {
       required: true
     }
   },
-  el: '#reportForm',
   data () {
     return {
       first_name: '',
@@ -375,6 +427,7 @@ export default {
       rep_indivtype: '',
       rep_gender: '',
       rep_desc: '',
+      required_fields:'',
       centerslist: {},
       rep_centerid:'',
       rep_centername: '',
@@ -384,13 +437,11 @@ export default {
       lname:'',
       citizen_name:'',
       images: [],
-      imageList: [],
+      imagesList: [],
+      imagesList2: [],
       showIncidentRepSuccessModal: false,
       selected_center: '',
       showCenterName: false,
-      //showAttachImage: false,
-      //maxImages: 2,
-      //addImage: 'button.add-image',
       showEditReportIncidentModal: false,
       repincident_data:[],
       showConfirmDeleteModal: false,
@@ -406,11 +457,21 @@ export default {
       image_error: '',
       imageData:'',
       image:'',
-      key:''
+      key:'',
+      w_size: "",
+      h_size: "",
+      rept_image: "",
+      showZoomInImageModal: false,
+      selectedtFiles: null,
+      perPage: 5,
+      currentPage: 1,
+      img_index: 0,
+      showCancelReportModal: false,
+      search: ""
     }
   },
   methods: {
-      ...mapActions(['getAPIkey', 'displayCenters', 'getProfile', 'sendIncidentReport', 'getMyIncidentReports', 'getReportedIncident', 'deleteReportedIncident', 'getIncidentReportImages']),
+      ...mapActions(['getAPIkey', 'displayCenters', 'getProfile', 'sendIncidentReport', 'getMyIncidentReports', 'getReportedIncident', 'deleteReportedIncident', 'getIncidentReportImages', 'deleteReportedImage1']),
       formatBirthDate (date) {
           return moment(date, 'YYYY-MM-DD').format('MM-DD-YYYY');
         },
@@ -562,7 +623,6 @@ export default {
                 centerData_byindivtype.push(indivCenterData)
             }
         })
-        //alert('hello hello hello')
         this.getNearestCenter(centerData_byindivtype)
     },
     getNearestCenter(centerData){
@@ -581,7 +641,6 @@ export default {
                 this.rep_centerid = el.center_id
                 this.rep_centername = el.center_name
             }
-            // alert(rep_centername + ' ' + distance2)
         })
         this.selected_center = this.rep_centername
         this.showCenterName = true
@@ -611,82 +670,68 @@ export default {
         })
     },
     sendReport(){
-        this.citizen_name = document.getElementById('reported_by').innerHTML
-        let fd = new FormData()
-        for( var i = 0; i < this.images.length; i++ ){
-            fd.append('imageFiles', this.images[i]);
-        }
-        fd.append('first_name', this.first_name)
-        fd.append('middle_initial', this.middle_initial)
-        fd.append('last_name', this.last_name)
-        fd.append('location', this.rep_location)
-        fd.append('individual_type', this.rep_indivtype)
-        fd.append('gender', this.rep_gender)
-        fd.append('description', this.rep_desc)
-        fd.append('center_id', this.rep_centerid)
-        fd.append('center_name',this.rep_centername)
-        
-        fd.append('reported_by', this.citizen_name)
-        fd.append('user_id', this.id)
-        fd.append('distance', this.distance2)
-        this.sendIncidentReport(fd)
-        .then(res => {
-            if(res.data.success) {
-                this.showReportIncidentModal = false
-                this.showIncidentRepSuccessModal = true
-                this.getMyIncidentReports(this.id)
-                .then(res => {
-                    this.myreports = res.data
-                    
-                })
-            }
-        })
-        /*this.first_name = ""
-        this.middle_initial = ""
-        this.last_name = ""
-        this.rep_location = ""
-        this.rep_indivtype = ""
-        this.rep_gender = ""
-        this.rep_desc = ""
-        this.rep_centerid = ""
-        this.center_name = ""
-        this.citizen_name = ""
-        this.showCenterName = false
-        this.showAttachImage = false
-        for(let i = 0; i < this.images.length; i++) {
-            this.images.splice(i, 1);
-        }*/
-    },
-    /*attachImage(){
-        if(this.showAttachImage === false){
-            this.showAttachImage = true
-            document.getElementById('attach_image').innerHTML = "Cancel"
+        if( this.first_name === "" ||
+            this.last_name === "" ||
+            this.rep_indivtype === "" ||
+            this.rep_location === "" ||
+            this.rep_desc === "" ||
+            this.rep_gender === "" ||
+            this.rep_desc === "") {
+                this.required_fields = "Please provide input on the required fields (*)." 
         } else {
+            this.citizen_name = document.getElementById('reported_by').innerHTML
+            for (let i = 0; i < this.selectedFiles.length; i++) {
+                //console.log(selectedFiles[i])
+                this.imagesList.push(this.selectedFiles[i]);
+            }
+            let fd = new FormData()
+            for( var i = 0; i < this.imagesList.length; i++ ){
+                fd.append('imageFiles', this.imagesList[i]);
+            }
+            fd.append('first_name', this.first_name)
+            fd.append('middle_initial', this.middle_initial)
+            fd.append('last_name', this.last_name)
+            fd.append('location', this.rep_location)
+            fd.append('individual_type', this.rep_indivtype)
+            fd.append('gender', this.rep_gender)
+            fd.append('description', this.rep_desc)
+            fd.append('center_id', this.rep_centerid)
+            fd.append('center_name',this.rep_centername)
+            
+            fd.append('reported_by', this.citizen_name)
+            fd.append('user_id', this.id)
+            fd.append('distance', this.distance2)
+            this.sendIncidentReport(fd)
+            .then(res => {
+                if(res.data.success) {
+                    this.showReportIncidentModal = false
+                    this.showIncidentRepSuccessModal = true
+                    this.getMyIncidentReports(this.id)
+                    .then(res => {
+                        this.myreports = res.data
+                    })
+                }
+            })
+            this.first_name = ""
+            this.middle_initial = ""
+            this.last_name = ""
+            this.rep_location = ""
+            this.rep_indivtype = ""
+            this.rep_gender = ""
+            this.rep_desc = ""
+            this.rep_centerid = ""
+            this.center_name = ""
+            this.citizen_name = ""
+            this.showCenterName = false
             this.showAttachImage = false
-            document.getElementById('attach_image').innerHTML = "Attach Image"
-        }
-    },*/
-    /*uploadImage(e){
-        let vm = this;
-        if(this.images.length === 2) {
-            alert('Maximum of 2 images can be uploaded.')
-        } else {
-            var selectedFiles = e.target.files;
-            for (let i = 0; i < selectedFiles.length; i++){
-                console.log(selectedFiles[i]);
-                this.images.push(selectedFiles[i]);
+            for(let i = 0; i < this.imagesList.length; i++) {
+                this.imagesList.splice(i, (i+1));
             }
-            for (let i = 0; i <this.images.length; i++){
-                let reader = new FileReader(); //instantiate a new file reader
-                reader.addEventListener('load', function(){
-                this.$refs['image' + parseInt(i)][0].src = reader.result;
-                }.bind(this), false);  //add event listener
-                reader.readAsDataURL(this.images[i]);
-            }
+            this.handleImages()
         }
-    },*/
+    },
     uploadImage(e) {
-      if(this.images.length === 2) {
+      if(this.imagesList.length === 2) {
           alert('You can only upload up to 2 images.')
       } else {
         let vm = this;
@@ -695,13 +740,12 @@ export default {
             console.log(selectedFiles[i])
             this.images.push(selectedFiles[i]);
         }
-
         for (let i = 0; i < this.images.length; i++) {
             let reader = new FileReader();
             reader.onload = (e) => {
-                this.$refs.imageData[i].src = reader.result;
+                this.$refs.image[i].src = reader.result;
                 //this.imageData = e.target.result
-                console.log(this.$refs.imageData[i].src);
+                console.log(this.$refs.image[i].src);
             };
             reader.readAsDataURL(this.images[i]);
         }
@@ -709,26 +753,27 @@ export default {
     },
     handleImages(e){
         this.imagesList = [];
-        var selectedFiles = e.target.files;
-        for (let i = 0; i < selectedFiles.length; i++) {
-            console.log(selectedFiles[i])
-            this.images.push(selectedFiles[i]);
+        this.selectedFiles = e.target.files;
+        if(this.selectedFiles.length > 2) {
+            alert('You can only upload up to 2 images.')
+            document.getElementById("rept_images").value = null
+        } else { 
+
+            let fileList = Array.prototype.slice.call(e.target.files);
+            fileList.forEach(f => {
+                if(!f.type.match("image.*")) {
+                    return;
+                }			
+                let reader = new FileReader();
+                let that = this;
+                reader.onload = function (e) {
+                    that.imagesList.push(e.target.result);
+                }
+                reader.readAsDataURL(f);
+            });
         }
-        let fileList = Array.prototype.slice.call(e.target.files);
-        fileList.forEach(f => {
-            if(!f.type.match("image.*")) {
-                return;
-            }			
-        let reader = new FileReader();
-        let that = this;
-        reader.onload = function (e) {
-          that.imagesList.push(e.target.result);
-        }
-        reader.readAsDataURL(f); 
-      });
     },
     removeImage(index) {
-        alert('hello')
         this.imagesList.splice(index, 1);
         this.$refs.images[index].name = ""
     },
@@ -748,8 +793,8 @@ export default {
         this.showConfirmDeleteModal = false
         this.deleteReportedIncident(id)
         .then(res => {
-                this.myreports.splice(a, 1)
-            })
+            this.myreports.splice(a, 1)
+        })
     },
     hideConfirmDelete(){
         this.showConfirmDeleteModal = false
@@ -765,29 +810,74 @@ export default {
             this.rptimg1 = v
         }
     },
-    showReportImage(){
-        return this.rptimg1
-    }
-  },
-    mounted(){
+    showReportImage(a){
+        return a;
+    },
+    getValueByKey2(v, i) {
+        let myimg
+        if(i === 'image_name2') {
+            myimg = v
+            this.rptimg2 = v
+        }
+    },
+    showReportImage2(){
+        return this.rptimg2
+    },
+    zoomInImage(a){
+        this.showZoomInImageModal = true
+        this.rept_image = a
+        this.w_size = "470px"
+        this.h_size = "400px"
+    },
+    getAllMyIncidentReports() {
         this.getMyIncidentReports(this.id)
         .then(res => {
             this.myreports = res.data
         })
     },
-    updated(){
-        const fileSelect = document.getElementById("fileSelect"),
-        fileElem = document.getElementById("fileElem"),
-        fileList = document.getElementById("fileList");
-
-        fileSelect.addEventListener("click", function (e) {
-        if (fileElem) {
-            fileElem.click();
+    cancelReport()
+    {
+        if(this.first_name !== "" ||
+        this.last_name !== "" ||
+        this.rep_location !== "" ||
+        this.rep_indivtype !== "" ||
+        this.rep_gender !== "" ||
+        this.rep_desc !== "")
+        {
+            this.showCancelReportModal = true
         }
-        e.preventDefault(); // prevent navigation to "#"
-        }, false);
-
-        fileElem.addEventListener("change", handleFiles, false);
+        else{
+            this.showReportIncidentModal = false
+        }
+    },
+    confirmCancelReport(){
+        this.showReportIncidentModal = false
+        this.showCancelReportModal = false
+        this.first_name = ""
+        this.middle_initial = ""
+        this.last_name = ""
+        this.rep_location = ""
+        this.rep_indivtype = ""
+        this.rep_gender = ""
+        this.rep_desc = ""
+        this.rep_centerid = ""
+        this.center_name = ""
+        this.citizen_name = ""
+        this.showCenterName = false
+        this.showAttachImage = false
+        this.required_fields = ""
+        for(let i = 0; i < this.imagesList.length; i++) {
+            this.imagesList.splice(i, (i+1));
+        }
+        this.handleImages()
+        
+    },
+    hideCancelReport(){
+        this.showCancelReportModal = false
+    }
+  },
+    mounted () {
+        this.getAllMyIncidentReports()
     },
     computed: {
         filteredReports() {
@@ -802,8 +892,18 @@ export default {
                 report.center_name.toLowerCase().match(this.search.toLowerCase()) ||
                 report.reported_on.toLowerCase().match(this.search.toLowerCase())
             })
+        },
+        lists () {
+            const items = this.myreports
+            // Return just page of items needed
+            return items.slice(
+                (this.currentPage - 1) * this.perPage,
+                this.currentPage * this.perPage
+            )
+        },
+        totalRows () {
+            return this.myreports.length
         }
-    
     }
 }
 </script>
@@ -812,7 +912,7 @@ export default {
 .container{
     margin-left:120px;
     max-width:100%;
-    height:600px;
+    height:800px;
     width:1220px;
     color:#042331;
     font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
@@ -851,7 +951,6 @@ table{
 }
 .modal-mask {
   position: fixed;
-  z-index: 9998;
   top: 0;
   left: 0;
   width: 100%;
@@ -859,7 +958,7 @@ table{
   background-color: rgba(0, 0, 0, .5);
   display: table;
   transition: opacity .3s ease;
-  z-index: 1
+  z-index: 100;
 }
 .modal-wrapper {
   display: table-cell;
@@ -878,12 +977,12 @@ table{
 }
 .btn-design{
     text-decoration: none;
-    background:#042331;
+    background-color:#042331;
     color: white;
     border-radius: 4px;
 }
 .btn-design:hover{
-    background: white;
+    background-color: white;
     color: #042331;
     border:1px solid #042331;
 }
@@ -892,7 +991,7 @@ table{
   font-style: italic;
 }
 .btn-actions{
-    width: 70%;
+    width: 60%;
 }
 .preview{
     width: 200px;
@@ -903,5 +1002,64 @@ table{
     line-height: 0%;
     font-style: italic;
     font-size: 10pt;
+}
+.rept_image{
+    width: 600px;
+    height: 600px;
+}
+.image_rept{
+    cursor: pointer;
+}
+.image_rept_edit{
+    width: 200px;
+    height: 200px;
+}
+.err_message{
+  color:red;
+  font-style: italic;
+}
+img.preview{
+    max-width:150px;
+    max-height:150px;
+}
+.row_header{
+    display: flex;
+    font-size: 14px;
+    padding: 0;
+    margin-top: 15px;
+}
+.row_header li{
+    font-size: 14px;
+    list-style-type: none;
+    width: 125px;
+    padding-right: 20px;
+    font-weight: 500;
+}
+.rept_header{
+    font-size: 14px;
+    padding: 2px;
+    display: flex;
+    background-color: #f5f5f0;
+}
+.rept_info{
+    font-size: 14px;
+    list-style-type: none;
+    width: 125px;
+    padding-right: 20px;
+}
+.rept_images{
+    list-style-type: none;
+    display: flex;
+    padding:0;
+    margin:0;
+}
+.row_header_container{
+    border-bottom: 1px solid grey;
+    margin-bottom: 10px;
+}
+.page-item{
+    display: flex;
+    position: relative;
+    z-index: 50;
 }
 </style>

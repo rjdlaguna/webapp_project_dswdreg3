@@ -11,7 +11,7 @@
           <div class="col-md-4 ml-3">
             <form enctype="multipart/form-data">
               <b-card title="" style = "width:15rem">
-                  <img :src="getPicURL(displayImage)" name ="profile_image" id="profile_image" class = "m-auto" width = "200" height = "200"/>
+                  <img :src="getPicURL(displayImage.image_name)" name ="profile_image" id="profile_image" class = "m-auto" width = "200" height = "200"/>
                   <button type="button" class = "btn" title="Upload Picture" id = "upload_pic" @click="showUploadPicModal=true"><i class = "fas fa-upload fa-2x" name = 'profile_pic'></i></button>
               </b-card>
             </form>
@@ -31,12 +31,13 @@
                             </button>
                         </div>
                         <form v-on:submit.prevent="uploadProfilePicture" enctype="multipart/form-data" id="imageForm">
-                          <div class="modal-body flex">
+                          <div class="modal-body" id="modal-image">
                             <b-card title = "" style="width: 15rem;" id = "profile_image-container">
                               <input type="hidden" v-model = "user_id" id = "user_id" name ="user_id"/>
-                              <img :src="showImage(displayImage)" name = 'profile_image' id = "profile_image" class = "m-auto" width = "200" height = "200"/>
+                              <img :src="showImage(displayImage.image_name)" name = 'profile_image' id = "profile_image" class = "m-auto" width = "200" height = "200"/>
                               <input type='file' id="image_file" name="image_file" style="display:none" ref="file" accept="image/*" v-on:change="handleFileUpload()" />
-                              <button class="btn btn-primary ml-5 mt-3" onclick="document.getElementById('image_file').click()">Select Image</button>
+                              <!--<button class="btn btn-primary ml-5 mt-3" onclick="document.getElementById('image_file').click()">Select Image</button>-->
+                              <button type="button" class="btn btn-primary ml-5 mt-3" onclick="document.getElementById('image_file').click()">Select Image</button>
                               <span class="err_message">{{noImageSelected}}</span>
                             </b-card>                                                
                           </div>
@@ -62,7 +63,7 @@
                   <h5>Personal Information</h5>
                   <input type="hidden" v-model="user._id" id="id" />
                   <p><label for="Name">Name: {{user.first_name + ' ' + user.middle_initial + '. ' + user.last_name}}</label></p>
-                  <p><label for="Birthdate">Birthdate {{formatBirthDate(user.birthdate)}}</label></p>
+                  <p><label for="Birthdate">Date of Birth: {{formatBirthDate(user.birthdate)}}</label></p>
                   <p><label for="Address">Address: {{user.address}}</label></p>
                   <p><label for="Mobile Number">Mobile number: {{user.mobile_no}}</label></p>
                 </div>
@@ -74,7 +75,7 @@
                 <div class="account_items">
                   <h5> User Account Credentials</h5>
                   <p><label for="Email">Email address: {{user.email}}</label></p>
-                  <p><label for="Username">Username: {{user.username}}</label></p>
+                  <!--<p><label for="Username">Username: {{user.username}}</label></p>-->
                   <p><label for="Password">Password: {{this.password}}</label></p>
                 </div>
                 <div class ="account_btn">
@@ -97,12 +98,13 @@
                             <span aria-hidden="true" @click="showEditInfoModal = false">&times;</span>
                           </button>
                         </div>
+                        <p class = "err_message ml-3">{{required_fields}}</p>
                         <div class="modal-body">
                           <div class="modal-body-section1">
                             <div class="form-group">
                               <ValidationProvider name = "first_name" rules="required" v-slot="{ errors }">
                                   <label for="first_name">First Name<span class = 'required_data'>*</span></label>
-                                  <input type="text" v-model="user.first_name" class="form-control" id = "first_name" name="first_name" placeholder="Enter First Name">
+                                  <input type="text" v-model="user.first_name" class="form-control" id="first_name" name="first_name" placeholder="Enter First Name">
                                   <p v-if="false">{{first_name = user.first_name}}</p>
                                   <span class = "err_message">{{ errors[0] }}</span>
                               </ValidationProvider>
@@ -136,8 +138,18 @@
                             <div class="form-group">
                               <ValidationProvider name = "birthdate" rules="required" v-slot="{ errors }">
                                 <label for="birthdate">Date of birth:<span class = 'required_data'>*</span></label>
-                                <input type="date" v-model="birthdate" class="form-control" name="birthdate">
-                                <p>{{birthdate=formatBirthDate2(user.birthdate)}}</p>
+                                <b-form-datepicker 
+                                id="birthdate"
+                                v-model="user.birthdate" 
+                                class="mb-2"
+                                right
+                                :date-format-options="{ year: 'numeric', month: '2-digit', day: '2-digit' }"
+                                locale="en"
+                                placeholder="Choose a date"
+                                >
+                                </b-form-datepicker>
+                                <p style="display:none;">{{birthdate2 = user.birthdate}}</p>
+                                <input type="hidden" v-model="birthdate2">
                                 <span class = "err_message">{{ errors[0] }}</span>
                               </ValidationProvider>
                             </div>
@@ -216,7 +228,7 @@
                                 <p class = "err_message">{{ errors[0] }}</p>
                               </ValidationProvider>
                               <ValidationProvider name = "retyped_new_password" rules="required|retyped_new_password:@new_password" v-slot="{ errors }">
-                                <label for="Retype New Password">Retype New Password</label>
+                                <label for="Retype New Password">Confirm New Password</label>
                                 <input type = "password" class="form-control" id = "retyped_new_password" v-model="retyped_new_password" name="retyped_new_password" />
                                 <p class = "err_message">{{ errors[0] }}</p>
                               </ValidationProvider>
@@ -358,10 +370,12 @@ export default {
       last_name:'',
       mobile_no:'',
       birthdate:'',
+      birthdate2: '',
       user_address:'',
       curr_password:'',
       new_password:'',
       retyped_new_password:'',
+      required_fields: '',
       passlen_textColor:'',
       upperc_textColor:'',
       lowerc_textColor:'',
@@ -401,16 +415,15 @@ export default {
   methods: {
   ...mapActions(['getProfile', 'displayProfilePic', 'uploadProfilePic', 'updateAccountInfo', 'changeUserPassword']),
   formatBirthDate (date) {
-    return moment(date, 'YYYY-MM-DD').format('MMMM DD, YYYY');
+    return moment(date, 'YYYY-MM-DD').format('DD/MM/YYYY');
     },
-  formatBirthDate2 (date) {
-    return moment(date, 'YYYY-MM-DD').format('DD-MM-YYYY');
-    },
-  onFileSelected (event) {
+  /*onFileSelected (event) {
       this.selectedFile = event.target.files[0]
       this.selectedImage = true
-    },
-  handleFileUpload () {
+    },*/
+  handleFileUpload (e) {
+    this.selectedFile = event.target.files[0]
+    this.selectedImage = true
     this.noImageSelected = ''
     this.isUploading = true
     this.file = this.$refs.file.files[0]
@@ -441,14 +454,12 @@ export default {
     this.file = this.$refs.file.files[0]
     fd.append('image_file',this.file)
     fd.append('user_id', this.user_id)
-
     if(!this.selectedImage) {
       this.noImageSelected = "Please select an image to upload."
     } else {
       this.uploadProfilePic(fd)
       .then(res => {
         if(res.data.success) {
-          // alert('Profile picture successfully uploaded.')
           this.showUploadProfilePicSuccessModal = true
           this.displayProfilePic(this.id).then(res => {
           this.displayImage = res.data
@@ -527,19 +538,26 @@ export default {
         }
     },
   updateAccount() {
-    this.first_name = document.getElementById('first_name').value
-    this.middle_initial = document.getElementById('middle_initial').value
-    this.last_name = document.getElementById('last_name').value
-    this.mobile_no = document.getElementById('mobile_no').value
-    this.address = document.getElementById('user_address').value
-    
-    let user_info = {
+    this.first_name = document.getElementById("first_name").value
+    this.middle_initial = document.getElementById("middle_initial").value
+    this.last_name = document.getElementById("last_name").value
+    this.mobile_no = document.getElementById("mobile_no").value
+    this.address = document.getElementById("user_address").value
+    if(this.first_name === '' ||
+      this.last_name === '' ||
+      this.mobile_no === '' ||
+      this.address === '' ||
+      this.birthdate2 === '')
+    {
+      this.required_fields = "Please provide input on the required fields (*)."
+    } else {
+      let user_info = {
         _id: this.user_id,
         first_name: this.first_name,
         middle_initial: this.middle_initial,
         last_name: this.last_name,
         mobile_no: this.mobile_no,
-        birthdate: this.birthdate,
+        birthdate: this.birthdate2,
         address: this.address
     }
     this.updateAccountInfo(user_info)
@@ -547,11 +565,13 @@ export default {
       if(res.data.success) {
         this.showEditInfoModal = false
         this.showUserProfileEditSuccessModal = true
-      } else {
-        
-      }
+        this.getProfile().then( res => {
+          this.user_id = res.data.user._id
+        })
+      } 
     })
-  },
+  } 
+},
   checkStrongPassword() {
       let orig_pass_len = 0;
       let password_len = this.new_password.length
@@ -693,8 +713,6 @@ export default {
     color: #042331;
     border:1px solid #042331;
 }
-
-
 sidebar-menu{
     z-index: 100;
 }
@@ -761,5 +779,9 @@ sidebar-menu{
 }
 .check{
   color: green;
+}
+#modal-image{
+  display: flex;
+  justify-content: space-around;
 }
 </style>
