@@ -7,21 +7,6 @@
                 <div class="banner-content">
                   <p id = "welcome_msg">Welcome to DSWD Region III Centers and Institutions Records Management and Incident Reporting</p>
                 </div>
-                      <!-- <transition-group name='fade' tag='carousel'>
-                        <div
-                        v-for="number in [currentNumber]"
-                        :key='number'
-                        >
-                          <img
-                              :src="currentImage"
-                              v-on:mouseover="stopRotation"
-                              v-on:mouseout="startRotation"
-                              width = "1305"
-                              height = "500"
-                              class = "carousel ml-2"
-                              />
-                      </div>
-                    </transition-group> -->
               </div> 
           </div>
           

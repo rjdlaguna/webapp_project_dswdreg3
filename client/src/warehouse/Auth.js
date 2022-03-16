@@ -326,7 +326,7 @@ const actions = {
     commit
   }, logs_info) {
     commit('deleteuserlogs_request')
-    let res = await axios.post('http://localhost:9000/api/users/deleteuserlogs/', logs_info)
+    let res = await axios.delete('http://localhost:9000/api/users/deleteuserlogs/' + logs_info)
     if(res.data.success !== undefined) {
       commit('deleteuserlogs_success')
     }

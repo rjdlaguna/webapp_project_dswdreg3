@@ -6,6 +6,7 @@ const jwt = require("jsonwebtoken")
 const bcrypt = require("bcryptjs")
 const multer = require("multer")
 const path = require('path')
+const moment = require('moment-timezone')
 
 var passport = require('passport');
 const key = require('../../config/keys').secret;
@@ -152,100 +153,93 @@ users.post('/registeruser', (req, res) => {
         confirm_password
     } = req.body
 
-    //Check for the unique username
-    // User.findOne({
-    //     username: username
-    // }).then(user => {
-    //     if(user) {
-    //         console.log('Username is already taken...')
-    //         return res.status(500).json({
-    //             error: "true",
-    //             msg: "Username is already taken."
-    //         })
-    //     } else {
-                //Check for the unique email
-                User.findOne({
-                    email: email
-                }).then(user => {
-                    if(user) {
-                        console.log('Email is already registered...')
-                        return res.status(500).json({
-                            failed: 'true',
-                            msg: "Email is already registered."
-                        })
-                    } else {
-                            // console.log(email)
-                            const token = jwt.sign({first_name,last_name,email,password}, process.env.JWT_ACC_ACTIVATE,{expiresIn:'20m'})
-                            const data = {
-                                from: 'admin@dswdregion3centersandinstitutions.com',
-                                to: email,
-                                subject: 'Account Activation Link',
-                                html:`
-                                <h3>Please click on the provided link to activate your account</h3>
-                                <a href = '${process.env.CLIENT_URL}/verifyemail/${token}'>Verify Email Address</a>
-                                ` 
-                            };
-                            mg.messages().send(data, function (error, body) {
-                                if(error) {
-                                    return res.json({
-                                        error: err.message
-                                    })
-                                }
-                                // return res.json({message: 'Kindly check your email to activate your account.'})
-                            });
-                                //The data is valid and user can be registered       
-                                let newUser = new User({
-                                    first_name,
-                                    middle_initial,
-                                    last_name,
-                                    mobile_no,
-                                    birthdate,
-                                    address,
-                                    email,
-                                    password,
-                                    confirm_password,
-                                    user_type,
-                                    created,
-                                    isVerified
-                                });
-                                bcrypt.genSalt(10, (err, salt) => {
-                                    bcrypt.hash(newUser.password, salt, (err, hash) => {
-                                        if(err) throw err;
-                                        newUser.password = hash;
-                                        newUser.save().then(user => {
-                                            User.findOne().sort({created: -1}).exec(function(err, info) {
-                                                if (err) {return err}
-                                                u_id = info.id
-                                                console.log(info.id)
-                                            var img = fs.readFileSync('../webapp_project/client/src/assets/images/temp_pic.jpg')
-                                            //var img = fs.readFileSync('../vue/client/src/assets/images/temp_pic.jpg')
-                                            var encode_image = img.toString('base64')
-                                            
-                                            const TempPicData = {
-                                                profile_pic: {
-                                                    contentType: '"image/jpg"',
-                                                    data: Buffer.from(encode_image).toString('base64')
-                                                },
-                                                user_id: u_id,
-                                                image_path: '@/assets/images/temp_pic.jpg',
-                                                image_name: 'temp_pic.jpg'
-                                            }
+    //Check for the unique email
+    User.findOne({
+        email: email
+    }).then(user => {
+        if(user) {
+            console.log('Email is already registered...')
+            return res.json({
+                error: "Email is already registered"
+            })
+            /*return res.status(202).json({
+                success: 'false',
+                msg: "Email is already registered."
+            })*/
+        } else {
 
-                                            ProfilePicture.create(TempPicData)
-                                            .then(temppic=> {
-                                                // res.json({ status: user.email + ' registered' })
-                                                console.log('Temporary Profile Picture Saved.')
-                                            })
-                                        })
-                                            return res.status(201).json({
-                                                success: 'true',
-                                                msg: "User is successfully registered. Kindly check your email to activate your account."
-                                            })
-                                        })
-                                    })
-                                })
+                const token = jwt.sign({first_name,last_name,email,password}, process.env.JWT_ACC_ACTIVATE,{expiresIn:'20m'})
+                const data = {
+                    from: 'admin@dswdregion3centersandinstitutions.com',
+                    to: email,
+                    subject: 'Account Activation Link',
+                    html:`
+                    <h3>Please click on the provided link to activate your account</h3>
+                    <a href = '${process.env.CLIENT_URL}/verifyemail/${token}'>Verify Email Address</a>
+                    ` 
+                };
+                mg.messages().send(data, function (error, body) {
+                    if(error) {
+                        /*return res.json({
+                            error: error.message
+                        })*/
+                        console.log(error.message)
                     }
-                })
+                    // return res.json({message: 'Kindly check your email to activate your account.'})
+                });
+                    //The data is valid and user can be registered       
+                    let newUser = new User({
+                        first_name,
+                        middle_initial,
+                        last_name,
+                        mobile_no,
+                        birthdate,
+                        address,
+                        email,
+                        password,
+                        confirm_password,
+                        user_type,
+                        created,
+                        isVerified
+                    });
+                    bcrypt.genSalt(10, (err, salt) => {
+                        bcrypt.hash(newUser.password, salt, (err, hash) => {
+                            if(err) throw err;
+                            newUser.password = hash;
+                            newUser.save().then(user => {
+                                User.findOne().sort({created: -1}).exec(function(err, info) {
+                                    if (err) {return err}
+                                    u_id = info.id
+                                    console.log(info.id)
+                                var img = fs.readFileSync('../webapp_project/client/src/assets/images/temp_pic.jpg')
+                                //var img = fs.readFileSync('../vue/client/src/assets/images/temp_pic.jpg')
+                                var encode_image = img.toString('base64')
+                                
+                                const TempPicData = {
+                                    profile_pic: {
+                                        contentType: '"image/jpg"',
+                                        data: Buffer.from(encode_image).toString('base64')
+                                    },
+                                    user_id: u_id,
+                                    image_path: '@/assets/images/temp_pic.jpg',
+                                    image_name: 'temp_pic.jpg'
+                                }
+
+                                ProfilePicture.create(TempPicData)
+                                .then(temppic=> {
+                                    // res.json({ status: user.email + ' registered' })
+                                    console.log('Temporary Profile Picture Saved.')
+                                })
+                            })
+                                return res.status(201).json({
+                                    success: 'true',
+                                    msg: "User is successfully registered. Kindly check your email to activate your account."
+                                })
+                            })
+                        })
+                    })
+        }
+    })
 })
 
 // Get User Logs
@@ -259,12 +253,17 @@ users.get('/getuserlogs/:id', (req, res) => {
     })
 })
 
-users.delete('/deleteuserlogs', (req, res) => {
-    let logs = req.body
+users.delete('/deleteuserlogs/:logs_info', (req, res) => {
+    console.log('deleting logs')
+    var logs = [];
+    logs = req.params.logs_info.split(',')
+    for (let logID of logs) {
+        UserLogs.deleteOne({_id:logID}, (err, result) => {
+            if(err) res.json(err)
+        })
+    }
+    res.json('User log successfully removed...') 
 
-    logs.forEach( id => {
-        console.log(id)
-    })
 })
 
 users.post('/addcenteremployee', upload.single('image_file'), (req, res) => {
@@ -490,8 +489,9 @@ users.get('/edituserdata/:id', (req, res) => {
 })
 //User Login (Working)
 users.post('/login', (req, res) => {
+    let email = req.body.loginemail
     User.findOne({
-        email: req.body.loginemail
+        email: email
     }).then(user => {
         if (!user) {
             res.json({ error: 'User does not exist' })
@@ -523,9 +523,13 @@ users.post('/login', (req, res) => {
                         token: `Bearer ${token}`,
                         msg: 'You are now logged in.'
                     })
+                    
+                    let currentDate = moment.tz(new Date(), "America/New_York");
+                    let philDate = currentDate.clone().tz("Asia/Manila").format()
                     let newlog = new UserLogs({
                         user_id: user._id,
                         user_activity: "Logged in to account",
+                        timestamp: philDate
                     });
                     newlog.save()
                     .then(userlog => {
@@ -593,9 +597,12 @@ users.post("/uploadprofilepic/:id", upload.single('image_file'), (req,res) => {
     ProfilePicture.findOneAndUpdate({user_id:id},ProfilePicData)
     .then(profpic => {
         // res.json({ status: 'Profile Picture Successfully Uploaded...' })
+        let currentDate = moment.tz(new Date(), "America/New_York");
+        let philDate = currentDate.clone().tz("Asia/Manila").format()
         let newlog = new UserLogs({
             user_id: id,
             user_activity: "Uploaded profile picture.",
+            timestamp: philDate
         });
         newlog.save()
         .then(userlog => {
@@ -669,9 +676,12 @@ users.post('/updateaccountinfo/:id', (req, res) => {
             info.position = position
             info.save().then(()=>{
 
+                let currentDate = moment.tz(new Date(), "America/New_York");
+                let philDate = currentDate.clone().tz("Asia/Manila").format('YYYY-MM-DDThh:mm:ss A')
                 let newlog = new UserLogs({
                     user_id: id,
                     user_activity: "Updated user account information.",
+                    timestamp: philDate
                 });
                 newlog.save()
                 .then(userlog => {
@@ -870,9 +880,9 @@ users.get('/getcenterprofile/:id', (req,res) => {
     CentersProfile.findById(id, function(err, center){
         if(err) {
             res.json(err)
+        } else {
+            res.json(center)
         }
-        // console.log(center)
-        res.json(center)
         /*return res.status(201).json({
             success: 'true',
             msg: "Center was successfully registered.",

@@ -13,7 +13,7 @@
                 <b-card-text>
                     Display the number of incidents you reported and the number of centers and institutions. 
                 </b-card-text>
-                <router-link :to="{name:'dashboard', params:{id: user._id}}" class="btn btn-primary">Click here</router-link>
+                <router-link :to="{name:'dashboard', params:{id: user_data.user._id}}" class="btn btn-primary">Click here</router-link>
             </b-card>
         </div>
         <div class = "page_content centers col-sm-4 mt-3">
@@ -21,7 +21,7 @@
                 <b-card-text>
                     Enable to report to specific centers or institution. Displays the different centers and institutions in Region III.
                 </b-card-text>
-                <router-link :to="{name:'centersinstitutionslist', params:{uid:user._id}}" class="btn btn-primary">Click here</router-link>
+                <router-link :to="{name:'centersinstitutionslist', params:{uid:user_data.user._id}}" class="btn btn-primary">Click here</router-link>
             </b-card>
         </div>
         <div class = "page_content centers col-sm-4 mt-3">
@@ -29,7 +29,7 @@
                 <b-card-text>
                     Enable you to send report an incident and show all the incidents you have reported.
                 </b-card-text>
-                <router-link :to="{name:'myincidentreports', params:{id:user._id}}" class="btn btn-primary">Click here</router-link>
+                <router-link :to="{name:'myincidentreports', params:{id:user_data.user._id}}" class="btn btn-primary">Click here</router-link>
             </b-card>
         </div>
     </div>
@@ -76,6 +76,7 @@ export default {
     this.getProfile()
     .then(res => {
       this.user_data = res.data
+      // alert(JSON.stringify(this.user_data.user._id))
     })
   }
 }

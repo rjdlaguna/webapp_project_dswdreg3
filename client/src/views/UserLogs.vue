@@ -19,9 +19,9 @@
 
                 <div class = "row_records">
                     <p v-if="hasLogs" id="emptyLogs">No logs has been recorded</p>
-                    <ul class="logs_header" v-for="log in logs" v-bind:key="log.user_id">
+                    <ul class="logs_header" v-for="(log, index) in logs" v-bind:key="log.user_id">
                         <li style = "display: none">{{log._id}}</li>
-                        <li class = "logs_info"><input type="checkbox" id="checkbox" value="checked" @change="addToDeleteList(log._id)" @click="checkValue" ></li>
+                        <li class = "logs_info"><input type="checkbox" id="checkbox" value="checked" @change="toggleToDeleteList(log._id, index)" @click="checkValue" ></li>
                         <li class = "logs_info">{{ formatLogDate(log.timestamp)}}</li>
                         <li class = "logs_info">{{ formatLogTime(log.timestamp)}}</li>
                         <li class = "logs_info">{{ log.user_activity}}</li>
@@ -55,7 +55,8 @@ export default {
             logs: [],
             haslogs: true,
             isChecked: false,
-            logstodelete: []
+            logstodelete: [],
+            logsIndex: [],
         }
     },
     methods: {
@@ -64,26 +65,40 @@ export default {
             return moment(date, 'YYYY-MM-DD').format('MM/DD/YYYY');
         },
         formatLogTime (time) {
-            return moment(time, 'YYYY-MM-DDThh-mm-ss').format('h:mm:ss A');
+            return moment(time, 'YYYY-MM-DDThh-mm-ss').format('hh:mm:ss A');
         },
-        addToDeleteList (id) {
-            let logData = {
-                log_id: id,
-                isChecked: this.isChecked
-            }
-            if(id){
-                this.logstodelete.push(logData)
+        toggleToDeleteList (id, index) {
+            // let logData = {
+            //     log_id: id,
+            //     isChecked: this.isChecked
+            // }
+            alert(id + " " + index)
+            if(this.isChecked){
+                this.logstodelete.push(id)
+                this.logsIndex.push(index)
+            } else if (!this.isChecked){
+               this.logstodelete.splice(index, 1)
+               this.logsIndex.splice(index, 1)
             }
         },
         checkValue(e){
             this.isChecked = e.target.checked
         },
         deleteSelectedLogs(){
-            this.deleteSelectedLogs(this.logstodelete)
-            .then(res => {
+            if(this.logstodelete.length > 0)
+            {
+                this.deleteUserLogs(this.logstodelete)
+                .then(res => {
+                for (let index = 0; index < this.logsIndex.length; index++) {
+                    this.logsIndex.splice(this.logsIndex[index],1)
+                }
                 alert('Log successfully deleted.')
                 return res
-            })
+                })
+            } else {
+                alert('No logs to delete...')
+            }
+           
         }
     },
     created () {
@@ -95,7 +110,6 @@ export default {
             {
                 this.haslogs = false
             }
-            
     }
 }
 </script>

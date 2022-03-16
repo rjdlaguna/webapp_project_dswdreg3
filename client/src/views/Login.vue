@@ -119,5 +119,4 @@ export default {
   text-align: center;
   margin-top:1em;
 }
-
 </style>

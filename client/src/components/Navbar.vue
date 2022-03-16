@@ -2,8 +2,13 @@
 <div>
       <div class = "b-navbar">
         <b-navbar toggleable="lg" type="dark">
-          <b-navbar-brand><router-link id="dswd_homelink" to="/"><img :src="require('../assets/images/dswd_logo.png')" width="50" height="50" alt="" id = "logo"/><span id="dswd_home">DSWD R3</span></router-link></b-navbar-brand>
+          <b-navbar-brand>
+            <router-link id="dswd_homelink" to="/"><img :src="require('../assets/images/dswd_logo.png')" width="50" height="50" alt="" id = "logo"/>
+              <span id="dswd_home_line1">DSWD RIII</span>
+            </router-link>
+          </b-navbar-brand>
           <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
+
           <b-collapse id="nav-collapse" is-nav>
 
             <!-- Right aligned nav items -->
@@ -45,12 +50,12 @@
                           </ValidationProvider>
                         </div>
                         <div id ="forgotpass">
-                          <p>Forgot your password? <button type="button" class="btn btn-design" @click="showForgotPasswordModal=true; showLoginModal=false">Click here</button></p>
+                          <p>Forgot your password?<button type="button" class="btn" id="btn-forgot-pass" @click="showForgotPasswordModal=true; showLoginModal=false">Click here</button></p>
                         </div>
                       </div>
                       <div class="modal-footer">
                         <div class form-group>
-                          <input type="submit" class="btn btn-primary mr-3" value="Login">
+                          <input type="submit" class="btn btn-login mr-3" value="Login">
                           <button type="button" class="btn btn-secondary" @click="hideLoginModal">Close</button>
                         </div>
                       </div>
@@ -107,7 +112,7 @@
                           <div class="form-group">
                             <ValidationProvider name = "mobile_no" rules="required|digits:11" v-slot="{ errors }">
                               <label for="mobilephone_no">Mobile Phone No.<span class = 'required_data'>*</span></label>
-                              <VuePhoneNumberInput v-model="mobile_no" />
+                              <!--<VuePhoneNumberInput v-model="mobile_no" />-->
                               <input type="tel" v-model="mobile_no" v-bind="mobile_no" maxlength="11" class="form-control" name="mobile_no" placeholder="09xx3456789" required pattern="[0-9]{11}" />
                               <span class = "err_message">{{ errors[0] }}</span>
                             </ValidationProvider>
@@ -182,6 +187,7 @@
                             <label for="email">Email Address<span class = 'required_data'>*</span></label>
                             <input type="text" v-model="email" class="form-control" name="email" placeholder="Enter Email">
                             <span class = "err_message">{{ errors[0] }}</span>
+                            <p class = "err_message">{{error_signup}}</p>
                           </ValidationProvider>
                         </div>
                         <!--<div class="form-group">
@@ -295,7 +301,7 @@
                       </div>
                       <div class="modal-footer">
                         <div class form-group>
-                          <button type="button" class="btn btn-primary mr-3" @click="resetPass">Reset Password</button>
+                          <button type="button" class="btn btn-design mr-2 " @click="resetPass">Reset Password</button>
                           <button type="button" class="btn btn-secondary" @click="showForgotPasswordModal = false; showLoginModal=true">Cancel</button>
                         </div>
                       </div>
@@ -345,6 +351,7 @@ export default {
       loginemail: '',
       loginpassword:'',
       error_login:'',
+      error_signup:'',
       login_message: '',
       first_name: '',
       middle_initial: '',
@@ -373,6 +380,7 @@ export default {
       showCheck5:false,
       pass_num: 0,
       logdata: '',
+      regdata: '',
       emailadd: ''
     }
   },
@@ -435,6 +443,9 @@ export default {
       // this.loginemail = ""
       // this.loginpassword = ""
     },
+    existingEmail () {
+      this.error_signup = "Email already registered."
+    },
     loginMessage () {
       this.login_message = "User successfully registered. You can now login to your account."
     },
@@ -462,6 +473,7 @@ export default {
         confirm_password: this.confirm_password
         }
         this.register(user).then(res => {
+          this.regdata = Object.values(res.data)
           if (res.data.success) {
             this.first_name =""
             this.middle_initial = ""
@@ -474,6 +486,8 @@ export default {
             this.confirm_password = ""
             this.showRegisterModal2 = false
             this.showRegistrationSuccessModal = true
+          } else if(String(this.regdata) === 'Email is already registered'){
+            this.existingEmail();
           }
         })
       }
@@ -704,13 +718,18 @@ export default {
   border: 1px solid #fff;
   margin-top: 5px
 }
-#dswd_home{
+#dswd_home_line1{
+  font-size: 20pt;
+  font-weight: bold;
+}
+#dswd_home_line2{
   font-size: 20pt;
   font-weight: bold;
 }
 #dswd_homelink{
   text-decoration: none;
   color:white;
+  width: 100px;
 }
 .nav-link{
     color:white;
@@ -748,9 +767,6 @@ export default {
 .modal-title, .modal-body {
   color:#042331;
 }
-#forgotpass{
-  display: block;
-}
 .err_message{
   color:red;
   font-style: italic;
@@ -784,6 +800,25 @@ export default {
 .btn-design:hover{
   color: #042331;
   background:#fff;
+  border: 1px solid #042331;
+}
+#btn-forgot-pass{
+  color: #06f;
+  font-size: 11pt;
+  padding: 2px;
+}
+#btn-forgot-pass:hover{
+  color: #06f;
+  font-size: 11pt;
+  text-decoration: underline;
+}
+.btn-login{
+  background: #042331;
+  color:#fff;
+}
+.btn-login:hover{
+  background: #fff;
+  color:#042331;
   border: 1px solid #042331;
 }
 </style>

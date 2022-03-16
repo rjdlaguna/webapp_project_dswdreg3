@@ -9,23 +9,50 @@
     <div class = "nav">
       <ul class = "nav-link">
         <li class="nav-link-item">
-          <router-link to="">
-            <!--<i class = "fas fa-user-circle fa-3x"></i>-->
+          <b-button v-b-toggle.sidebar-backdrop variant="light">
             <img :src="getPicURL(displayImage.image_name)" name ="profile_image" id="profile_image" class = "m-auto" width = "50" height = "50"/>
             <br/>
             Profile
-          </router-link>
+          </b-button>
+          <b-sidebar
+            id="sidebar-backdrop"
+            title="Profile"
+            :backdrop-variant="variant"
+            backdrop
+            shadow
+          >
+            <div>
+              <ul class = "nav-sublink">
+                <!--<li id = "header_profile">
+                  <h3>Profile</h3>
+                </li>-->
+                <li id = "profile_name">{{ convertToUpperCase(user_data.user.first_name) + ' ' + convertToUpperCase(user_data.user.last_name)}}</li>
+                <li class = "nav-sublink-item" id = "sublink1">
+                  <router-link :to="{name: 'userprofile', params:{id: user_data.user._id}}">Account Details</router-link>
+                  <p id="centerID" style="display:none">{{user_data.user.center_id}}</p>
+                </li>
+                <li class="nav-sublink-item" id="sublink3">
+                  <router-link :to="{name: 'userlogs', params:{id: user_data.user._id}}">My Logs</router-link>
+                </li>
+                <li class = "nav-sublink-item" id ="sublink2">
+                  <button type="button" id="btn_logout" class="btn ml-5" @click="logoutUser">Logout</button>
+                </li>
+              </ul>
+            </div>
+
+          </b-sidebar>
+          <!--</router-link>-->
             <ul class = "nav-sublink">
               <li id = "header_profile">
                 <h3>Profile</h3>
               </li>
-              <li id = "profile_name">{{ convertToUpperCase(user.first_name) + ' ' + convertToUpperCase(user.last_name)}}</li>
+              <li id = "profile_name">{{ convertToUpperCase(user_data.user.first_name) + ' ' + convertToUpperCase(user_data.user.last_name)}}</li>
               <li class = "nav-sublink-item" id = "sublink1">
-                <router-link :to="{name: 'userprofile', params:{id: user._id}}">Account Details</router-link>
-                <p id="centerID" style="display:none">{{user.center_id}}</p>
+                <router-link :to="{name: 'userprofile', params:{id: user_data.user._id}}">Account Details</router-link>
+                <p id="centerID" style="display:none">{{user_data.user.center_id}}</p>
               </li>
               <li class="nav-sublink-item" id="sublink3">
-                <router-link :to="{name: 'userlogs', params:{id: user._id}}">My Logs</router-link>
+                <router-link :to="{name: 'userlogs', params:{id: user_data.user._id}}">My Logs</router-link>
               </li>
               <li class = "nav-sublink-item" id ="sublink2">
                 <button type="button" id="btn_logout" class="btn ml-5" @click="logoutUser">Logout</button>
@@ -33,11 +60,11 @@
             </ul>
         </li>
         <li class="nav-link-item">
-          <router-link :to ="{name: 'dashboard', params:{id: user._id}}"><i class = "fas fa-tachometer-alt fa-3x"></i>Dashboard</router-link>
+          <router-link :to ="{name: 'dashboard', params:{id: user_data.user._id}}"><i class = "fas fa-tachometer-alt fa-3x"></i>Dashboard</router-link>
           </li>
         <li class="nav-link-item">
-          <router-link :to ="{name: 'centersinstitutionslist',params:{uid: user._id}}"><i class = "fas fa-house-user fa-3x"></i><br />Centers & Insitutions</router-link>
-          <ul v-if="user.user_type == 'employee' || user.user_type=='center_head'" class = "nav-sublink">
+          <router-link :to ="{name: 'centersinstitutionslist',params:{uid: user_data.user._id}}"><i class = "fas fa-house-user fa-3x"></i><br />Centers & Insitutions</router-link>
+          <ul v-if="user_data.user.user_type == 'employee' || user_data.user.user_type=='center_head'" class = "nav-sublink">
               <li id = "header_center">
                 <h5>Centers & Institutions</h5>
               </li>
@@ -51,16 +78,19 @@
           </ul>
         </li>
         <li class="nav-link-item">
-          <router-link v-if="user.user_type==='citizen'" :to="{name:'myincidentreports', params:{id: user._id}}"><i class = "fas fa-blender-phone fa-3x"></i><br />My Incident Reports</router-link>
-          <router-link v-if="user.user_type=='employee'|| user.user_type=='center_head'" :to="{name:'centerincidentreports', params:{id: center_data._id}}"><i class = "fas fa-blender-phone fa-3x"></i><br />Incident Reports</router-link>
-          <router-link v-if="user.user_type=='admin'" to=""><i class = "fas fa-blender-phone fa-3x"></i><br />Incident Reports</router-link>
+          <router-link v-if="user_data.user.user_type==='citizen'" :to="{name:'myincidentreports', params:{id: user_data.user._id}}"><i class = "fas fa-blender-phone fa-3x"></i><br />My Incident Reports</router-link>
+          <router-link v-if="user_data.user.user_type=='employee'|| user_data.user.user_type=='center_head'" :to="{name:'centerincidentreports', params:{id: center_data._id}}"><i class = "fas fa-blender-phone fa-3x"></i><br />Incident Reports</router-link>
+          <router-link v-if="user_data.user.user_type=='admin'" to=""><i class = "fas fa-blender-phone fa-3x"></i><br />Incident Reports</router-link>
           </li>
         <li class="nav-link-items">
-          <router-link v-if="user.user_type=='admin'" to=""><i class = "fas fa-home"></i><br />SETTINGS</router-link>
+          <router-link v-if="user_data.user.user_type=='admin'" to=""><i class = "fas fa-home"></i><br />SETTINGS</router-link>
           </li>
       </ul>
     </div>
-
+    
+    <div>
+      
+    </div>
     <!--<div v-if="showLogoutModal">
           <transition name="modal">
             <div class="modal-mask">
@@ -141,12 +171,12 @@ export default {
     this.getProfile()
     .then(res => {
       this.user_data = res.data
-      this.centerID = document.getElementById('centerID').innerHTML;
+      //this.centerID = document.getElementById('centerID').innerHTML;
       if(this.user.user_type === "employee" || this.user.user_type === "center_head")
       {
         this.getCenterProfile(this.centerID)
         .then(res => {
-          this.center_data = res.data   
+          this.center_data = res.data  
         })
       }
 
@@ -218,6 +248,7 @@ export default {
 #dswd_name{
   font-weight: bold;
 }
+/*
 .nav ul li:hover > ul { 
   left: 140px; 
   -webkit-transition: left 300ms ease-in; 
@@ -230,7 +261,7 @@ export default {
   opacity: 1;
   background-color: #fff; 
   }
-
+*/
 .nav ul li > ul { 
   box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
   position: absolute; 

@@ -552,7 +552,7 @@ export default {
         }
     },
     methods: {
-        ...mapActions(['getCenterProfile', 'displayCenterImage', 'uploadCenterPic', 'createCenterUser', 'displayCenterUsers', 'getAPIkey', 'getCenterIDByProfile', 'updateCenterInfo']),
+        ...mapActions(['getProfile','getCenterProfile', 'displayCenterImage', 'uploadCenterPic', 'createCenterUser', 'displayCenterUsers', 'getAPIkey', 'getCenterIDByProfile', 'updateCenterInfo']),
         getCenterImageURL(img) {
             return require('@/assets/images/'+img)
         },
@@ -767,6 +767,7 @@ export default {
         }
     },
     created() {
+        this.getProfile()
         this.getCenterProfile(this.id)
         .then(res => {
             this.center_profile = res.data

@@ -19,7 +19,7 @@
           </div>
           <div class="form-group">
             <label for="mobilephone_no">Mobile Phone No.<span class = 'required_data'>*</span></label>
-            <input type="text" v-model="mobile_no" class="form-control" name="mobile_no" placeholder="09xx3456789"/>
+            <input type="text" v-model="mobile_no" class="form-control" name="mobile_no" placeholder="09xx3456789" />
             
           </div>
           <div class="form-group">
