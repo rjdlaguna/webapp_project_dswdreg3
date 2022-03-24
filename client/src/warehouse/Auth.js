@@ -21,7 +21,7 @@ const actions = {
     commit
   }, user) {
     commit('auth_request')
-    let res = await axios.post('http://localhost:9000/api/users/login', user)
+    let res = await axios.post('http://dswdregion3centersandinstitutions.com:9000/api/users/login', user)
     if (res.data.success) {
       const token = res.data.token
       const user = res.data.user
@@ -36,7 +36,7 @@ const actions = {
     commit
   }, user) {
     commit('register_request')
-    let res = await axios.post('http://localhost:9000/api/users/registeruser', user)
+    let res = await axios.post('http://dswdregion3centersandinstitutions.com:9000/api/users/registeruser', user)
     if (res.data.success !== undefined) {
       commit('register_success')
     }
@@ -48,7 +48,7 @@ const actions = {
     let empForm = new FormData
     empForm = empData
     commit('register_request')
-    let res = await axios.post('http://localhost:9000/api/users/addcenteremployee', empForm)
+    let res = await axios.post('http://dswdregion3centersandinstitutions.com:9000/api/users/addcenteremployee', empForm)
     if (res.data.success !== undefined) {
       commit('register_success')
     }
@@ -58,7 +58,7 @@ const actions = {
     commit
   }, id) {
     commit('empinfo_request')
-    let res = await axios.get('http://localhost:9000/api/users/getemployeeinfo/' + id)
+    let res = await axios.get('http://dswdregion3centersandinstitutions.com:9000/api/users/getemployeeinfo/' + id)
     commit('empinfo_success', res.data.empinfo)
     return res
   },
@@ -66,7 +66,7 @@ const actions = {
     commit
   }, token) {
     commit('verifyemail_request')
-    let res = await axios.post('http://localhost:9000/api/users/emailactivate/' + token)
+    let res = await axios.post('http://dswdregion3centersandinstitutions.com:9000/api/users/emailactivate/' + token)
     if(res.data.success !== 'undefined'){
       commit('verifyemail_success')
     }
@@ -74,7 +74,7 @@ const actions = {
   },
   async getProfile ({commit}) {
     commit('profile_request')
-    let res = await axios.get('http://localhost:9000/api/users/profile')
+    let res = await axios.get('http://dswdregion3centersandinstitutions.com:9000/api/users/profile')
     commit('user_profile', res.data.user)
     return res
   },
@@ -82,13 +82,13 @@ const actions = {
     commit
   }, id) {
     commit('profile_request')
-    let res = await axios.get('http://localhost:9000/api/users/getcenteridbyprofile/'+id)
+    let res = await axios.get('http://dswdregion3centersandinstitutions.com:9000/api/users/getcenteridbyprofile/'+id)
     commit('user_profile', res.data.user)
     return res
   },
   async logout ({commit}) {
     await localStorage.removeItem('token')
-    //let res = await axios.get('http://localhost:9000/api/users/logout')
+    //let res = await axios.get('http://dswdregion3centersandinstitutions.com:9000/api/users/logout')
     delete axios.defaults.headers.common['Authorization']
     //router.push({name: 'welcome'})
     if (
@@ -102,7 +102,7 @@ const actions = {
   },
   async displayProfilePic ({commit}, id) {
       commit('profilepic_request')
-      let res = await axios.get('http://localhost:9000/api/users/displayprofilepic/'+ id)
+      let res = await axios.get('http://dswdregion3centersandinstitutions.com:9000/api/users/displayprofilepic/'+ id)
       commit('profile_picture', res.data.image_path)
       return res
   },
@@ -113,7 +113,7 @@ const actions = {
     let imgForm = new FormData
     imgForm = imgdata
     let id = imgForm.get('user_id')
-    let res = await axios.post('http://localhost:9000/api/users/uploadprofilepic/' + id, imgForm) //,{headers: {'Content-Type': 'multipart/form-data' }})
+    let res = await axios.post('http://dswdregion3centersandinstitutions.com:9000/api/users/uploadprofilepic/' + id, imgForm) //,{headers: {'Content-Type': 'multipart/form-data' }})
     if (res.data.success !== undefined) {
       commit('uploadpic_success')
     }
@@ -124,7 +124,7 @@ const actions = {
   }, user_info) {
     commit('updateaccount_request')
     let id = user_info._id
-    let res = await axios.post('http://localhost:9000/api/users/updateaccountinfo/'+ id, user_info)
+    let res = await axios.post('http://dswdregion3centersandinstitutions.com:9000/api/users/updateaccountinfo/'+ id, user_info)
     if (res.data.success !== undefined) {
       commit('updateaccount_success')
     }
@@ -135,7 +135,7 @@ const actions = {
   }, password_info) {
     let id = password_info._id
     commit('changepassword_request')
-    let res = await axios.post('http://localhost:9000/api/users/changepassword/'+id, password_info)
+    let res = await axios.post('http://dswdregion3centersandinstitutions.com:9000/api/users/changepassword/'+id, password_info)
     if(res.data.success !== undefined) {
       commit('changepassword_success')
     }
@@ -146,7 +146,7 @@ const actions = {
   }, resetpass_data) {
     let email = resetpass_data.email
     commit('resetpassword_request')
-    let res = await axios.post('http://localhost:9000/api/users/resetpassword/'+email, resetpass_data)
+    let res = await axios.post('http://dswdregion3centersandinstitutions.com:9000/api/users/resetpassword/'+email, resetpass_data)
     if(res.data.success !== undefined) {
       commit('resetpassword_success')
     }
@@ -156,7 +156,7 @@ const actions = {
     commit
   }, center){
     commit('registercenter_request')
-    let res = await axios.post('http://localhost:9000/api/users/registercenter', center)
+    let res = await axios.post('http://dswdregion3centersandinstitutions.com:9000/api/users/registercenter', center)
     if(res.data.success !== undefined) {
       commit('registercenter_success')
     }
@@ -167,7 +167,7 @@ const actions = {
     commit
   }){
     commit('displaycenters_request')
-    let res = await axios.get('http://localhost:9000/api/users/displaycenters')
+    let res = await axios.get('http://dswdregion3centersandinstitutions.com:9000/api/users/displaycenters')
     if(res.data.success !== undefined) {
       commit('displaycenters_success')
     }
@@ -178,13 +178,13 @@ const actions = {
     commit
   }, id) {
     commit('centerprofile_request')
-    let res = await axios.get('http://localhost:9000/api/users/getcenterprofile/' + id)
+    let res = await axios.get('http://dswdregion3centersandinstitutions.com:9000/api/users/getcenterprofile/' + id)
     return res
   },
 
   async displayCenterImage ({commit}, id) {
     commit('centerimage_request')
-    let res = await axios.get('http://localhost:9000/api/users/displaycenterimage/'+ id)
+    let res = await axios.get('http://dswdregion3centersandinstitutions.com:9000/api/users/displaycenterimage/'+ id)
     commit('centerimage_request', res.data.image_path)
     return res
   },
@@ -195,7 +195,7 @@ const actions = {
     let imgForm = new FormData
     imgForm = imgdata
     let id = imgForm.get('center_id')
-    let res = await axios.post('http://localhost:9000/api/users/uploadcenterpic/' + id, imgdata) //,{headers: {'Content-Type': 'multipart/form-data' }})
+    let res = await axios.post('http://dswdregion3centersandinstitutions.com:9000/api/users/uploadcenterpic/' + id, imgdata) //,{headers: {'Content-Type': 'multipart/form-data' }})
     if (res.data.success !== undefined) {
       commit('uploadpic_success')
     }
@@ -205,7 +205,7 @@ const actions = {
     commit
   }, usercenter_data) {
     commit('registercenteruser_request')
-    let res = await axios.post('http://localhost:9000/api/users/createcenteruser', usercenter_data)
+    let res = await axios.post('http://dswdregion3centersandinstitutions.com:9000/api/users/createcenteruser', usercenter_data)
     if(res.data.success !== undefined) {
       commit('registercenteruser_success')
     }
@@ -215,7 +215,7 @@ const actions = {
     commit
   }, id){
     commit('centerusers_request')
-    let res = await axios.get('http://localhost:9000/api/users/displaycenterusers/' + id)
+    let res = await axios.get('http://dswdregion3centersandinstitutions.com:9000/api/users/displaycenterusers/' + id)
    /*  if(res.data.success !== undefined) {
       commit('centerusers_success')
     } */
@@ -225,14 +225,14 @@ const actions = {
     commit
   }){
     commit('apikey_request')
-    let res = await axios.get('http://localhost:9000/api/users/getapikey')
+    let res = await axios.get('http://dswdregion3centersandinstitutions.com:9000/api/users/getapikey')
     return res
   },
   async getCenterData({
     commit
   }, id){
     commit('centerdata_request')
-    let res = await axios.get('http://localhost:9000/api/users/getcenterdatabyuser/' + id)
+    let res = await axios.get('http://dswdregion3centersandinstitutions.com:9000/api/users/getcenterdatabyuser/' + id)
     return res
   },
   async updateCenterInfo({
@@ -240,7 +240,7 @@ const actions = {
   }, centerdata){
     commit('updatecenterdata_request')
     let id = centerdata._id
-    let res = await axios.post('http://localhost:9000/api/users/updatecenterinfo/' + id, centerdata)
+    let res = await axios.post('http://dswdregion3centersandinstitutions.com:9000/api/users/updatecenterinfo/' + id, centerdata)
     if(res.data.success !== undefined){
       commit('updatecenterdata_success')
     }
@@ -252,7 +252,7 @@ const actions = {
     let rptForm = new FormData
     rptForm = report
     commit('sendincidentrep_request')
-    let res = await axios.post('http://localhost:9000/api/users/sendincidentreport', rptForm)
+    let res = await axios.post('http://dswdregion3centersandinstitutions.com:9000/api/users/sendincidentreport', rptForm)
     if(res.data.success !== undefined){
       commit('sendincientrep_success')
     }
@@ -262,7 +262,7 @@ const actions = {
     commit
   }, id){
     commit('myincidentreports_request')
-    let res = await axios.get('http://localhost:9000/api/users/getmyincidentreports/' + id)
+    let res = await axios.get('http://dswdregion3centersandinstitutions.com:9000/api/users/getmyincidentreports/' + id)
     return res
   },
 
@@ -270,63 +270,63 @@ const actions = {
     commit
   }, id) {
     commit('myincidentreportimg_request')
-    let res = await axios.get('http://localhost:9000/api/users/getincidentreportimages/' + id)
+    let res = await axios.get('http://dswdregion3centersandinstitutions.com:9000/api/users/getincidentreportimages/' + id)
     return res
   },
   async getCenterIncidentReports({
     commit
   }, id){
     commit('centerincidentrep_request')
-    let res = await axios.get('http://localhost:9000/api/users/getcenterincidentreports/' + id)
+    let res = await axios.get('http://dswdregion3centersandinstitutions.com:9000/api/users/getcenterincidentreports/' + id)
     return res
   },
   async getReportedIncident({
     commit
   }, id) {
     commit('reportedincident_request')
-    let res = await axios.get('http://localhost:9000/api/users/getreportedincident/' + id)
+    let res = await axios.get('http://dswdregion3centersandinstitutions.com:9000/api/users/getreportedincident/' + id)
     return res
   },
   async deleteReportedIncident({
     commit
   }, id){
     commit('deleteincidentrep_request')
-    let res = await axios.get('http://localhost:9000/api/users/deletereportedincident/' + id)
+    let res = await axios.get('http://dswdregion3centersandinstitutions.com:9000/api/users/deletereportedincident/' + id)
     return res
   },
   async deleteReportedImage1({
     commit
   }, image1){
     commit('deleterptimage1_loading')
-    let res = await axios.delete('http://localhost:9000/api/users/deletereportedimage1/ ' + image1)
+    let res = await axios.delete('http://dswdregion3centersandinstitutions.com:9000/api/users/deletereportedimage1/ ' + image1)
     return res
   },
   async saveUpdatedIncidentReport({
     commit,
   }, reptdata){
     commit('saveupdateincidentrept_loading')
-    let res = await axios.post('http://localhost:9000/api/users/saveupdatedincidentreport', reptdata)
+    let res = await axios.post('http://dswdregion3centersandinstitutions.com:9000/api/users/saveupdatedincidentreport', reptdata)
     return res
   },
   async saveUpdatedIncidentReport2({
     commit,
   }, reptdata){
     commit('saveupdateincidentrept_loading')
-    let res = await axios.post('http://localhost:9000/api/users/saveupdatedincidentreport2', reptdata)
+    let res = await axios.post('http://dswdregion3centersandinstitutions.com:9000/api/users/saveupdatedincidentreport2', reptdata)
     return res
   },
   async getUserLogs({
     commit
   }, id){
     commit('userlogs_request')
-    let res = await axios.get('http://localhost:9000/api/users/getuserlogs/' + id)
+    let res = await axios.get('http://dswdregion3centersandinstitutions.com:9000/api/users/getuserlogs/' + id)
     return res
   },
   async deleteUserLogs({
     commit
   }, logs_info) {
     commit('deleteuserlogs_request')
-    let res = await axios.delete('http://localhost:9000/api/users/deleteuserlogs/' + logs_info)
+    let res = await axios.delete('http://dswdregion3centersandinstitutions.com:9000/api/users/deleteuserlogs/' + logs_info)
     if(res.data.success !== undefined) {
       commit('deleteuserlogs_success')
     }
