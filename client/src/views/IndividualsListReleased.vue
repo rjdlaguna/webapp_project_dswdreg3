@@ -151,8 +151,7 @@ export default {
           this.saveUpdatedIncidentReport(updatedincidentrep)
           .then(res => {
             incidentRep = res.data
-            console.log(res.data)
-            alert("Incident report successfully updated...")
+            alert("Incident report successfully updated..." + incidentRep)
             this.showSaveBtn = false
           })
         } else {
@@ -164,7 +163,7 @@ export default {
           this.saveUpdatedIncidentReport2(updatedincidentrep)
           .then(res => {
             incidentRep = res.data
-            alert("Incident report successfully updated...")
+            alert("Incident report successfully updated..." + incidentRep)
             this.showSaveBtn = false
             this.showCancelBtn = false
             this.showUpdateBtn = true
