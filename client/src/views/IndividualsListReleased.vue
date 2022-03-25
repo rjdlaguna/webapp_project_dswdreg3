@@ -147,8 +147,10 @@ export default {
             image2_path: this.incidentrepdata_id.report_image2.image_path,
             image2_name: this.incidentrepdata_id.report_image2.image_name
           }
+          let incidentRep = {}
           this.saveUpdatedIncidentReport(updatedincidentrep)
           .then(res => {
+            incidentRep = res.data
             console.log(res.data)
             alert("Incident report successfully updated...")
             this.showSaveBtn = false
@@ -161,7 +163,7 @@ export default {
           }
           this.saveUpdatedIncidentReport2(updatedincidentrep)
           .then(res => {
-            console.log(res.data)
+            incidentRep = res.data
             alert("Incident report successfully updated...")
             this.showSaveBtn = false
             this.showCancelBtn = false
