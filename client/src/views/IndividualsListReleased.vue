@@ -124,7 +124,7 @@ export default {
         this.status_update = document.getElementById('rep_status').value;
         let center_uid = this.id
         this.incidentrepdata_id = res.data
-       
+        let incidentRep = {}
         if(this.status_update === 'Viewed') {
           let updatedincidentrep = {
             user_id: id,
@@ -147,7 +147,6 @@ export default {
             image2_path: this.incidentrepdata_id.report_image2.image_path,
             image2_name: this.incidentrepdata_id.report_image2.image_name
           }
-          let incidentRep = {}
           this.saveUpdatedIncidentReport(updatedincidentrep)
           .then(res => {
             incidentRep = res.data
